@@ -1314,12 +1314,17 @@ void __unguarded_linear_insert(_RandomAccessIter __last, _Tp __val,
                                _Compare __comp) {
   _RandomAccessIter __next = __last;
   --__next;  
+  /**
+  该函数中用cmp去从后往前挨个比较，如果_comp一直返回true，则一直__next--，如果使用>=,数组元素全部为相等，则返回的next指针一直递减，
+  除非访问到非法地址才会停下来。
+  所以在数组全部相同时，>=会导致崩溃。
+  **/
   while (__comp(__val, *__next)) {
     *__last = *__next;
-    __last = __next;
+    __last = __next; //swap(last,next)
     --__next;
   }
-  *__last = __val;
+  *__last = __val; //find
 }
 
 template <class _RandomAccessIter, class _Tp>
@@ -1337,7 +1342,13 @@ inline void __linear_insert(_RandomAccessIter __first,
 template <class _RandomAccessIter, class _Tp, class _Compare>
 inline void __linear_insert(_RandomAccessIter __first, 
                             _RandomAccessIter __last, _Tp*, _Compare __comp) {
-  _Tp __val = *__last;
+  _Tp __val = *__last;//最后一个元素的值
+  /**
+  课本上的是和最后一个元素比较
+  它会先将该值和第一个元素进行比较，如果比第一个元素还小，那么就直接将前面已经排列好的数据整体向后移动一位，然后将该元素放在起始位置。
+   对于这种情况，和标准插入排序相比，它将last - first - 1次的比较与交换操作变成了一次copy_backward操作，
+    节省了每次移动前的比较操作。
+  **/
   if (__comp(__val, *__first)) {
     copy_backward(__first, __last, __last + 1);
     *__first = __val;
@@ -1407,7 +1418,7 @@ void __final_insertion_sort(_RandomAccessIter __first,
   if (__last - __first > __stl_threshold) {
     __insertion_sort(__first, __first + __stl_threshold, __comp);
     __unguarded_insertion_sort(__first + __stl_threshold, __last, __comp);
-  }
+  } //元素多余16个
   else
     __insertion_sort(__first, __last, __comp);
 }
@@ -1424,9 +1435,10 @@ void __introsort_loop(_RandomAccessIter __first,
                       _RandomAccessIter __last, _Tp*,
                       _Size __depth_limit)
 {
-  while (__last - __first > __stl_threshold) {
-    if (__depth_limit == 0) {
-      partial_sort(__first, __last, __last);
+  while (__last - __first > __stl_threshold) { ///长度大于16才进行一次快排分割
+    if (__depth_limit == 0) 
+    {
+      partial_sort(__first, __last, __last); //堆排序
       return;
     }
     --__depth_limit;
@@ -1434,9 +1446,9 @@ void __introsort_loop(_RandomAccessIter __first,
       __unguarded_partition(__first, __last,
                             _Tp(__median(*__first,
                                          *(__first + (__last - __first)/2),
-                                         *(__last - 1))));
-    __introsort_loop(__cut, __last, (_Tp*) 0, __depth_limit);
-    __last = __cut;
+                                         *(__last - 1))));////找三个位置的中位数作为快排依据
+    __introsort_loop(__cut, __last, (_Tp*) 0, __depth_limit); //排后一部分
+    __last = __cut; //排前一部分
   }
 }
 
@@ -1467,11 +1479,12 @@ inline void sort(_RandomAccessIter __first, _RandomAccessIter __last) {
   __STL_REQUIRES(_RandomAccessIter, _Mutable_RandomAccessIterator);
   __STL_REQUIRES(typename iterator_traits<_RandomAccessIter>::value_type,
                  _LessThanComparable);
-  if (__first != __last) {
+  if (__first != __last) { //只有一个记录 ，不需要排序
     __introsort_loop(__first, __last,
                      __VALUE_TYPE(__first),
-                     __lg(__last - __first) * 2);
-    __final_insertion_sort(__first, __last);
+                     __lg(__last - __first) * 2);//快速排序，整体有序
+    __final_insertion_sort(__first, __last); //剩下未排序的数据，直接插入排序
+    
   }
 }
 
