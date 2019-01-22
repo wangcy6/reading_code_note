@@ -85,10 +85,9 @@ __median(const _Tp& __a, const _Tp& __b, const _Tp& __c, _Compare __comp) {
 // for_each.  Apply a function to every element of a range.
 template <class _InputIter, class _Function>
 _Function for_each(_InputIter __first, _InputIter __last, _Function __f) {
-  __STL_REQUIRES(_InputIter, _InputIterator);
   for ( ; __first != __last; ++__first)
-    __f(*__first);
-  return __f;
+    __f(*__first);// 调用类_f(__first),相当于调用类._f.opeartor(__first) 函数
+  return __f;//_Function 为返回值 
 }
 
 // find and find_if.

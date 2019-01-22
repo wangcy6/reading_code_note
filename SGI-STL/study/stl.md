@@ -6,25 +6,45 @@
 
 gcc 使用 4.8.4 版本，STL源码 在 Linux 系统的位置是：/usr/include/c++/4.8.4/bits (79个文件)
 
+
+
 # 目录：
 
 ## [小王职场记 谈谈你的STL理解（1）](https://mp.weixin.qq.com/s/yOyLsW1PZfLZJqXeWR0Y6w)
 
 
 
-# 算法部分
+# 功能划分
 
-## 代码：
+1. 算法代码
 
-#include <algorithm>  
+algorithm
 
-stl_algo.h 
+algo.h
 
-## 函数对象(仿函数)
+ stl_algo.h 
+
+stl_numeric.h
+
+2. 函数对象代码
+
+stl_function.h
+
+
+
+
+
+
+
+# 函数对象模块
 
 - 定义：
 
-  重载了“operaotr()”操作符的普通类对象
+  重载了“operaotr()”操作符的普通类对象 ，
+
+  这个对象具备了具有函数行为
+
+  > 调用类(), 相当于调用类.成员函数()
 
 ```c++
 
@@ -35,24 +55,36 @@ struct greater : public binary_function<_Tp,_Tp,bool>
   bool operator()(const _Tp& __x, const _Tp& __y) const { return __x > __y; }
 };
 //这个函数对象没有数据成员、没有虚函数、没有显示声明的构造函数和析构函数，且对operator()的实现是内联的。用作STL比较器的函数对象一般都很小
+
+greater<int> greaterobj;
+greaterobj(3, 5)//等价于greaterobj.operator(3,5) 效果等价于函数调用function(3, 5); 
+
+    
 ```
 
 
 
+- 函数对象作用：1 可调用的表达式
+
+![func_objets](https://github.com/wangcy6/reading_code_note/blob/master/SGI-STL/images/func_object_call.PNG)
+
+> 使用函数对象作为比较器还有一个额外的好处，就是比较操作将被内联处理，
+
+> 而使用函数指针则不允许内联
 
 
-- 函数对象作用： 回调函数
 
-  > 使用函数对象作为比较器还有一个额外的好处，就是比较操作将被内联处理，
-  >
-  > 而使用函数指针则不允许内联
+- 函数对象作用： 2以函数对象的临时对象履行函数功能
 
 ```c++
-template< class RandomIt, class Compare > //calss 说明就是一个class 不是一个函数
-void sort( RandomIt first, RandomIt last, Compare comp )
+cout << greater<int>()(3, 5) << endl;
 ```
 
-- 函数对象作用  ： 支持Lambda表达式
+- 函数对象作用  ： lambda表达式原理
+
+
+
+Lambda表达式来源于函数式编程，说白就了就是在**使用的地方定义函数**，有的语言叫“闭包”
 
 C++引入Lambda的最主要原因就是
 
@@ -60,11 +92,21 @@ C++引入Lambda的最主要原因就是
 
 2）编译器会把其转成**函数对象**
 
-【c++精神，不创造新概念】
-
-
+**编译器会把一个lambda表达式生成一个匿名类的匿名对象，并在类中重载函数调用运算符**
 
 ![func_objets](https://github.com/wangcy6/reading_code_note/blob/master/SGI-STL/images/func_objets.PNG)
+
+
+
+塔山
+
+- https://www.youtube.com/watch?v=482weZjwVHY
+
+
+
+ # 算法模块
+
+
 
 ## std:sort 
 
@@ -153,6 +195,33 @@ if  数据少于16个 then 改为 插入排序，降低递归堆栈消耗
 4. http://blog.sina.com.cn/s/blog_79d599dc01012m7l.html
 
 ## std::for_each
+
+```c++
+// for_each.  Apply a function to every element of a range.
+template <class _InputIter, class _Function>
+_Function for_each(_InputIter __first, _InputIter __last, _Function __f) {
+  for ( ; __first != __last; ++__first)
+    __f(*__first);// 调用类_f(),相当于调用类._f.opeartor() 函数
+  return __f;//临时对象
+}
+
+
+//Lambda 
+int total = 0;
+std::for_each(myvector.begin(), myvector.end(), [&total](int x) { total += x; });
+std::cout <<"Lambda: "<< total<<endl;
+
+//函数对象
+struct Sum
+{
+    Sum(): sum{0} { }
+    void operator()(int x) { total += x; } //只有一个函数
+    int total;
+};
+// calls Sum::operator() for each number
+Sum s = std::for_each(myvector.begin(), myvector.end(), Sum());
+std::cout << "sum: " << s.sum <<endl;
+```
 
 
 
