@@ -71,6 +71,8 @@ greaterobj(3, 5)//等价于greaterobj.operator(3,5) 效果等价于函数调用f
 > 使用函数对象作为比较器还有一个额外的好处，就是比较操作将被内联处理，
 
 > 而使用函数指针则不允许内联
+>
+> 《C++Primer Plus》第16章“函数对象”这一节，发现C++中还有比函数指针更高层次的抽象——functor，中文名为“仿函数”“类函数”或“函数对象”。它的实际就是“重载了'operator()'的类”，并兼容函数指针
 
 
 
@@ -95,6 +97,8 @@ C++引入Lambda的最主要原因就是
 **编译器会把一个lambda表达式生成一个匿名类的匿名对象，并在类中重载函数调用运算符**
 
 ![func_objets](https://github.com/wangcy6/reading_code_note/blob/master/SGI-STL/images/func_objets.PNG)
+
+- 函数对象作用:函数适配器【待学习】
 
 
 
