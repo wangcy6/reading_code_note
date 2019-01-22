@@ -1,10 +1,18 @@
+
+
+
+
 # 版本
 
 gcc 使用 4.8.4 版本，STL源码 在 Linux 系统的位置是：/usr/include/c++/4.8.4/bits (79个文件)
 
+# 目录：
+
+## [小王职场记 谈谈你的STL理解（1）](https://mp.weixin.qq.com/s/yOyLsW1PZfLZJqXeWR0Y6w)
 
 
-# 算法
+
+# 算法部分
 
 ## 代码：
 
@@ -12,21 +20,66 @@ gcc 使用 4.8.4 版本，STL源码 在 Linux 系统的位置是：/usr/include/
 
 stl_algo.h 
 
-## std:compare：
+## 函数对象(仿函数)
 
- Effective STL： Item 21：永远让比较函数对相同元素返回false
+- 定义：
+
+  重载了“operaotr()”操作符的普通类对象
+
+```c++
+
+ // 大于
+template <class _Tp>
+struct greater : public binary_function<_Tp,_Tp,bool> 
+{
+  bool operator()(const _Tp& __x, const _Tp& __y) const { return __x > __y; }
+};
+//这个函数对象没有数据成员、没有虚函数、没有显示声明的构造函数和析构函数，且对operator()的实现是内联的。用作STL比较器的函数对象一般都很小
+```
+
+
+
+
+
+- 函数对象作用： 回调函数
+
+  > 使用函数对象作为比较器还有一个额外的好处，就是比较操作将被内联处理，
+  >
+  > 而使用函数指针则不允许内联
+
+```c++
+template< class RandomIt, class Compare > //calss 说明就是一个class 不是一个函数
+void sort( RandomIt first, RandomIt last, Compare comp )
+```
+
+- 函数对象作用  ： 支持Lambda表达式
+
+C++引入Lambda的最主要原因就是
+
+1）可以定义匿名函数，
+
+2）编译器会把其转成**函数对象**
+
+【c++精神，不创造新概念】
+
+
+
+![func_objets](https://github.com/wangcy6/reading_code_note/blob/master/SGI-STL/images/func_objets.PNG)
 
 ## std:sort 
 
 ```c++
 template <class _RandomAccessIter>
 inline void sort(_RandomAccessIter __first, _RandomAccessIter __last) {
-
-  if (__first != __last) {
+  __STL_REQUIRES(_RandomAccessIter, _Mutable_RandomAccessIterator);
+  __STL_REQUIRES(typename iterator_traits<_RandomAccessIter>::value_type,
+                 _LessThanComparable);
+  if (__first != __last) { //只有一个记录 ，不需要排序
     __introsort_loop(__first, __last,
                      __VALUE_TYPE(__first),
-                     __lg(__last - __first) * 2); //快速排序
-    __final_insertion_sort(__first, __last); //直接插入排序
+                     __lg(__last - __first) * 2);//快速排序，整体有序
+    __final_insertion_sort(__first, __last); //剩下未排序的数据，直接插入排序
+    
   }
 }
 template <class _RandomAccessIter, class _Tp, class _Size>
@@ -54,7 +107,7 @@ void __introsort_loop(_RandomAccessIter __first,
 
 
 
-### 描述
+### sort描述
 
 维基百科 [内省排序](https://zh.wikipedia.org/wiki/%E5%86%85%E7%9C%81%E6%8E%92%E5%BA%8F)
 
@@ -99,11 +152,15 @@ if  数据少于16个 then 改为 插入排序，降低递归堆栈消耗
 3. https://paste.ubuntu.com/p/Y8k2DKCTX5/
 4. http://blog.sina.com.cn/s/blog_79d599dc01012m7l.html
 
-# 容器
+## std::for_each
 
-# 分配器
 
-# 迭代器
+
+# 容器部分
+
+# 分配器部分
+
+# 迭代器部分
 
 
 
