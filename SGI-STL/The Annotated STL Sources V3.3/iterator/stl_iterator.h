@@ -35,7 +35,8 @@ __STL_BEGIN_NAMESPACE
 
 
 template <class _Container>
-class back_insert_iterator {
+class back_insert_iterator 
+{
 protected:
   _Container* container;
 public:
@@ -46,11 +47,21 @@ public:
   typedef void                pointer;
   typedef void                reference;
 
-  explicit back_insert_iterator(_Container& __x) : container(&__x) {}
+  explicit back_insert_iterator(_Container& __x) : container(&__x) {} //当传入参数是 容器时候，只能这样构造
+/**
+/**
+explicit:禁止隐式调用类内的单参数构造函数
+ 从上面的解释可以看到， explicit关键字的作用：禁止隐式调用类内的单参数构造函数，这主要包括如下三层意思：
+         （1）该关键字只能用来修饰类内部的构造函数
+         （2）禁止隐式调用拷贝构造函数
+         （3）禁止类对象之间的隐式转换
+**/
+
   back_insert_iterator<_Container>&
-  operator=(const typename _Container::value_type& __value) { 
+  operator=(const typename _Container::value_type& __value) 
+  { 
     container->push_back(__value);
-    return *this;
+    return *this; //对迭代器适配器的赋值变为了对容器的插入操作。
   }
   back_insert_iterator<_Container>& operator*() { return *this; }
   back_insert_iterator<_Container>& operator++() { return *this; }
@@ -67,30 +78,37 @@ iterator_category(const back_insert_iterator<_Container>&)
 }
 
 #endif /* __STL_CLASS_PARTIAL_SPECIALIZATION */
-
+/**
+back_insert_iterator是一个类（废话）
+对它们的赋值操作将转换为对绑定容器的插入操作（重载 operator=）
+为了操作方便，向用户提供的是一个函数，函数中才创建上述类
+***/
 template <class _Container>
 inline back_insert_iterator<_Container> back_inserter(_Container& __x) {
-  return back_insert_iterator<_Container>(__x);
+  return back_insert_iterator<_Container>(__x); //创建一个临时对象
 }
 
 template <class _Container>
 class front_insert_iterator {
 protected:
-  _Container* container;
+  _Container* container; //底层容器
 public:
-  typedef _Container          container_type;
-  typedef output_iterator_tag iterator_category;
+  typedef _Container          container_type; //容器的类型
+  typedef output_iterator_tag iterator_category; //
   typedef void                value_type;
   typedef void                difference_type;
   typedef void                pointer;
   typedef void                reference;
-
+   //构造函数
   explicit front_insert_iterator(_Container& __x) : container(&__x) {}
+
+  //重载 =
   front_insert_iterator<_Container>&
   operator=(const typename _Container::value_type& __value) { 
     container->push_front(__value);
     return *this;
   }
+   //禁用
   front_insert_iterator<_Container>& operator*() { return *this; }
   front_insert_iterator<_Container>& operator++() { return *this; }
   front_insert_iterator<_Container>& operator++(int) { return *this; }
@@ -109,7 +127,9 @@ iterator_category(const front_insert_iterator<_Container>&)
 
 template <class _Container>
 inline front_insert_iterator<_Container> front_inserter(_Container& __x) {
-  return front_insert_iterator<_Container>(__x);
+  return front_insert_iterator<_Container>(__x); //temp
+  //  front_insert_iterator temp(_x) 
+  //  return temp;
 }
 
 template <class _Container>
@@ -291,7 +311,14 @@ public:
 
 public:
   reverse_iterator() {}
-  explicit reverse_iterator(iterator_type __x) : current(__x) {}
+  explicit reverse_iterator(iterator_type __x) : current(__x) {//构造函数的任务就是把传入的迭代器保存在内部的current中。}
+/**
+explicit:禁止隐式调用类内的单参数构造函数
+ 从上面的解释可以看到， explicit关键字的作用：禁止隐式调用类内的单参数构造函数，这主要包括如下三层意思：
+         （1）该关键字只能用来修饰类内部的构造函数
+         （2）禁止隐式调用拷贝构造函数
+         （3）禁止类对象之间的隐式转换
+**/
 
   reverse_iterator(const _Self& __x) : current(__x.current) {}
 #ifdef __STL_MEMBER_TEMPLATES
@@ -303,14 +330,14 @@ public:
   iterator_type base() const { return current; }
   reference operator*() const {
     _Iterator __tmp = current;
-    return *--__tmp;
+    return *--__tmp;  // 先自减，再接引用
   }
 #ifndef __SGI_STL_NO_ARROW_OPERATOR
   pointer operator->() const { return &(operator*()); }
 #endif /* __SGI_STL_NO_ARROW_OPERATOR */
 
   _Self& operator++() {
-    --current;
+    --current;//back
     return *this;
   }
   _Self operator++(int) {

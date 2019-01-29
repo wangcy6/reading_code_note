@@ -266,14 +266,15 @@ void count(_InputIter __first, _InputIter __last, const _Tp& __value,
 }
 
 template <class _InputIter, class _Predicate, class _Size>
+//模板函数 计算满足条件的元素个数
 void count_if(_InputIter __first, _InputIter __last, _Predicate __pred,
               _Size& __n) {
   __STL_REQUIRES(_InputIter, _InputIterator);
   __STL_UNARY_FUNCTION_CHECK(_Predicate, bool, 
                   typename iterator_traits<_InputIter>::value_type);
   for ( ; __first != __last; ++__first)
-    if (__pred(*__first))
-      ++__n;
+    if (__pred(*__first))  /* 对每个元素调用仿函数 */
+      ++__n;  /* 满足条件则累加 */
 }
 
 #ifdef __STL_CLASS_PARTIAL_SPECIALIZATION

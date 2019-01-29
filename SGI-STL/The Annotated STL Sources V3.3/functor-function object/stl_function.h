@@ -32,7 +32,8 @@
 #define __SGI_STL_INTERNAL_FUNCTION_H
 
 __STL_BEGIN_NAMESPACE
-
+//typedef：https://blog.csdn.net/ameyume/article/details/6326278 
+//auto:https://blog.csdn.net/craftsman1970/article/details/81949960
 // 一元函数的参数类型和返回值类型
 template <class _Arg, class _Result>
 struct unary_function {
@@ -157,7 +158,7 @@ struct logical_not : public unary_function<_Tp,bool>
 {
   bool operator()(const _Tp& __x) const { return !__x; }
 };
-
+// typename用法：http://pages.cs.wisc.edu/~driscoll/typename.html
 // 以下是仿函数的适配器
 template <class _Predicate>
 class unary_negate
@@ -228,22 +229,77 @@ bind1st(const _Operation& __fn, const _Tp& __x)
   return binder1st<_Operation>(__fn, _Arg1_type(__x));
 }
 
-template <class _Operation> 
+
+
+//第一次分析：class binder2nd 声明一个类 这个语法你肯定明白
+//第二次分析：class binder2nd:public unary_function 
+//binder2nd继承来了模板类unary_function，typename _Operation::first_argument_type 是参数类型 
+//vector<int> int就是类型  vector就是模板类  这个对比应该明白  
+//第三次分析：  _<typename _Operation::first_argument_type
+//请问 class  _Operation是任意类， typename first_argument_type任意类型之间关系是什么？
+//但是在stl语法中 typename T 代码是 成员变量的类型（int ，char*）   class T 代表类的类型
+//vector:base, a.m_i 
+//T::T
+//第四次分析：
+// _Operation::second_argument_type 你怎么确定  类_Operation里面一定有成员变量 second_argument_type
+// 
+//binary_function is a base class for creating function objects with two arguments.
+//stl 规定 函数对象必须这个类， 这样函数对象之间（虽然不是继承，但是可以调用），但是相互使用了（佩服呀，因此函数对象适配器，可以适配任何同类对象）
+// 这就是编译期间的多态
+
+////第五次分析：重载 返回值 operator()(参数)
+//typename _Operation::result_type operator()(const typename _Operation::first_argument_type& __x) const 
+ //返回的结果是不是具体类型 是模板  result_type是unary_function实现的
+ //op(__x, value) 
+
+////第6次分析：
+//binder2nd::unary_function
+//_Operation::binary_function
+//这是一次更强大的适配
+//这个是第六次分析   关键点 
+//value 是 binder2nd是创建时候调用构造时候设置的，
+//_x 调用函数关系()设置的
+//A a(10)  构造(a) 
+// a(20)   函数调用(a,b)
+/**
+此函数适配器必须要继承自unary_function对象，满足可配接性。
+解释一下可配接性。less_equal类继承自binary_function，便有了内部嵌套类型second_argument_type，
+而这个类型正好需要用在binder2nd中，以保存（绑定）某个参数。这样，less_equal就变为了可配接的。
+纵观整个适配器系统，基本上都是把某个对象或指向对象的指针封装在一个适配器类中，对适配器的操作最终都会传递到对所包含对象的操作
+**/
+
+template <class _Operation>
 class binder2nd
   : public unary_function<typename _Operation::first_argument_type,
                           typename _Operation::result_type> {
 protected:
-  _Operation op;
-  typename _Operation::second_argument_type value;
+  _Operation op;//第一个成员变量是：是函数对象
+  typename _Operation::second_argument_type value;//第二个成员变量是：函数对象的参数
 public:
-  binder2nd(const _Operation& __x,
+ //构造函数 函数对象的创建
+  binder2nd(const _Operation& __x,  // 仿函数
             const typename _Operation::second_argument_type& __y) 
-      : op(__x), value(__y) {}
-  typename _Operation::result_type
-  operator()(const typename _Operation::first_argument_type& __x) const {
-    return op(__x, value); 
+      : op(__x), value(__y) // 绑定的第二个数
+  {
+
+  }
+  typename _Operation::result_type //返回的结果是不是具体类型 是模板  result_type是unary_function实现的
+
+ 
+  typename _Operation::result_type operator()(const typename _Operation::first_argument_type& __x) const 
+  {
+     return op(__x, value);  
+     //这个是第六次分析   关键点 
+     //value 是 binder2nd是创建时候调用构造时候设置的，
+     //_x 调用函数关系()设置的
+     //A a(10)  构造(a) 
+     // a(20)   函数调用(a,b)
+    
   }
 };
+
+
+
 
 template <class _Operation, class _Tp>
 inline binder2nd<_Operation> 

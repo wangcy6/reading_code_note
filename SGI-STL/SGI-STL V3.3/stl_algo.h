@@ -301,7 +301,7 @@ count_if(_InputIter __first, _InputIter __last, _Predicate __pred) {
                   typename iterator_traits<_InputIter>::value_type);
   typename iterator_traits<_InputIter>::difference_type __n = 0;
   for ( ; __first != __last; ++__first)
-    if (__pred(*__first))
+    if (__pred(*__first)) //仿函数的调用
       ++__n;
   return __n;
 }
