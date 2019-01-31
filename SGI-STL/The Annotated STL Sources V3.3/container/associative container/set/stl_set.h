@@ -65,20 +65,20 @@ class set {
 public:
   // typedefs:
 
-  typedef _Key     key_type;
+  typedef _Key     key_type; //容易区分，不如同样类型 不知道哪个是哪个了
   typedef _Key     value_type;
   typedef _Compare key_compare;
   typedef _Compare value_compare;
 private:
   typedef _Rb_tree<key_type, value_type, 
                   _Identity<value_type>, key_compare, _Alloc> _Rep_type;  // set 的底层实现为 RB-tree
-  _Rep_type _M_t;  // red-black tree representing set
+  _Rep_type _M_t;  // red-black tree representing set rb tree
 public:
   typedef typename _Rep_type::const_pointer pointer;
   typedef typename _Rep_type::const_pointer const_pointer;
   typedef typename _Rep_type::const_reference reference;
   typedef typename _Rep_type::const_reference const_reference;
-  typedef typename _Rep_type::const_iterator iterator; // iterator 的类型为 const_iterator
+  typedef typename _Rep_type::const_iterator iterator; // iterator 的类型为 const_iterator 默认是常量
   typedef typename _Rep_type::const_iterator const_iterator;
   typedef typename _Rep_type::const_reverse_iterator reverse_iterator;
   typedef typename _Rep_type::const_reverse_iterator const_reverse_iterator;
@@ -87,7 +87,8 @@ public:
   typedef typename _Rep_type::allocator_type allocator_type;
 
   // allocation/deallocation
-
+  //构造函数
+  //成员初始化
   set() : _M_t(_Compare(), allocator_type()) {}
   explicit set(const _Compare& __comp,
                const allocator_type& __a = allocator_type())

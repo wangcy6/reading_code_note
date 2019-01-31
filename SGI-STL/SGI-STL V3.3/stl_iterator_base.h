@@ -122,7 +122,7 @@ struct iterator_traits<_Tp*> {
   typedef _Tp*                        pointer;
   typedef _Tp&                        reference;
 };
-
+// 特化版本一，针对原生指针类型
 template <class _Tp>
 struct iterator_traits<const _Tp*> {
   typedef random_access_iterator_tag iterator_category;

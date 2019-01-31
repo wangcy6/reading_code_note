@@ -143,6 +143,13 @@ void AnimalShot(Animal & anim)
 
 # 内联函数可以是虚函数吗[QA]
 
+>Note: It's imperative that the function's definition (the part between the {...}) be placed in a header file, unless the function is used only in a single .cpp file. In particular, if you put the inline function's definition into a .cpp file and you call it from some other .cpp file, you'll get an "unresolved external" error from the linker.
+
+1）如果在头文件中定义非inline函数，一旦该头文件被多个文件包含，就会造成该非inline函数的“重定义”，因而，不建议将非inline函数的定义放在头文件中，但是非inline函数的声明是可以放在头文件中的。
+
+.头文件中有些声明但没有定义的函数，是在库中定义的，当然这些库是不包含在
+      内核代码中的。比如unistd.h中的系统调用都是在库里面封装的。再如sys/stat.h
+      中chmod函数其实在unistd.h中也有声明，我
 
 
 
@@ -150,10 +157,14 @@ void AnimalShot(Animal & anim)
 
 
 
+- 内联函数是弱符号
 
-
-
-## 
+```c
+[root@VM-10-112-178-190 c++]# nm a.out |c++filt |grep -E "test|inlineFunc"
+0000000000400977 t _GLOBAL__sub_I__Z4testv
+000000000040098c W inlineFunc(int)
+00000000004008c0 T test()
+```
 
 
 
@@ -489,6 +500,20 @@ std::unary_function<int,bool>
 
 # 
 
+**### 应用于仿函数，function adapter**
+
+\> 对返回值进行逻辑否定：not1, not2
+
+\> 对参数进行绑定：bind1st, bind2nd
+
+\> 用于函数合成：compose1, compose2
+
+\> 用于函数指针：ptr_fun
+
+\> 用于成员函数指针：mem_fun, mem_fun_ref
+
+
+
 | 成员类型      | 定义                   | 注释                     |
 | ------------- | ---------------------- | ------------------------ |
 | argument_type | 第一个模板参数 (Arg)   | `()重载函数的参数类型`   |
@@ -581,6 +606,7 @@ public:
 std::vector<int> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 //计算容器中小于等于3的元素个数
 cout << count_if(vec.begin(), vec.end(), bind2nd(less_equal<int>(), 3));
+int count  = std::count_if(vec.begin(), vec.end(), [](int x) {return x >  3;})
 ```
 
 ![1548330412420](C:\Users\wangchuanyi\AppData\Roaming\Typora\typora-user-images\1548330412420.png)
@@ -589,7 +615,48 @@ cout << count_if(vec.begin(), vec.end(), bind2nd(less_equal<int>(), 3));
 
 ![1548330412420](https://github.com/wangcy6/reading_code_note/blob/master/SGI-STL/images/1548330412420.png)
 
+
+
+
+
+# lambda表达式的本质(函数对象)
+
+**lambda表达式就是一个函数对象**。
+
+当编写了一个lambda表达式的时候，编译器将该表达式翻译成一**个未命名类的未命名对象**
+
+​	
+
+```c++
+int num = 100;
+auto f = [num](){return num; };//等价于F
+
+class F
+{
+public:
+    F(int n) :num(n){}
+    int operator()() const { return num; }
+private:
+    int num;
+};
+ambda表达式产生的类，不含有默认构造函数、赋值运算符和默认析构函数，其他成员由需要捕获的类型确定。
+```
+
 塔山：
 
 https://www.youtube.com/watch?v=a-MXdU-SWp0
+
+https://stackoverflow.com/questions/22386882/why-have-unary-function-binary-function-been-removed-from-c11
+
+https://zhuanlan.zhihu.com/p/35923250
+
+https://stackoverflow.com/questions/30873206/header-file-included-only-once-in-entire-program
+
+https://www.zhihu.com/question/40793741/answer/88412179
+
+https://jiadebin.github.io/2017/04/03/%E5%A4%B4%E6%96%87%E4%BB%B6%E4%B8%AD%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0%E5%BC%95%E5%8F%91%E7%9A%84multiple-definition/
+
+
+
+https://zybuluo.com/uuprince/note/81709
 
