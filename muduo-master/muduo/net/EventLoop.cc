@@ -104,6 +104,7 @@ void EventLoop::loop()
 {
   assert(!looping_);
   assertInLoopThread();
+
   looping_ = true;
   quit_ = false;  // FIXME: what if someone calls quit() before loop() ?
   LOG_TRACE << "EventLoop " << this << " start looping";
@@ -113,6 +114,7 @@ void EventLoop::loop()
     activeChannels_.clear();
     pollReturnTime_ = poller_->poll(kPollTimeMs, &activeChannels_);
     ++iteration_;
+    
     if (Logger::logLevel() <= Logger::TRACE)
     {
       printActiveChannels();
