@@ -6,6 +6,13 @@
         "vector": "cpp",
         "algorithm": "cpp",
         "xstring": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "deque": "cpp",
+        "initializer_list": "cpp",
+        "type_traits": "cpp",
+        "xmemory0": "cpp",
+        "xtr1common": "cpp",
+        "xtree": "cpp",
+        "xutility": "cpp"
     }
 }

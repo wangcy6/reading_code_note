@@ -4852,7 +4852,10 @@ static int read_into_chunked_item(conn *c) {
 
 
 /******************************************************************
+ * 
+ * 
   * 函数功能:  状态机
+  * http://luodw.cc/2016/01/12/memcache-drive-machine/
   ******************************************************************/
 static void drive_machine(conn *c) {
     bool stop = false;
@@ -4969,10 +4972,12 @@ static void drive_machine(conn *c) {
 
             break;
 
+        //子线程如何处理客户发来的请求
         case conn_new_cmd:
-            /* Only process nreqs at a time to avoid starving other
-               connections */
 
+            /* Only process nreqs at a time to avoid starving other
+               connections   客户端每一次执行命令,默认20条*/
+   
             --nreqs;
             if (nreqs >= 0) {
                 reset_cmd_handler(c);
@@ -4997,7 +5002,7 @@ static void drive_machine(conn *c) {
                 stop = true;
             }
             break;
-
+         //libevent的epoll默认使用的是“水平触发”
         case conn_nread:
             if (c->rlbytes == 0) {
                 complete_nread(c);
@@ -5992,7 +5997,8 @@ static bool _parse_slab_sizes(char *s, uint32_t *slab_sizes) {
 }
 
 // 启动入口
-int main (int argc, char **argv) {
+int main (int argc, char **argv) 
+{
     int c;
     bool lock_memory = false;
     bool do_daemonize = false;

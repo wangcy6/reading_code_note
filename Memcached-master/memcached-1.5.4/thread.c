@@ -814,8 +814,9 @@ void memcached_thread_init(int nthreads, void *arg) {
     for (i = 0; i < nthreads; i++) {
         int fds[2];
 	
-	// 创建管道pipe，用于主线程和工作线程通信
-        if (pipe(fds)) {
+	   // 创建管道pipe，用于主线程和工作线程通信
+        if (pipe(fds)) 
+        {
             perror("Can't create notify pipe");
             exit(1);
         }
@@ -823,7 +824,7 @@ void memcached_thread_init(int nthreads, void *arg) {
         threads[i].notify_receive_fd = fds[0]; // 接收端(读端)
         threads[i].notify_send_fd = fds[1];    // 发送端(写端)
 
-	// 创建每个线程自己的libevent
+	   // 创建每个线程自己的libevent
         setup_thread(&threads[i]);
         /* Reserve three fds for the libevent base, and two for the pipe */
         stats_state.reserved_fds += 5;
