@@ -1,0 +1,39 @@
+# Tencent is pleased to support the open source community by making PhxSQL available.
+# Copyright (C) 2016 THL A29 Limited, a Tencent company. All rights reserved.
+# Licensed under the GNU General Public License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+#
+# https://opensource.org/licenses/GPL-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+allobject=libphxsqlproxyconfig.a phxsqlproxy_phxrpc libphxsqlproxylib_phxrpc.a
+
+PHXSQLPROXYCONFIG_OBJ=phxsqlproxyconfig.o
+
+PHXSQLPROXYCONFIG_LIB=phxsqlproxyconfig phxbinlogsvr/config:phxbinlogconfig
+
+PHXSQLPROXYCONFIG_SYS_LIB=
+
+PHXSQLPROXYCONFIG_INCS=$(SRC_BASE_PATH)/phxsqlproxy 
+
+PHXSQLPROXYCONFIG_EXTRA_CPPFLAGS=-pipe -fPIC -Wno-deprecated -D__STDC_FORMAT_MACROS -ldl -O2
+
+PHXSQLPROXY_PHXRPC_OBJ=phxsqlproxymain_phxrpc.o
+
+PHXSQLPROXY_PHXRPC_LIB=:phxsqlproxylib_phxrpc phxcomm/log/phxglog:phxglog phxbinlogsvr/framework/phxrpc/client:phxbinlogsvrclient_phxrpc
+
+PHXSQLPROXY_PHXRPC_SYS_LIB=
+
+PHXSQLPROXY_PHXRPC_INCS=$(SRC_BASE_PATH)/phxsqlproxy 
+
+PHXSQLPROXY_PHXRPC_EXTRA_CPPFLAGS=-pipe -fPIC -Wno-deprecated -D__STDC_FORMAT_MACROS -O2
+
+PHXSQLPROXYLIB_PHXRPC_OBJ=phxsqlproxymain.o phxsqlproxyconfig.o phxsqlproxyutil.o routineutil.o phxcoroutine.o phxthread.o group_status_cache.o accept_thread.o io_routine.o io_router.o io_channel.o proxy_protocol_handler.o monitor_routine.o worker_thread.o connection_dispatcher.o heartbeat_thread.o
+
+PHXSQLPROXYLIB_PHXRPC_LIB=phxsqlproxylib_phxrpc phxbinlogsvr/config:phxbinlogconfig phxsqlproxy/plugin/monitor:monitor_plugin phxsqlproxy/plugin/requestfilter:freqfilter_plugin phxcomm/log/phxlog:phxlog phxcomm/configparser:phxconfig
+
+PHXSQLPROXYLIB_PHXRPC_SYS_LIB=$(COLIB_LIB_PATH)/libcolib.a $(MYSQL_LIB_PATH)/libperconaserverclient.a -ldl -lrt -lz
+
+PHXSQLPROXYLIB_PHXRPC_INCS=$(SRC_BASE_PATH)/phxsqlproxy  $(COLIB_INCLUDE_PATH) $(MYSQL_INCLUDE_PATH) 
+
+PHXSQLPROXYLIB_PHXRPC_EXTRA_CPPFLAGS=-pipe -fPIC -Wno-deprecated -D__STDC_FORMAT_MACROS -ldl -O2
