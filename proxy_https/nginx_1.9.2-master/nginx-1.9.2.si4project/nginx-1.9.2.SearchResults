@@ -1,0 +1,32 @@
+---- main( Matches (31 in 15 files) ----
+luajit.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\LuaJIT-2.0.3\LuaJIT-2.0.3\src) line 508 : static int pmain(lua_State *L)
+luajit.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\LuaJIT-2.0.3\LuaJIT-2.0.3\src) line 556 : int main(int argc, char **argv)
+buildvm.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\LuaJIT-2.0.3\LuaJIT-2.0.3\src\host) line 431 : int main(int argc, char **argv)
+minilua.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\LuaJIT-2.0.3\LuaJIT-2.0.3\src\host) line 7749 : int main(int argc,char**argv){
+正则表达式语法.c line 535 : 09.int main()  
+正则表达式语法.c line 588 : int main()
+问题疑问_yyz.c line 4 : int main()
+main.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\高并发测试工具\tcpburn-master\tcpburn-master\src\burn) line 775 : main(int argc, char **argv)
+webbench.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\高并发测试工具\webbench-1.5) line 106 : int main(int argc, char *argv[])
+nginx-coredump文件调试技巧.c line 303 : void main() 
+nginx-coredump文件调试技巧.c line 317 : void main() 
+nginx-coredump文件调试技巧.c line 332 : void main() 
+nginx-coredump文件调试技巧.c line 346 : void main() 
+nginx-coredump文件调试技巧.c line 348 : main(); 
+request_yyz.c line 4 : int main()
+demo.c (src) line 579 : int main(int argc, char **argv)
+nginx.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\core) line 209 : main(int argc, char *const *argv)
+ngx_epoll_module.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\event\modules) line 199 :  int main(){
+ngx_http_request.h (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\http) line 1324 :     //�ͻ��˵Ľ������ӵ�ʱ��r->main =r(ngx_http_create_request),����Ǵ���������sr->main = r->main(ngx_http_subrequest)������->main=���ϲ��r
+ngx_http_proxy_module.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\http\modules) line 213 : static char *ngx_http_proxy_cookie_domain(ngx_conf_t *cf, ngx_command_t *cmd,
+ngx_http_proxy_module.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\http\modules) line 4762 : ngx_http_proxy_cookie_domain(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+ngx_http_userid_filter_module.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\http\modules) line 60 : static char *ngx_http_userid_domain(ngx_conf_t *cf, void *post, void *data);
+ngx_http_userid_filter_module.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\http\modules) line 764 : ngx_http_userid_domain(ngx_conf_t *cf, void *post, void *data)
+ngx_files.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\os\unix) line 730 : int main(int argc,char* argv[])
+ngx_files.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\os\unix) line 812 :  5 int main()
+ngx_files.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\os\unix) line 855 :  1 int main(int argc, char *argv[])
+ngx_files.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\os\unix) line 909 : 32 int main()
+ngx_files.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\os\unix) line 1304 : int main()
+ngx_files.h (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\src\os\unix) line 219 :  int main() {
+webbench.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2\webbench-1.5) line 106 : int main(int argc, char *argv[])
+yyz_add.c (C:\Users\wangchuanyi\Desktop\code\leetcode\分布式\nginx\nginx-1.9.2) line 1225 : main(){
