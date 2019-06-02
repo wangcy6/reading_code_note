@@ -306,16 +306,21 @@ while ((conn_sock = accept(listenfd,(struct sockaddr *) &remote, (size_t *)&addr
 ×Ö´«¸ø²Ù×÷ÏµÍ³£¨ÕâÊ×ÏÈ¾ÍÊÇÓÃ»§Ì¬ÄÚ´æµ½ÄÚºËÌ¬ÄÚ´æµÄ´óÁ¿¸´ÖÆ£©£¬¶øÓÉ²Ù×÷ÏµÍ³ÄÚºËÑ°
 ÕÒÕâÐ©Á¬½ÓÉÏÓÐÃ»ÓÐÎ´´¦ÀíµÄÊÂ¼þ£¬½«»áÊÇ¾Þ´óµÄ×ÊÔ´ÀË·Ñ£¬È»¶øselectºÍpoll¾ÍÊÇÕâÑù×ö
 µÄ£¬Òò´ËËüÃÇ×î¶àÖ»ÄÜ´¦Àí¼¸Ç§¸ö²¢·¢Á¬½Ó¡£¶øepoll²»ÕâÑù×ö£¬ËüÔÚLinuxÄÚºËÖÐÉêÇëÁË
-Ò»¸ö¼òÒ×µÄÎÄ¼þÏµÍ³£¬°ÑÔ­ÏÈµÄÒ»¸öselect»òÕßpollµ÷ÓÃ·Ö³É¶¡3¸ö²¿·Ö£ºµ÷ÓÃepoll_create
-½¨Á¢1¸öepoll¶ÔÏó£¨ÔÚepollÎÄ¼þÏµÍ³ÖÐ¸øÕâ¸ö¾ä±ú·ÖÅä×ÊÔ´£©¡¢µ÷ÓÃepoll_ctlÏòepoll¶ÔÏó
+Ò»¸ö¼òÒ×µÄÎÄ¼þÏµÍ³£¬°ÑÔ­ÏÈµÄÒ»¸öselect»òÕßpollµ÷ÓÃ·Ö³É¶¡3¸ö²¿·Ö£º
+µ÷ÓÃepoll_create
+½¨Á¢1¸öepoll¶ÔÏó£¨ÔÚepollÎÄ¼þÏµÍ³ÖÐ¸øÕâ¸ö¾ä±ú·ÖÅä×ÊÔ´£©¡¢
+µ÷ÓÃepoll_ctlÏòepoll¶ÔÏó
 ÖÐÌí¼ÓÕâ100Íò¸öÁ¬½ÓµÄÌ×½Ó×Ö¡¢µ÷ÓÃepoll_waitÊÕ¼¯·¢ÉúÊÂ¼þµÄÁ¬½Ó¡£ÕâÑù£¬Ö»ÐèÒªÔÚ½ø
 ³ÌÆô¶¯Ê±½¨Á¢1¸öepoll¶ÔÏó£¬²¢ÔÚÐèÒªµÄÊ±ºòÏòËüÌí¼Ó»òÉ¾³ýÁ¬½Ó¾Í¿ÉÒÔÁË£¬Òò´Ë£¬ÔÚÊµ
-¼ÊÊÕ¼¯ÊÂ¼þÊ±£¬epoll_waitµÄÐ§ÂÊ¾Í»á·Ç³£¸ß£¬ÒòÎªµ÷ÓÃepoll_waitÊ±²¢Ã»ÓÐÏòËü´«µÝÕâ100
+¼ÊÊÕ¼¯ÊÂ¼þÊ±£¬
+epoll_waitµÄÐ§ÂÊ¾Í»á·Ç³£¸ß£¬ÒòÎªµ÷ÓÃepoll_waitÊ±²¢Ã»ÓÐÏòËü´«µÝÕâ100
 Íò¸öÁ¬½Ó£¬ÄÚºËÒ²²»ÐèÒªÈ¥±éÀúÈ«²¿µÄÁ¬½Ó¡£
+
     ÄÇÃ´£¬LinuxÄÚºË½«ÈçºÎÊµÏÖÒÔÉÏµÄÏë·¨ÄØ£¿ÏÂÃæÒÔLinuxÄÚºË2.6.35°æ±¾ÎªÀý£¬¼ò
 µ¥ËµÃ÷Ò»ÏÂepollÊÇÈçºÎ¸ßÐ§´¦ÀíÊÂ¼þµÄ¡£Í¼9-5Õ¹Ê¾ÁËepollµÄÄÚ²¿Ö÷ÒªÊý¾Ý½á¹¹ÊÇÈçºÎ
 °²ÅÅµÄ¡£
     µ±Ä³Ò»¸ö½ø³Ìµ÷ÓÃepoll_create·½·¨Ê±£¬LinuxÄÚºË»á´´½¨Ò»¸öeventpoll½á¹¹Ìå£¬Õâ¸ö
+
 ½á¹¹ÌåÖÐÓÐÁ½¸ö³ÉÔ±ÓëepollµÄÊ¹ÓÃ·½Ê½ÃÜÇÐÏà¹Ø£¬ÈçÏÂËùÊ¾¡£
 struct eventpoll  (
     £¯¡£ÍÞºÚÊ÷µÄ¸ù½Úµã£¬Õâ¿ÃÊ÷ÖÐ´æ´¢×ÅËùÓÐÌí¼Óµ½epollÖÐµÄÊÂ¼þ£¬Ò²¾ÍÊÇÕâ¸öepoll¼à¿ØµÄÊÂ¼þ¡££¯
@@ -395,20 +400,22 @@ for(int i = 0; i < res;i++)
 
 
     ÔÚÌ½ÌÖNginxÊÇÈçºÎÉè¼ÆÊÂ¼þÇý¶¯¿ò¼Ü¡¢ÈçºÎ¹ÜÀí²»Í¬µÄÊÂ¼þÇý
+
 ¶¯Ä£¿éµÄ£¬µ«±¾½ÚÖÐ½«ÒÔepollÎªÀý£¬ÌÖÂÛLinux²Ù×÷ÏµÍ³ÄÚºËÊÇÈçºÎÊµÏÖepollÊÂ¼þÇý¶¯»ú
 ÖÆµÄ£¬ÔÚ¼òµ¥ÁË½âËüµÄÓÃ·¨ºó£¬»á½øÒ»²½ËµÃ÷ngx_epoll_moduleÄ£¿éÊÇÈçºÎ»ùÓÚepollÊµÏÖ
 NginxµÄÊÂ¼þÇý¶¯µÄ¡£ÕâÑù¶ÁÕß¾Í»á¶ÔNginxÍêÕûµÄÊÂ¼þÇý¶¯Éè¼Æ·½·¨ÓÐÈ«ÃæµÄÁË½â£¬Í¬Ê±
 ¿ÉÒÔÅªÇå³þNginxÔÚ¼¸Ê®Íò²¢·¢Á¬½ÓÏÂÊÇÈçºÎ×öµ½¸ßÐ§ÀûÓÃ·þÎñÆ÷×ÊÔ´µÄ¡£
 
 
-
-
+//https://blog.csdn.net/mmshixing/article/details/51848673
+ 
     ÉèÏëÒ»¸ö³¡¾°£ºÓÐ100ÍòÓÃ»§Í¬Ê±ÓëÒ»¸ö½ø³Ì±£³Ö×ÅTCPÁ¬½Ó£¬¶øÃ¿Ò»Ê±¿ÌÖ»ÓÐ¼¸Ê®¸ö
 »ò¼¸°Ù¸öTCPÁ¬½ÓÊÇ»îÔ¾µÄ£¨½ÓÊÕµ½TCP°ü£©£¬Ò²¾ÍÊÇËµ£¬ÔÚÃ¿Ò»Ê±¿Ì£¬½ø³ÌÖ»ÐèÒª´¦ÀíÕâ
 100ÍòÁ¬½ÓÖÐµÄÒ»Ð¡²¿·ÖÁ¬½Ó¡£ÄÇÃ´£¬ÈçºÎ²ÅÄÜ¸ßÐ§µØ´¦ÀíÕâÖÖ³¡¾°ÄØ£¿½ø³ÌÊÇ·ñÔÚÃ¿´ÎÑ¯
 ÎÊ²Ù×÷ÏµÍ³ÊÕ¼¯ÓÐÊÂ¼þ·¢ÉúµÄTCPÁ¬½ÓÊ±£¬°ÑÕâ100Íò¸öÁ¬½Ó¸æËß²Ù×÷ÏµÍ³£¬È»ºóÓÉ²Ù×÷Ïµ
 Í³ÕÒ³öÆäÖÐÓÐÊÂ¼þ·¢ÉúµÄ¼¸°Ù¸öÁ¬½ÓÄØ£¿Êµ¼ÊÉÏ£¬ÔÚLinuxÄÚºË2.4°æ±¾ÒÔÇ°£¬ÄÇÊ±µÄselect
 »òÕßpollÊÂ¼þÇý¶¯·½Ê½¾ÍÊÇÕâÑù×öµÄ¡£
+
     ÕâÀïÓÐ¸ö·Ç³£Ã÷ÏÔµÄÎÊÌâ£¬¼´ÔÚÄ³Ò»Ê±¿Ì£¬½ø³ÌÊÕ¼¯ÓÐÊÂ¼þµÄÁ¬½ÓÊ±£¬ÆäÊµÕâ100ÍòÁ¬
 ½ÓÖÐµÄ´ó²¿·Ö¶¼ÊÇÃ»ÓÐÊÂ¼þ·¢ÉúµÄ¡£Òò´Ë£¬Èç¹ûÃ¿´ÎÊÕ¼¯ÊÂ¼þÊ±£¬¶¼°ÑÕâ100ÍòÁ¬½ÓµÄÌ×½Ó
 ×Ö´«¸ø²Ù×÷ÏµÍ³£¨ÕâÊ×ÏÈ¾ÍÊÇÓÃ»§Ì¬ÄÚ´æµ½ÄÚºËÌ¬ÄÚ´æµÄ´óÁ¿¸´ÖÆ£©£¬¶øÓÉ²Ù×÷ÏµÍ³ÄÚºËÑ°
@@ -1606,8 +1613,7 @@ void ngx_epoll_event_2str(uint32_t event, char* buf)
 //ngx_epoll_process_events×¢²áµ½ngx_process_eventsµÄ  
 //ºÍngx_epoll_add_eventÅäºÏÊ¹ÓÃ
 //¸Ãº¯ÊýÔÚngx_process_events_and_timersÖÐµ÷ÓÃ
-static ngx_int_t
-ngx_epoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer, ngx_uint_t flags)//flags²ÎÊýÖÐº¬ÓÐNGX_POST_EVENTS±íÊ¾ÕâÅúÊÂ¼þÒªÑÓºó´¦Àí
+static ngx_int_t ngx_epoll_process_events(ngx_cycle_t *cycle, ngx_msec_t timer, ngx_uint_t flags)//flags²ÎÊýÖÐº¬ÓÐNGX_POST_EVENTS±íÊ¾ÕâÅúÊÂ¼þÒªÑÓºó´¦Àí
 {
     int                events;
     uint32_t           revents;
@@ -1648,7 +1654,7 @@ ngx_notify->ngx_epoll_notifyÖ»»á´¥·¢epoll_in£¬²»»áÍ¬Ê±Òý·¢epoll_out£¬Èç¹ûÊÇÍøÂç¶
     if (flags & NGX_UPDATE_TIME || ngx_event_timer_alarm) {
         ngx_time_update();
     }
-
+      //errÎª·ÇÁãÖ¸Ê¾epoll_waitÊ§°Ü
     if (err) {
         if (err == NGX_EINTR) {
 
