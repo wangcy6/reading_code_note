@@ -343,27 +343,27 @@ ngx_single_process_cycle(ngx_cycle_t *cycle)
     }
 }
 
-
-static void
-ngx_start_worker_processes(ngx_cycle_t *cycle, ngx_int_t n, ngx_int_t type)
+//真正创建worker子进程的函数是 n work进程个数
+static void ngx_start_worker_processes(ngx_cycle_t *cycle, ngx_int_t n, ngx_int_t type)
 {
     ngx_int_t      i;
     ngx_channel_t  ch;
 
     ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0, "start worker processes");
-
+      //传递给其他worker子进程的命令，打开通信管道
     ch.command = NGX_CMD_OPEN_CHANNEL;
-
+    //创建n个worker子进程
     for (i = 0; i < n; i++) {
 
         cpu_affinity = ngx_get_cpu_affinity(i);
-
+        //ngx_spawn_process创建worker子进程并初始化相关资源和属性
+        //然后执行子进程的执行函数ngx_worker_process_cycle
         ngx_spawn_process(cycle, ngx_worker_process_cycle, NULL,
                           "worker process", type);
-
-        ch.pid = ngx_processes[ngx_process_slot].pid;
-        ch.slot = ngx_process_slot;
-        ch.fd = ngx_processes[ngx_process_slot].channel[0];
+        //上面没有堆创建失败做判断
+        ch.pid = ngx_processes[ngx_process_slot].pid; //work 进程pid
+        ch.slot = ngx_process_slot; //第一个work进程
+        ch.fd = ngx_processes[ngx_process_slot].channel[0]; // 管道fd
 
         ngx_pass_open_channel(cycle, &ch);
     }
@@ -424,13 +424,13 @@ ngx_start_cache_manager_processes(ngx_cycle_t *cycle, ngx_uint_t respawn)
 }
 
 
-static void
-ngx_pass_open_channel(ngx_cycle_t *cycle, ngx_channel_t *ch)
+static void ngx_pass_open_channel(ngx_cycle_t *cycle, ngx_channel_t *ch)
 {
     ngx_int_t  i;
 
     for (i = 0; i < ngx_last_process; i++) {
 
+        //跳过自己和异常的worker,出路work创建失败情况
         if (i == ngx_process_slot
             || ngx_processes[i].pid == -1
             || ngx_processes[i].channel[0] == -1)
@@ -445,7 +445,7 @@ ngx_pass_open_channel(ngx_cycle_t *cycle, ngx_channel_t *ch)
                       ngx_processes[i].channel[0]);
 
         /* TODO: NGX_AGAIN */
-
+        //发送消息给其他的worker
         ngx_write_channel(ngx_processes[i].channel[0],
                           ch, sizeof(ngx_channel_t), cycle->log);
     }
@@ -715,14 +715,13 @@ ngx_master_process_exit(ngx_cycle_t *cycle)
 }
 
 
-static void
-ngx_worker_process_cycle(ngx_cycle_t *cycle, void *data)
+static void ngx_worker_process_cycle(ngx_cycle_t *cycle, void *data)
 {
     ngx_uint_t         i;
-    ngx_connection_t  *c;
-
+    ngx_connection_t  *c; //client 
+    ////在master中，ngx_process被设置为NGX_PROCESS_MASTER
     ngx_process = NGX_PROCESS_WORKER;
-
+    //初始化
     ngx_worker_process_init(cycle, 1);
 
     ngx_setproctitle("worker process");
@@ -774,16 +773,17 @@ ngx_worker_process_cycle(ngx_cycle_t *cycle, void *data)
 #endif
 
     for ( ;; ) {
-
+        //如果进程退出,关闭所有连接
         if (ngx_exiting) {
 
-            c = cycle->connections;
-
+            c = cycle->connections;//客户端连链接
+            //客户端连接个数
             for (i = 0; i < cycle->connection_n; i++) {
 
                 /* THREAD: lock */
 
-                if (c[i].fd != -1 && c[i].idle) {
+                if (c[i].fd != -1 && c[i].idle) 
+                {
                     c[i].close = 1;
                     c[i].read->handler(c[i].read);
                 }
@@ -799,26 +799,33 @@ ngx_worker_process_cycle(ngx_cycle_t *cycle, void *data)
 
         ngx_log_debug0(NGX_LOG_DEBUG_EVENT, cycle->log, 0, "worker cycle");
 
-        ngx_process_events_and_timers(cycle);
 
+
+        //work 逻辑 
+        ngx_process_events_and_timers(cycle);
+           
+
+
+        
+        //收到NGX_CMD_TERMINATE命令
         if (ngx_terminate) {
             ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0, "exiting");
-
+            //清理后进程退出，会调用所有模块的钩子exit_process
             ngx_worker_process_exit(cycle);
         }
-
+        //收到NGX_CMD_QUIT命令
         if (ngx_quit) {
             ngx_quit = 0;
             ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0,
                           "gracefully shutting down");
             ngx_setproctitle("worker process is shutting down");
-
+           //如果进程没有"正在退出
             if (!ngx_exiting) {
                 ngx_close_listening_sockets(cycle);
                 ngx_exiting = 1;
             }
         }
-
+        //收到NGX_CMD_REOPEN命令，重新打开log
         if (ngx_reopen) {
             ngx_reopen = 0;
             ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0, "reopening logs");

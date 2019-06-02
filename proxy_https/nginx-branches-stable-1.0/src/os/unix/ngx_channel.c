@@ -10,8 +10,7 @@
 #include <ngx_channel.h>
 
 
-ngx_int_t
-ngx_write_channel(ngx_socket_t s, ngx_channel_t *ch, size_t size,
+ngx_int_t ngx_write_channel(ngx_socket_t s, ngx_channel_t *ch, size_t size,
     ngx_log_t *log)
 {
     ssize_t             n;

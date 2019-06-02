@@ -418,7 +418,15 @@ ngx_trylock_fd(ngx_fd_t fd)
     fl.l_pid = 0;
     fl.l_type = F_WRLCK;
     fl.l_whence = SEEK_SET;
-
+     //https://blog.nlogn.cn/nginx-lock/
+     /**
+      * 先来总结一下 nginx 中的锁，主要是两大类：
+文件锁：根据传给 fcntl() 的参数，又可以加锁时阻塞和非阻塞
+F_SETLKW，表示获取不到文件锁时，阻塞直到可以获取
+F_SETLK, 获取不到锁时会直接返回，不会阻塞进程。因为会直接返回，所以需要在外部在包装一个 ngx_shmtx_trylock() 函数。
+原子锁：用库函数或者nginx实现，取决于 configure 脚本生成的宏定义。
+也分为阻塞的和非阻塞的，但是这与锁本身的实现没有关系，而是靠额外的信号量来实现阻塞
+      ***/
     if (fcntl(fd, F_SETLK, &fl) == -1) {
         return ngx_errno;
     }
