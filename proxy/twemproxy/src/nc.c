@@ -463,12 +463,11 @@ nc_test_conf(struct instance *nci)
                nci->conf_filename);
     return true;
 }
-
-static rstatus_t
-nc_pre_run(struct instance *nci)
+//https://blog.csdn.net/shawhe/article/details/53302980
+static rstatus_t nc_pre_run(struct instance *nci)
 {
     rstatus_t status;
-
+     //日志
     status = log_init(nci->log_level, nci->log_filename);
     if (status != NC_OK) {
         return status;
@@ -513,9 +512,8 @@ nc_post_run(struct instance *nci)
 
     log_deinit();
 }
-
-static void
-nc_run(struct instance *nci)
+//https://www.cnblogs.com/shenhang/p/4156049.html
+static void nc_run(struct instance *nci)
 {
     rstatus_t status;
     struct context *ctx;
@@ -536,8 +534,7 @@ nc_run(struct instance *nci)
     core_stop(ctx);
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     rstatus_t status;
     struct instance nci;
@@ -569,7 +566,7 @@ main(int argc, char **argv)
         }
         exit(0);
     }
-
+    //运行前的初始化和准备
     status = nc_pre_run(&nci);
     if (status != NC_OK) {
         nc_post_run(&nci);

@@ -33,8 +33,7 @@ static struct signal signals[] = {
     { 0,        NULL,     0,                 NULL }
 };
 
-rstatus_t
-signal_init(void)
+rstatus_t signal_init(void)
 {
     struct signal *sig;
 

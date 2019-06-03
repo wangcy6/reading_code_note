@@ -26,8 +26,7 @@
 
 static struct logger logger;
 
-int
-log_init(int level, char *name)
+int log_init(int level, char *name)
 {
     struct logger *l = &logger;
 

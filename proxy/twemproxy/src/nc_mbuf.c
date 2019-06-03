@@ -259,8 +259,7 @@ mbuf_split(struct mhdr *h, uint8_t *pos, mbuf_copy_t cb, void *cbarg)
     return nbuf;
 }
 
-void
-mbuf_init(struct instance *nci)
+void mbuf_init(struct instance *nci)
 {
     nfree_mbufq = 0;
     STAILQ_INIT(&free_mbufq);

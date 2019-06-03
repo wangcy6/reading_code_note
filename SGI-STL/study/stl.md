@@ -1,19 +1,77 @@
 
 
+## 目录
 
+SGI STL 六大组件的代码测试
 
-# 版本
+* [配置器(allocator)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/allocator_test)
+* [迭代器(iterator)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/iterator_test)
+* [容器(container)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/container_test)
+* [算法(algorithm)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/algorithm_test)
+* [仿函数(functor)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/functor_test)
+* [配接器(adapter)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/adapter_test)
 
-gcc 使用 4.8.4 版本，
+在 gcc version 4.8.4 下编译，C++11 标准，编译带 `-std=c++11`
 
 STL源码 在 Linux 系统的位置是：/usr/include/c++/4.8.4/bits (79个文件)
 
 
 
-参考 ：[STL源码分析](https://www.kancloud.cn/digest/mystl/192549)
+--------------------------------------------------------------------------
+
+### 容器
+
+
+STL对定义的通用容器分三类：
+顺序性容器、关联式容器和容器适配器。
+
+- 顺序性容器：vector、list、deque
+
+- 关联性容器：set、multiset、map、multimap
+
+- 容器适配器：stack、queue、priority_queue
+
+  stack 模板类的底层容器是:deque/list 容器
+  queue 模板类的底层容器是:deque/list 容器
+  priority_queue 模板类底层容器是array/vector 模拟二叉树
+  
 
 
 
+--------------------------------------------------------------------------
+堆排序：
+https://www.cnblogs.com/chengxiao/p/6129630.html
+
+--------------------------------------------------------------------------
+
+### 适配器
+
+![类型](https://github.com/steveLauwh/SGI-STL/raw/master/The%20Annotated%20STL%20Sources%20V3.3/Other/adapter.PNG)
+
+- 函数适配器
+- 容器适配器
+
+- 迭代器适配器
+
+
+
+----------------------------------------------------------------------
+
+![容器适配器](https://upload-images.jianshu.io/upload_images/1837968-341ccb6ba217e986.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+QA
+
+为什么priortiy_queue 适配类型 不用list？ 因为list 访问是o(n)
+为什么priortiy_queue 适配类型 必杀技红黑树？是大材小用
+
+
+
+Adapter Design Pattern（相同的放在一起）
+https://sourcemaking.com/design_patterns/adapter
+
+
+
+----------------------------------------------------------------------
 # 目录：
 
 [小王职场记 谈谈你的STL理解（1）](https://mp.weixin.qq.com/s/yOyLsW1PZfLZJqXeWR0Y6w)
@@ -659,4 +717,32 @@ https://jiadebin.github.io/2017/04/03/%E5%A4%B4%E6%96%87%E4%BB%B6%E4%B8%AD%E5%AE
 
 
 https://zybuluo.com/uuprince/note/81709
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

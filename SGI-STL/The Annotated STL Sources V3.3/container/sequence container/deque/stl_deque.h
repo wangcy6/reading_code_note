@@ -693,11 +693,14 @@ private:                        // helper functions for assign()
 public:                         // push_* and pop_*
   // push_back
   void push_back(const value_type& __t) {
+    //最后一个序列进行插入
+    //如果还能还能插入
     if (_M_finish._M_cur != _M_finish._M_last - 1) {
-      construct(_M_finish._M_cur, __t);
+      construct(_M_finish._M_cur, __t);//构造一个节点
       ++_M_finish._M_cur;
     }
     else
+    //扩容
       _M_push_back_aux(__t);
   }
 

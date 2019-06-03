@@ -416,8 +416,7 @@ evmap_io_del_(struct event_base *base, evutil_socket_t fd, struct event *ev)
 	return (retval);
 }
 
-void
-evmap_io_active_(struct event_base *base, evutil_socket_t fd, short events)
+void evmap_io_active_(struct event_base *base, evutil_socket_t fd, short events)
 {
 	struct event_io_map *io = &base->io;
 	struct evmap_io *ctx;

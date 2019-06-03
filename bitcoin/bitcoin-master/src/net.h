@@ -110,6 +110,12 @@ struct CSerializedNetMsg
 
 
 class NetEventsInterface;
+
+/**
+ * 网络连接的管理类。
+ * 负责节点的初始化及启动，
+ * P2P消息的推送及接收，接收其他节点的连接等等
+ **/
 class CConnman
 {
 public:
@@ -471,9 +477,9 @@ struct CombinerAll
 class NetEventsInterface
 {
 public:
-    virtual bool ProcessMessages(CNode* pnode, std::atomic<bool>& interrupt) = 0;
-    virtual bool SendMessages(CNode* pnode) = 0;
-    virtual void InitializeNode(CNode* pnode) = 0;
+    virtual bool ProcessMessages(CNode* pnode, std::atomic<bool>& interrupt) = 0; //处理接收到的消息
+    virtual bool SendMessages(CNode* pnode) = 0;//:发送消息
+    virtual void InitializeNode(CNode* pnode) = 0;//初始化节点；
     virtual void FinalizeNode(NodeId id, bool& update_connection_time) = 0;
 
 protected:

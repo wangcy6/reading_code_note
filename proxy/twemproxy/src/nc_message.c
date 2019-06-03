@@ -135,8 +135,7 @@ msg_from_rbe(struct rbnode *node)
     return msg;
 }
 
-struct msg *
-msg_tmo_min(void)
+struct msg *msg_tmo_min(void)
 {
     struct rbnode *node;
 

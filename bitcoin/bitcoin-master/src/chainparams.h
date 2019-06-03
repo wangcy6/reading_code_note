@@ -89,11 +89,11 @@ protected:
 
     Consensus::Params consensus;
     CMessageHeader::MessageStartChars pchMessageStart;
-    int nDefaultPort;
+    int nDefaultPort;//比特币P2P网络默认的监听端口，默认是8333。
     uint64_t nPruneAfterHeight;
     uint64_t m_assumed_blockchain_size;
     uint64_t m_assumed_chain_state_size;
-    std::vector<std::string> vSeeds;
+    std::vector<std::string> vSeeds;//这个是比特币代码中内置的一些DNS种子节点
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
     std::string bech32_hrp;
     std::string strNetworkID;

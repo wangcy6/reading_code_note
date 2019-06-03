@@ -494,7 +494,7 @@ typedef struct {
     logger *l;                  /* logger buffer */
     void *lru_bump_buf;         /* async LRU bump buffer */
 } LIBEVENT_THREAD;
-
+//http://blog.chinaunix.net/uid-23381466-id-1630441.html
 /**
  * The structure representing a connection into memcached.
  */

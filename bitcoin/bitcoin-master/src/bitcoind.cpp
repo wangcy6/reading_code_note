@@ -196,10 +196,13 @@ int main(int argc, char* argv[])
     util::WinCmdLineArgs winArgs;
     std::tie(argc, argv) = winArgs.get();
 #endif
+    //这里会初始化整个服务端的相关参数
     SetupEnvironment();
 
     // Connect bitcoind signal handlers
     noui_connect();
-
+    /**
+     *     AppInit函数的最后，会调用AppInitMain，完成整个系统的初始化，AppInitMain比较重，比特币系统核心的东西基本上都从这里诞生。
+     */
     return (AppInit(argc, argv) ? EXIT_SUCCESS : EXIT_FAILURE);
 }

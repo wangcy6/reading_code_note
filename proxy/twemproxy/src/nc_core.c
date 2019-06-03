@@ -155,8 +155,7 @@ core_ctx_destroy(struct context *ctx)
     nc_free(ctx);
 }
 
-struct context *
-core_start(struct instance *nci)
+struct context * core_start(struct instance *nci)
 {
     struct context *ctx;
 
@@ -261,8 +260,7 @@ core_error(struct context *ctx, struct conn *conn)
     core_close(ctx, conn);
 }
 
-static void
-core_timeout(struct context *ctx)
+static void core_timeout(struct context *ctx)
 {
     for (;;) {
         struct msg *msg;
@@ -351,8 +349,7 @@ core_core(void *arg, uint32_t events)
     return NC_OK;
 }
 
-rstatus_t
-core_loop(struct context *ctx)
+rstatus_t core_loop(struct context *ctx)
 {
     int nsd;
 
