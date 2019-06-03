@@ -104,42 +104,55 @@ typedef enum {
 #define NGX_SSL_BUFFERED       0x01
 
 
+//服务器的被动连接
 struct ngx_connection_s {
     void               *data;
+    //连接对应的读事件
     ngx_event_t        *read;
+    //连接对应的写事件
     ngx_event_t        *write;
-
+    //套接字句柄
     ngx_socket_t        fd;
-
+    //直接接收网络字节流的方法
     ngx_recv_pt         recv;
     ngx_send_pt         send;
     ngx_recv_chain_pt   recv_chain;
     ngx_send_chain_pt   send_chain;
-
+    
+	//此链接由ngx_listening_t监听的事件建立
     ngx_listening_t    *listening;
-
+   //这个连接已经发送出去的字节数
     off_t               sent;
-
+    
+    //记录日志
     ngx_log_t          *log;
-
+      //在accept一个新连接的时候,会创建一个内存池,而这个连接结束时候,会销毁一个内存池.
+	//这里所说的连接是成功建立的tcp连接.内存池的大小由pool_size决定
+	//所有的ngx_connect_t结构体都是预分配的
     ngx_pool_t         *pool;
-
+     //连接客户端的结构体
     struct sockaddr    *sockaddr;
     socklen_t           socklen;
+    //连接客户端的ip(字符串形式)
     ngx_str_t           addr_text;
 
 #if (NGX_SSL)
     ngx_ssl_connection_t  *ssl;
 #endif
-
+   //本机中监听端口对应的socketaddr结构体
+	//也就是listen监听对象中的socketaddr成员
     struct sockaddr    *local_sockaddr;
-
+   
+    //用于接收和缓存客户端发来的字符流
     ngx_buf_t          *buffer;
 
+
+    //该字段表示将该连接以双向链表形式添加到cycle结构体中的
+	//reusable_connections_queen双向链表中,表示可以重用的连接.
     ngx_queue_t         queue;
 
     ngx_atomic_uint_t   number;
-
+    //处理请求的次数
     ngx_uint_t          requests;
 
     unsigned            buffered:8;

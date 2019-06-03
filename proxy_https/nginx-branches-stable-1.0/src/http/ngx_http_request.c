@@ -179,8 +179,7 @@ ngx_http_header_t  ngx_http_headers_in[] = {
 };
 
 
-void
-ngx_http_init_connection(ngx_connection_t *c)
+void ngx_http_init_connection(ngx_connection_t *c)
 {
     ngx_event_t         *rev;
     ngx_http_log_ctx_t  *ctx;

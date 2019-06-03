@@ -17,13 +17,12 @@ ngx_thread_volatile ngx_event_t  *ngx_posted_events;
 ngx_mutex_t                      *ngx_posted_events_mutex;
 #endif
 
-
-void
-ngx_event_process_posted(ngx_cycle_t *cycle,
+//work是单线程 不考虑队列锁的问题
+void ngx_event_process_posted(ngx_cycle_t *cycle,
     ngx_thread_volatile ngx_event_t **posted)
 {
     ngx_event_t  *ev;
-
+    // 遍历post队列，依次处理各个读写事件
     for ( ;; ) {
 
         ev = (ngx_event_t *) *posted;
@@ -36,6 +35,11 @@ ngx_event_process_posted(ngx_cycle_t *cycle,
         }
 
         ngx_delete_posted_event(ev);
+            /* 监听套接字上读事件的handler定义为ngx_event_accept()
+           已连接套接字上读写事件的handler定义在ngx_http_init_connection()中：
+           rev = c->read;
+           rev->handler = ngx_http_wait_request_handler;
+           c->write->handler = ngx_http_empty_handler; */
 
         ev->handler(ev);
     }
