@@ -1,0 +1,6 @@
+contrib/yaml-0.1.4
+contrib/hiredis
+contrib/libevent**
+sentinelResponse
+build
+conf/*
