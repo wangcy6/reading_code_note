@@ -357,6 +357,7 @@ event_wait(struct event_base *evb, int timeout)
                 }
 
                 if (evd->cb != NULL) {
+                    /* 对每个事件执行回调 */
                     evd->cb(evb, evd->priv, events);
                 }
             }

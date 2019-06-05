@@ -1,0 +1,13 @@
+# This is an example TwemProxy config file
+# Please note the element needs to be called twem1
+twem1: 
+  listen: "172.19.111.15:22121"
+  hash: fnv1a_64
+  distribution: ketama
+  auto_eject_hosts: false
+  redis: true
+  server_retry_timeout: 100
+  server_failure_limit: 500
+  servers: 
+    - "172.19.111.21:6379:1 redis1"
+    - "172.19.111.22:6379:1 redis2"

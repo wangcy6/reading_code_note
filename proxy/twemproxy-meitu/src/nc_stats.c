@@ -1265,8 +1265,7 @@ stats_destroy(struct stats *st)
     nc_free(st);
 }
 
-void
-stats_swap(struct stats *st)
+void stats_swap(struct stats *st)
 {
     if (!stats_enabled) {
         return;

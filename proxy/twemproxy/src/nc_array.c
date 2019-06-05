@@ -122,8 +122,7 @@ array_push(struct array *a)
     return elem;
 }
 
-void *
-array_pop(struct array *a)
+void * array_pop(struct array *a)
 {
     void *elem;
 
@@ -178,12 +177,11 @@ array_sort(struct array *a, array_compare_t compare)
     qsort(a->elem, a->nelem, a->size, compare);
 }
 
-/*
+/* stl for——each
  * Calls the func once for each element in the array as long as func returns
  * success. On failure short-circuits and returns the error status.
  */
-rstatus_t
-array_each(struct array *a, array_each_t func, void *data)
+rstatus_t array_each(struct array *a, array_each_t func, void *data)
 {
     uint32_t i, nelem;
 

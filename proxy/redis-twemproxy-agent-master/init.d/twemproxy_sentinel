@@ -1,0 +1,57 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          twemproxy_sentinel
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start TwemProxy Sentinel at boot time
+# Description:       Starts the nodejs service to monitor redis-sentinal and update twemproxy config
+### END INIT INFO
+
+ROOT=/opt/twemproxy_sentinel
+EXEC=$ROOT/bin/redis_twemproxy_agent
+
+NODE=/opt/node/bin/node
+FOREVER=/opt/node/bin/forever
+
+PID=`ps -aefw | grep "$NODE $EXEC" | grep -v " grep " | awk '{print $2}'`
+USER=root
+
+case "$1" in
+    start)
+        if [ ! -z $PID ]
+        then
+                echo "TwemProxy Redis Sentinel Agent is already running!"
+        else
+                echo "TwemProxy Redis Sentinel Agent Starting"
+                su -c "$FOREVER start -l /dev/null -a -o /dev/null -e /dev/null -w --watchDirectory $ROOT $EXEC" $USER
+                echo "TwemProxy Redis Sentinel Agent Started"
+        fi
+        ;;
+    stop)
+        if [ -z $PID ]
+        then
+                echo "TwemProxy Redis Sentinel Agent is not running"
+        else
+                echo "Stopping TwemProxy Redis Sentinel Agent"
+                su -c "$FOREVER stop $EXEC" $USER
+                echo "TwemProxy Redis Sentinel Agent stopped."
+        fi
+        ;;
+
+    restart)
+        if [ -z $PID ]
+        then
+                /etc/init.d/twemproxy_sentinel start
+        else
+                /etc/init.d/twemproxy_sentinel stop
+                /etc/init.d/twemproxy_sentinel start
+        fi
+        ;;
+    *)
+        echo "Please use start or stop as first argument"
+        ;;
+esac
+

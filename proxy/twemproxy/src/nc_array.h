@@ -32,8 +32,7 @@ struct array {
 
 #define null_array { 0, NULL, 0, 0 }
 
-static inline void
-array_null(struct array *a)
+static inline void array_null(struct array *a)
 {
     a->nelem = 0;
     a->elem = NULL;

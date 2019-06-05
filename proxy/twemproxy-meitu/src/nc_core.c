@@ -230,8 +230,7 @@ core_ctx_destroy(struct context *ctx)
     nc_free(ctx);
 }
 
-struct context *
-core_start(struct instance *nci)
+struct context * core_start(struct instance *nci)
 {
     rstatus_t status;
     struct context *ctx;
@@ -435,8 +434,7 @@ core_core(void *evb, void *arg, uint32_t events)
     return NC_OK;
 }
 
-rstatus_t
-core_loop(struct context *ctx)
+rstatus_t core_loop(struct context *ctx)
 {
     int nsd;
 

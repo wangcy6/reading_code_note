@@ -573,8 +573,7 @@ nc_post_run(struct instance *nci)
     log_deinit();
 }
 
-static void
-nc_run(struct instance *nci)
+static void nc_run(struct instance *nci)
 {
     struct context *ctx;
 
@@ -616,8 +615,7 @@ nc_handle_user_cmd(struct instance *nci, const char *cmd)
     exit(kill(pid, sig));
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     rstatus_t status;
     struct instance nci;

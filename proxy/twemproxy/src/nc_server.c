@@ -91,8 +91,7 @@ server_timeout(struct conn *conn)
     return pool->timeout;
 }
 
-bool
-server_active(struct conn *conn)
+bool server_active(struct conn *conn)
 {
     ASSERT(!conn->client && !conn->proxy);
 
@@ -183,8 +182,7 @@ server_deinit(struct array *server)
     array_deinit(server);
 }
 
-struct conn *
-server_conn(struct server *server)
+struct conn * server_conn(struct server *server)
 {
     struct server_pool *pool;
     struct conn *conn;
@@ -215,8 +213,7 @@ server_conn(struct server *server)
     return conn;
 }
 
-static rstatus_t
-server_each_preconnect(void *elem, void *data)
+static rstatus_t server_each_preconnect(void *elem, void *data)
 {
     rstatus_t status;
     struct server *server;
@@ -262,8 +259,7 @@ server_each_disconnect(void *elem, void *data)
     return NC_OK;
 }
 
-static void
-server_failure(struct context *ctx, struct server *server)
+static void server_failure(struct context *ctx, struct server *server)
 {
     struct server_pool *pool = server->owner;
     int64_t now, next;
@@ -273,7 +269,7 @@ server_failure(struct context *ctx, struct server *server)
         return;
     }
 
-    server->failure_count++;
+    server->failure_count++; //练级失败次数
 
     log_debug(LOG_VERB, "server '%.*s' failure count %"PRIu32" limit %"PRIu32,
               server->pname.len, server->pname.data, server->failure_count,
@@ -741,9 +737,8 @@ server_pool_conn(struct context *ctx, struct server_pool *pool, uint8_t *key,
 
     return conn;
 }
-
-static rstatus_t
-server_pool_each_preconnect(void *elem, void *data)
+//reids connetciont
+static rstatus_t server_pool_each_preconnect(void *elem, void *data)
 {
     rstatus_t status;
     struct server_pool *sp = elem;
@@ -760,11 +755,10 @@ server_pool_each_preconnect(void *elem, void *data)
     return NC_OK;
 }
 
-rstatus_t
-server_pool_preconnect(struct context *ctx)
+rstatus_t server_pool_preconnect(struct context *ctx)
 {
     rstatus_t status;
-
+    //call back
     status = array_each(&ctx->pool, server_pool_each_preconnect, NULL);
     if (status != NC_OK) {
         return status;
@@ -845,8 +839,7 @@ server_pool_each_run(void *elem, void *data)
     return server_pool_run(elem);
 }
 
-rstatus_t
-server_pool_init(struct array *server_pool, struct array *conf_pool,
+rstatus_t server_pool_init(struct array *server_pool, struct array *conf_pool,
                  struct context *ctx)
 {
     rstatus_t status;

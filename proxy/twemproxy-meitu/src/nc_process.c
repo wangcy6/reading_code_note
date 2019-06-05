@@ -134,8 +134,7 @@ nc_multi_processes_cycle(struct instance *parent_nci)
     return status;
 }
 
-static rstatus_t
-nc_setup_listener_for_workers(struct instance *parent_nci, bool reloading)
+static rstatus_t nc_setup_listener_for_workers(struct instance *parent_nci, bool reloading)
 {
     rstatus_t status;
     int i, n = parent_nci->ctx->cf->global.worker_processes;
@@ -214,8 +213,7 @@ rollback_step1:
     return status;
 }
 
-static rstatus_t
-nc_spawn_worker(int worker_id, struct instance *worker_nci, struct array *workers) {
+static rstatus_t nc_spawn_worker(int worker_id, struct instance *worker_nci, struct array *workers) {
     pid_t pid;
 
     worker_nci->chan = nc_alloc_channel();
@@ -276,8 +274,7 @@ nc_shutdown_workers(struct array *workers)
     return NC_OK;
 }
 
-static void
-nc_worker_process(int worker_id, struct instance *nci)
+static void nc_worker_process(int worker_id, struct instance *nci)
 {
     rstatus_t status;
     sigset_t set;
@@ -347,8 +344,7 @@ nc_worker_process(int worker_id, struct instance *nci)
     exit(0);
 }
 
-rstatus_t
-nc_single_process_cycle(struct instance *nci)
+rstatus_t nc_single_process_cycle(struct instance *nci)
 {
     rstatus_t status;
 

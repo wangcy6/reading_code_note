@@ -29,10 +29,11 @@
 
 typedef int (*event_cb_t)(void *, void *, uint32_t);
 typedef void (*event_stats_cb_t)(void *, void *);
-
+//task
+//http://idning.github.io/twemproxy-src.html
 struct ev_data {
     int        mask;
-    event_cb_t cb;
+    event_cb_t cb;//
     void       *priv;
 };
 
