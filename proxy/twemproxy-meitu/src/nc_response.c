@@ -19,8 +19,7 @@
 #include <nc_server.h>
 #include <nc_process.h>
 
-struct msg *
-rsp_get(struct conn *conn)
+struct msg * rsp_get(struct conn *conn)
 {
     struct msg *msg;
 
@@ -34,16 +33,14 @@ rsp_get(struct conn *conn)
     return msg;
 }
 
-void
-rsp_put(struct msg *msg)
+void rsp_put(struct msg *msg)
 {
     ASSERT(!msg->request);
     ASSERT(msg->peer == NULL);
     msg_put(msg);
 }
 
-static struct msg *
-rsp_make_error(struct context *ctx, struct conn *conn, struct msg *msg)
+static struct msg * rsp_make_error(struct context *ctx, struct conn *conn, struct msg *msg)
 {
     struct msg *pmsg;        /* peer message (response) */
     struct msg *cmsg, *nmsg; /* current and next message (request) */
@@ -84,8 +81,7 @@ rsp_make_error(struct context *ctx, struct conn *conn, struct msg *msg)
     return msg_get_error(conn->redis, err);
 }
 
-struct msg *
-rsp_recv_next(struct context *ctx, struct conn *conn, bool alloc)
+struct msg *rsp_recv_next(struct context *ctx, struct conn *conn, bool alloc)
 {
     struct msg *msg;
 

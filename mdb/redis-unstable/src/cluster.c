@@ -1632,6 +1632,9 @@ void clusterUpdateSlotsConfigWith(clusterNode *sender, uint64_t senderConfigEpoc
  * was processed, otherwise 0 if the link was freed since the packet
  * processing lead to some inconsistency error (for instance a PONG
  * received from the wrong sender ID). */
+
+//https://blog.csdn.net/hangbo216/article/details/53504699?spm=a2c4e.11153940.blogcont666381.11.73103ce5hfPYvk
+
 int clusterProcessPacket(clusterLink *link) {
     clusterMsg *hdr = (clusterMsg*) link->rcvbuf;
     uint32_t totlen = ntohl(hdr->totlen);
@@ -2959,6 +2962,9 @@ void clusterHandleSlaveFailover(void) {
      *
      * Timeout is MAX(NODE_TIMEOUT*2,2000) milliseconds.
      * Retry is two times the Timeout.
+     * 当slave发现自己的master变为FAIL状态时，便尝试进行Failover，以期成为新的master。
+       由于挂掉的master可能会有多个slave。
+       Failover的过程需要经过类Raft协议的过程在整个集群内达到一致
      */
     auth_timeout = server.cluster_node_timeout*2;
     if (auth_timeout < 2000) auth_timeout = 2000;
@@ -3303,6 +3309,41 @@ void clusterHandleManualFailover(void) {
 
 /* -----------------------------------------------------------------------------
  * CLUSTER cron job
+ * 
+ * 集群通信故障
+
+     集群故障检测主要是在定时任务clusterCron定期向随机节点和长期没被随机到的节点发送ping，然后根据返回
+
+pong的时间判断是疑似下线(PFAIL)。集群通过ping和pong消息将节点知道nodes的在线状态传播到其他节点。当
+
+检测到某个节点的fail_reports大于等于(server.cluster->size / 2) + 1时，标记这个节点为FAIL，然后广播FAIL消息到整
+
+个集群。slave中定时任务clusterCron检测自己的master为FAIL，就启动Failover。
+首先开始选举，根据与master
+的offset偏差进行排序决定谁优先请求被投票。投票完成后，票数大于等于(server.cluster->size / 2) + 1的节点成为
+
+master，如果没有大于(server.cluster->size / 2) + 1，等待下次投票。
+
+       clusterCron是集群的定时任务，根据server .cluster->nodes的节点状态信息作出相应的处理，起到监控作用。
+
+1、对handshake的节点创建连接，同时删除handshake超时的节点；
+
+2、向随机节点和now-pong_received>cluster_node_timeout/2的发送ping消息；
+
+3、遍历nodes检查有没有超时还没返回pong的节点，然后标记为pfail的节点（之后通过gossip消息将pfail的节点
+
+     传播给别的节点，clusterProcessGossipSection函数中更新gossip消息，如果当某个节点的failreport超过
+
+     (server.cluster->size / 2) + 1）；
+
+4、统计孤立master，判断是否需要slave迁移，以避免孤立master fail没有slave failover；
+
+5、节点是slave，判断是否进行手动failover或者failover；
+--------------------- 
+作者：wade1991 
+来源：CSDN 
+原文：https://blog.csdn.net/hangbo216/article/details/53504699 
+版权声明：本文为博主原创文章，转载请附上博文链接！
  * -------------------------------------------------------------------------- */
 
 /* This is executed 10 times every second */
@@ -3356,6 +3397,7 @@ void clusterCron(void) {
     handshake_timeout = server.cluster_node_timeout;
     if (handshake_timeout < 1000) handshake_timeout = 1000;
 
+
     /* Update myself flags. */
     clusterUpdateMyselfFlags();
 
@@ -3364,6 +3406,8 @@ void clusterCron(void) {
      * better decisions in other part of the code. */
     di = dictGetSafeIterator(server.cluster->nodes);
     server.cluster->stats_pfail_nodes = 0;
+
+    //遍历nodes字典中的节点，检查与节点的连接情况并处理
     while((de = dictNext(di)) != NULL) {
         clusterNode *node = dictGetVal(de);
 
@@ -3373,14 +3417,14 @@ void clusterCron(void) {
 
         if (node->flags & CLUSTER_NODE_PFAIL)
             server.cluster->stats_pfail_nodes++;
-
+        //节点handshake超时，删除节点
         /* A Node in HANDSHAKE state has a limited lifespan equal to the
          * configured node timeout. */
         if (nodeInHandshake(node) && now - node->ctime > handshake_timeout) {
             clusterDelNode(node);
             continue;
         }
-
+         //新加入字典的节点，创建连接，并发送ping或者mee
         if (node->link == NULL) {
             int fd;
             mstime_t old_ping_sent;
@@ -3435,6 +3479,7 @@ void clusterCron(void) {
 
     /* Ping some random node 1 time every 10 iterations, so that we usually ping
      * one random node every second. */
+    //每隔一秒从节点列表随机选5个节点，然后对最老回复PONG的时间的节点发送PING消息
     if (!(iteration % 10)) {
         int j;
 
