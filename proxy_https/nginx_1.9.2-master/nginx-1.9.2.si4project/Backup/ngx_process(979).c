@@ -803,7 +803,8 @@ kill -s SIGUSR2 <nginx master pid>
 使用-h或者-?参数会显示支持的所有命令行参数。
 */
 //注册新号在ngx_init_signals
-void ngx_signal_handler(int signo)
+void
+ngx_signal_handler(int signo)
 {
     char            *action;
     ngx_int_t        ignore;

@@ -48,7 +48,8 @@ ngx_event_timer_init(ngx_log_t *log)
 }
 
 
-ngx_msec_t ngx_event_find_timer(void)
+ngx_msec_t
+ngx_event_find_timer(void)
 {
     ngx_msec_int_t      timer;
     ngx_rbtree_node_t  *node, *root, *sentinel;
@@ -72,7 +73,8 @@ ngx_msec_t ngx_event_find_timer(void)
 }
 
 
-void ngx_event_expire_timers(void)
+void
+ngx_event_expire_timers(void)
 {
     ngx_event_t        *ev;
     ngx_rbtree_node_t  *node, *root, *sentinel;

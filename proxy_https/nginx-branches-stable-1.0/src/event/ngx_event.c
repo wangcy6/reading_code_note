@@ -224,7 +224,7 @@ void ngx_process_events_and_timers(ngx_cycle_t *cycle)
     if (ngx_use_accept_mutex) {
         if (ngx_accept_disabled > 0) {
             ngx_accept_disabled--;
-           //处理已经分配的连接，不处理新连接
+
         } else {  
             // 抢锁
             if (ngx_trylock_accept_mutex(cycle) == NGX_ERROR) {

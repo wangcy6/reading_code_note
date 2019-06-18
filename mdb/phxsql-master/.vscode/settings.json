@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.c": "cpp",
+        "memory": "cpp",
+        "unordered_map": "cpp",
+        "xstring": "cpp"
+    }
+}
