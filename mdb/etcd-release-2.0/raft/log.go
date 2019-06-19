@@ -21,6 +21,7 @@ import (
 	pb "github.com/coreos/etcd/raft/raftpb"
 )
 
+//由于raft协议的核心工作是在集群节点之间进行日志复制
 type raftLog struct {
 	// storage contains all stable entries since the last snapshot.
 	storage Storage

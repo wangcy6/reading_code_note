@@ -24,6 +24,10 @@ import (
 // Note that unstable.offset may be less than the highest log
 // position in storage; this means that the next write to storage
 // might need to truncate the log before persisting unstable.entries.
+//unstable在使用内存数组维护所有的更新日志项。
+//对于Leader节点来说，它维护了客户端的更新请求对应的日志项；
+//对于Follower节点而言，它维护的是Leader节点复制的日志项。
+//在unstable中的日志项都是不安全的，尚未持久化存储，可能会因意外而丢失。
 type unstable struct {
 	// the incoming unstable snapshot, if any.
 	snapshot *pb.Snapshot

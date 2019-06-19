@@ -159,12 +159,13 @@ func (x *ConfChangeType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+//日志格式
 type Entry struct {
 	Type             EntryType `protobuf:"varint,1,req,enum=raftpb.EntryType" json:"Type"`
-	Term             uint64    `protobuf:"varint,2,req" json:"Term"`
-	Index            uint64    `protobuf:"varint,3,req" json:"Index"`
-	Data             []byte    `protobuf:"bytes,4,opt" json:"Data"`
-	XXX_unrecognized []byte    `json:"-"`
+	Term             uint64    `protobuf:"varint,2,req" json:"Term"`  //创建日志时的任期号
+	Index            uint64    `protobuf:"varint,3,req" json:"Index"` //索引：整数索引表示日志条目在日志中位置
+	Data             []byte    `protobuf:"bytes,4,opt" json:"Data"`   //状态机需要执行的指令（真正的内容）
+	XXX_unrecognized []byte    `json:"-"`                             //是否序列化
 }
 
 func (m *Entry) Reset()         { *m = Entry{} }
@@ -192,18 +193,19 @@ func (m *Snapshot) Reset()         { *m = Snapshot{} }
 func (m *Snapshot) String() string { return proto.CompactTextString(m) }
 func (*Snapshot) ProtoMessage()    {}
 
+//驱动状态改变
 type Message struct {
-	Type             MessageType `protobuf:"varint,1,req,name=type,enum=raftpb.MessageType" json:"type"`
+	Type             MessageType `protobuf:"varint,1,req,name=type,enum=raftpb.MessageType" json:"type"` //数据格式
 	To               uint64      `protobuf:"varint,2,req,name=to" json:"to"`
 	From             uint64      `protobuf:"varint,3,req,name=from" json:"from"`
-	Term             uint64      `protobuf:"varint,4,req,name=term" json:"term"`
-	LogTerm          uint64      `protobuf:"varint,5,req,name=logTerm" json:"logTerm"`
-	Index            uint64      `protobuf:"varint,6,req,name=index" json:"index"`
-	Entries          []Entry     `protobuf:"bytes,7,rep,name=entries" json:"entries"`
-	Commit           uint64      `protobuf:"varint,8,req,name=commit" json:"commit"`
+	Term             uint64      `protobuf:"varint,4,req,name=term" json:"term"`       //当前任期
+	LogTerm          uint64      `protobuf:"varint,5,req,name=logTerm" json:"logTerm"` //日志中最大任期 领导选举一个参考因素
+	Index            uint64      `protobuf:"varint,6,req,name=index" json:"index"`     //当前最大日志索引
+	Entries          []Entry     `protobuf:"bytes,7,rep,name=entries" json:"entries"`  //日志的内容
+	Commit           uint64      `protobuf:"varint,8,req,name=commit" json:"commit"`   //已经被确认的索引
 	Snapshot         Snapshot    `protobuf:"bytes,9,req,name=snapshot" json:"snapshot"`
-	Reject           bool        `protobuf:"varint,10,req,name=reject" json:"reject"`
-	RejectHint       uint64      `protobuf:"varint,11,req,name=rejectHint" json:"rejectHint"`
+	Reject           bool        `protobuf:"varint,10,req,name=reject" json:"reject"`         //拒绝投票
+	RejectHint       uint64      `protobuf:"varint,11,req,name=rejectHint" json:"rejectHint"` //拒绝的原因
 	XXX_unrecognized []byte      `json:"-"`
 }
 
