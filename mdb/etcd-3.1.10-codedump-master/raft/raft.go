@@ -437,7 +437,7 @@ func (r *raft) sendAppend(to uint64) {
 		m.Entries = ents
 		// append消息需要告知当前leader的commit索引
 		m.Commit = r.raftLog.committed
-		if n := len(m.Entries); n != 0 {	// 如果发送过去的entries不为空
+		if n := len(m.Entries); n != 0 { // 如果发送过去的entries不为空
 			switch pr.State {
 			// optimistically increase the next when in ProgressStateReplicate
 			case ProgressStateReplicate:
@@ -578,6 +578,7 @@ func (r *raft) appendEntry(es ...pb.Entry) {
 func (r *raft) tickElection() {
 	r.electionElapsed++
 
+	//选举超时的时候，选举成功
 	if r.promotable() && r.pastElectionTimeout() {
 		// 如果可以被提升为leader，同时选举时间也到了
 		r.electionElapsed = 0
@@ -686,6 +687,7 @@ func (r *raft) becomeLeader() {
 	r.logger.Infof("%x became leader at term %d", r.id, r.Term)
 }
 
+//调用该函数将驱动节点进入候选人状态，进而将竞争leader
 func (r *raft) campaign(t CampaignType) {
 	var term uint64
 	var voteMsg pb.MessageType
@@ -919,7 +921,7 @@ func stepLeader(r *raft, m pb.Message) {
 			// was removed from the configuration while serving as leader),
 			// drop any new proposals.
 			// 这里检查本节点是否还在集群以内，如果已经不在集群中了，不处理该消息直接返回。
-      // 这种情况出现在本节点已经通过配置变化被移除出了集群的场景。
+			// 这种情况出现在本节点已经通过配置变化被移除出了集群的场景。
 			return
 		}
 		// 当前正在转换leader过程中，不能提交
@@ -990,15 +992,15 @@ func stepLeader(r *raft, m pb.Message) {
 		return
 	}
 	switch m.Type {
-	case pb.MsgAppResp:	// 对append消息的应答
+	case pb.MsgAppResp: // 对append消息的应答
 		// 置位该节点当前是活跃的
 		pr.RecentActive = true
 
-		if m.Reject {	// 如果拒绝了append消息，说明term、index不匹配
+		if m.Reject { // 如果拒绝了append消息，说明term、index不匹配
 			r.logger.Debugf("%x received msgApp rejection(lastindex: %d) from %x for index %d",
 				r.id, m.RejectHint, m.From, m.Index)
 			// rejecthint带来的是拒绝该app请求的节点，其最大日志的索引
-			if pr.maybeDecrTo(m.Index, m.RejectHint) {	// 尝试回退关于该节点的Match、Next索引
+			if pr.maybeDecrTo(m.Index, m.RejectHint) { // 尝试回退关于该节点的Match、Next索引
 				r.logger.Debugf("%x decreased progress of %x to [%s]", r.id, m.From, pr)
 				if pr.State == ProgressStateReplicate {
 					pr.becomeProbe()
@@ -1006,9 +1008,9 @@ func stepLeader(r *raft, m pb.Message) {
 				// 再次发送append消息
 				r.sendAppend(m.From)
 			}
-		} else {	// 通过该append请求
+		} else { // 通过该append请求
 			oldPaused := pr.IsPaused()
-			if pr.maybeUpdate(m.Index) {	// 如果该节点的索引发生了更新
+			if pr.maybeUpdate(m.Index) { // 如果该节点的索引发生了更新
 				switch {
 				case pr.State == ProgressStateProbe:
 					// 如果当前该节点在探测状态，切换到可以接收副本状态
@@ -1069,7 +1071,7 @@ func stepLeader(r *raft, m pb.Message) {
 
 		// 调用advance函数尝试丢弃已经被确认的read index状态
 		rss := r.readOnly.advance(m)
-		for _, rs := range rss {	// 遍历准备被丢弃的readindex状态
+		for _, rs := range rss { // 遍历准备被丢弃的readindex状态
 			req := rs.req
 			if req.From == None || req.From == r.id { // from local member
 				// 如果来自本地
@@ -1179,7 +1181,7 @@ func stepCandidate(r *raft, m pb.Message) {
 		gr := r.poll(m.From, m.Type, !m.Reject)
 		r.logger.Infof("%x [quorum:%d] has received %d %s votes and %d vote rejections", r.id, r.quorum(), gr, m.Type, len(r.votes)-gr)
 		switch r.quorum() {
-		case gr:	// 如果进行投票的节点数量正好是半数以上节点数量
+		case gr: // 如果进行投票的节点数量正好是半数以上节点数量
 			if r.state == StatePreCandidate {
 				r.campaign(campaignElection)
 			} else {
@@ -1187,7 +1189,7 @@ func stepCandidate(r *raft, m pb.Message) {
 				r.becomeLeader()
 				r.bcastAppend()
 			}
-		case len(r.votes) - gr:	// 如果是半数以上节点拒绝了投票
+		case len(r.votes) - gr: // 如果是半数以上节点拒绝了投票
 			// 变成follower
 			r.becomeFollower(r.Term, None)
 		}
@@ -1236,7 +1238,7 @@ func stepFollower(r *raft, m pb.Message) {
 		m.To = r.lead
 		r.send(m)
 	case pb.MsgTimeoutNow:
-		if r.promotable() {	// 如果本节点可以提升为leader，那么就发起新一轮的竞选
+		if r.promotable() { // 如果本节点可以提升为leader，那么就发起新一轮的竞选
 			r.logger.Infof("%x [term %d] received MsgTimeoutNow from %x and starts an election to get leadership.", r.id, r.Term, m.From)
 			// Leadership transfers never use pre-vote even if r.preVote is true; we
 			// know we are not recovering from a partition so there is no need for the
