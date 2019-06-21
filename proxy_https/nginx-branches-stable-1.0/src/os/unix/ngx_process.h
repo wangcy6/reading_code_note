@@ -45,11 +45,11 @@ typedef struct {
 
 #define NGX_MAX_PROCESSES         1024
 
-#define NGX_PROCESS_NORESPAWN     -1
+#define NGX_PROCESS_NORESPAWN     -1 //子进程退出时,父进程不会再次重启
 #define NGX_PROCESS_JUST_SPAWN    -2
-#define NGX_PROCESS_RESPAWN       -3
+#define NGX_PROCESS_RESPAWN       -3 //子进程异常退出时,父进程需要重启
 #define NGX_PROCESS_JUST_RESPAWN  -4
-#define NGX_PROCESS_DETACHED      -5
+#define NGX_PROCESS_DETACHED      -5//热代码替换，暂时估计是用于在不重启Nginx的情况下进行软件升级
 
 
 #define ngx_getpid   getpid

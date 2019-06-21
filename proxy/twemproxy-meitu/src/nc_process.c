@@ -431,8 +431,7 @@ nc_reap_worker(void)
 }
 
 // keep the src (old) context's proxies if they exist in the dst (new) context
-static rstatus_t
-nc_migrate_proxies(struct context *dst, struct context *src)
+static rstatus_t nc_migrate_proxies(struct context *dst, struct context *src)
 {
     uint32_t i, nelem, j, nelem2;
     void *elem;
@@ -473,15 +472,15 @@ nc_migrate_proxies(struct context *dst, struct context *src)
     return NC_OK;
 }
 
-void
-nc_signal_workers(struct array *workers, int command)
+void nc_signal_workers(struct array *workers, int command)
 {
     uint32_t i, nelem;
     void *elem;
     struct chan_msg msg;
     struct instance *worker_nci;
 
-    for (i = 0, nelem = array_n(workers); i < nelem; i++) {
+    for (i = 0, nelem = array_n(workers); i < nelem; i++) 
+    {
         elem = array_get(workers, i);
         worker_nci = (struct instance *)elem;
         msg.command = command;

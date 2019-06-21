@@ -31,14 +31,17 @@ static void ngx_cache_manager_process_cycle(ngx_cycle_t *cycle, void *data);
 static void ngx_cache_manager_process_handler(ngx_event_t *ev);
 static void ngx_cache_loader_process_handler(ngx_event_t *ev);
 
-
+/**
+ * 标识当前进程的角色，master, worker, ...
+ * 在信号处理时，需要区分，因为master,worker等都共享ngx_signal_handler()这个信号处理函数
+ */
 ngx_uint_t    ngx_process;
 ngx_pid_t     ngx_pid;
 ngx_uint_t    ngx_threaded;
 
-sig_atomic_t  ngx_reap;
+sig_atomic_t  ngx_reap; ////回收子进程
 sig_atomic_t  ngx_sigio;
-sig_atomic_t  ngx_sigalrm;
+sig_atomic_t  ngx_sigalrm;/m/aster监控worker进程退出的闹钟标记
 sig_atomic_t  ngx_terminate;
 sig_atomic_t  ngx_quit;
 sig_atomic_t  ngx_debug_quit;
@@ -80,8 +83,7 @@ static ngx_log_t        ngx_exit_log;
 static ngx_open_file_t  ngx_exit_log_file;
 
 
-void
-ngx_master_process_cycle(ngx_cycle_t *cycle)
+void ngx_master_process_cycle(ngx_cycle_t *cycle)
 {
     char              *title;
     u_char            *p;
@@ -89,12 +91,12 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
     ngx_int_t          i;
     ngx_uint_t         n, sigio;
     sigset_t           set;
-    struct itimerval   itv;
+    struct itimerval   itv; //跟踪worker进程退出的定时器
     ngx_uint_t         live;
     ngx_msec_t         delay;
     ngx_listening_t   *ls;
     ngx_core_conf_t   *ccf;
-
+  /*master 进程设置的要处理的信号*/
     sigemptyset(&set);
     sigaddset(&set, SIGCHLD);
     sigaddset(&set, SIGALRM);
@@ -133,21 +135,23 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
 
 
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
-
+    /*启动worker进程*/
     ngx_start_worker_processes(cycle, ccf->worker_processes,
                                NGX_PROCESS_RESPAWN);
+     //启动cache进程                          
     ngx_start_cache_manager_processes(cycle, 0);
 
     ngx_new_binary = 0;
     delay = 0;
     sigio = 0;
-    live = 1;
+    live = 1;  //有worker 进程处于存活状态
+
 
     for ( ;; ) {
         if (delay) {
-            if (ngx_sigalrm) {
+            if (ngx_sigalrm) { /* 判定是否有定时器触发 */
                 sigio = 0;
-                delay *= 2;
+                delay *= 2; //每次定时器信号后，翻倍定时器时延
                 ngx_sigalrm = 0;
             }
 
@@ -157,7 +161,7 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
             itv.it_interval.tv_sec = 0;
             itv.it_interval.tv_usec = 0;
             itv.it_value.tv_sec = delay / 1000;
-            itv.it_value.tv_usec = (delay % 1000 ) * 1000;
+            itv.it_value.tv_usec = (delay % 1000 ) * 1000;//单位:微秒
 
             if (setitimer(ITIMER_REAL, &itv, NULL) == -1) {
                 ngx_log_error(NGX_LOG_ALERT, cycle->log, ngx_errno,
@@ -167,20 +171,24 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
 
         ngx_log_debug0(NGX_LOG_DEBUG_EVENT, cycle->log, 0, "sigsuspend");
 
-        sigsuspend(&set);
+        sigsuspend(&set); //每次处理完一个信号，master进程会被挂起，直到有新的信号到来
 
         ngx_time_update();
 
         ngx_log_debug1(NGX_LOG_DEBUG_EVENT, cycle->log, 0,
                        "wake up, sigio %i", sigio);
-
+        /**
+		 * 回收子进程,这里的回收是针对全局数组 ngx_processes, 
+		 * 操作系统层面的进程回收已经在信号处理函数 ngx_signal_handler() 中完成, 
+		 * 并对ngx_processes 的相应条目中进行了标记
+		 */
         if (ngx_reap) {
             ngx_reap = 0;
             ngx_log_debug0(NGX_LOG_DEBUG_EVENT, cycle->log, 0, "reap children");
 
             live = ngx_reap_children(cycle);
         }
-
+        /* 没有worker进程存活时，master进程才退出*/
         if (!live && (ngx_terminate || ngx_quit)) {
             ngx_master_process_exit(cycle);
         }
@@ -212,6 +220,7 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
                                         ngx_signal_value(NGX_SHUTDOWN_SIGNAL));
 
             ls = cycle->listening.elts;
+            ////关闭所有socket套接字
             for (n = 0; n < cycle->listening.nelts; n++) {
                 if (ngx_close_socket(ls[n].fd) == -1) {
                     ngx_log_error(NGX_LOG_EMERG, cycle->log, ngx_socket_errno,
@@ -223,13 +232,18 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
 
             continue;
         }
-
+       //收到SIGHUP信号，
         if (ngx_reconfigure) {
             ngx_reconfigure = 0;
-
+              //如果是平滑升级程序，则重启worker进程，不需要重新初始化配置
             if (ngx_new_binary) {
+                   //启动ccf->worker_processes个worker子进程，并设置好每个子进程与
+                //master父进程之间使用socketpair系统调用建立起来的socket句柄通信机制
+                //启动方式为NGX_PROCESS_RESPAWN,该值影响ngx_process_t结构体的respawn
                 ngx_start_worker_processes(cycle, ccf->worker_processes,
                                            NGX_PROCESS_RESPAWN);
+
+                //执行缓存管理工作的循环方法
                 ngx_start_cache_manager_processes(cycle, 0);
                 ngx_noaccepting = 0;
 
@@ -237,13 +251,13 @@ ngx_master_process_cycle(ngx_cycle_t *cycle)
             }
 
             ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0, "reconfiguring");
-
+          //不是平滑升级，重新读取配置
             cycle = ngx_init_cycle(cycle);
             if (cycle == NULL) {
                 cycle = (ngx_cycle_t *) ngx_cycle;
                 continue;
             }
-
+ 
             ngx_cycle = cycle;
             ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx,
                                                    ngx_core_module);
@@ -370,8 +384,7 @@ static void ngx_start_worker_processes(ngx_cycle_t *cycle, ngx_int_t n, ngx_int_
 }
 
 
-static void
-ngx_start_cache_manager_processes(ngx_cycle_t *cycle, ngx_uint_t respawn)
+static void ngx_start_cache_manager_processes(ngx_cycle_t *cycle, ngx_uint_t respawn)
 {
     ngx_uint_t       i, manager, loader;
     ngx_path_t     **path;
@@ -452,8 +465,7 @@ static void ngx_pass_open_channel(ngx_cycle_t *cycle, ngx_channel_t *ch)
 }
 
 
-static void
-ngx_signal_worker_processes(ngx_cycle_t *cycle, int signo)
+static void ngx_signal_worker_processes(ngx_cycle_t *cycle, int signo)
 {
     ngx_int_t      i;
     ngx_err_t      err;
@@ -677,8 +689,7 @@ ngx_reap_children(ngx_cycle_t *cycle)
 }
 
 
-static void
-ngx_master_process_exit(ngx_cycle_t *cycle)
+static void ngx_master_process_exit(ngx_cycle_t *cycle)
 {
     ngx_uint_t  i;
 
@@ -1296,8 +1307,7 @@ ngx_worker_thread_cycle(void *data)
 #endif
 
 
-static void
-ngx_cache_manager_process_cycle(ngx_cycle_t *cycle, void *data)
+static void ngx_cache_manager_process_cycle(ngx_cycle_t *cycle, void *data)
 {
     ngx_cache_manager_ctx_t *ctx = data;
 

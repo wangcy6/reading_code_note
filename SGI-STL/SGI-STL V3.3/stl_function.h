@@ -153,7 +153,7 @@ public:
   }
 };
 
-template <class _Predicate>
+template <class _Predicate> 
 inline unary_negate<_Predicate> 
 not1(const _Predicate& __pred)
 {

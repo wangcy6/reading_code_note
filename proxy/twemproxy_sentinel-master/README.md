@@ -5,7 +5,7 @@
   |_|  \_/\_/\___|_|_|_| .__/_| \___/_\_\\_, | |___/\___|_||_\__|_|_||_\___|_|
                        |_|               |__/                                 
 ```
-
+https://github.com/twitter/twemproxy/issues/67
 # Twemproxy Sentinel
 
 ### Author: Joseph Persie
