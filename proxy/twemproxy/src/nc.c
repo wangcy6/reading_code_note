@@ -536,10 +536,10 @@ nc_run(struct instance *nci)
     core_stop(ctx);
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     rstatus_t status;
+    //这个instance就相当于是一个twemproxy实
     struct instance nci;
 
     nc_set_default_options(&nci);
