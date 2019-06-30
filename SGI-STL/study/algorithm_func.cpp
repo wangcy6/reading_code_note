@@ -15,7 +15,7 @@ struct Sum
         cout << "operator()" << x《《 endl; 
         total += x; 
     }
-    int total;
+    int total; //bit copy
 };
 
 //g++ -g -std=c++11 algorithm_for_each.cpp

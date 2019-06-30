@@ -163,9 +163,8 @@ _conn_get(void)
 
     return conn;
 }
-
-struct conn *
-conn_get(void *owner, bool client, bool redis)
+//连接标记  client  redis
+struct conn * conn_get(void *owner, bool client, bool redis)
 {
     struct conn *conn;
 
@@ -184,24 +183,25 @@ conn_get(void *owner, bool client, bool redis)
          * client receives a request, possibly parsing it, and sends a
          * response downstream.
          */
-        conn->recv = msg_recv;
-        conn->recv_next = req_recv_next;
-        conn->recv_done = req_recv_done;
+        conn->recv = msg_recv; // 从conn读数据
+        conn->recv_next = req_recv_next; //在真正从conn读数据之前，需要分配一个req_msg，用于承载读进来的数据
 
-        conn->send = msg_send;
-        conn->send_next = rsp_send_next;
-        conn->send_done = rsp_send_done;
+        conn->recv_done = req_recv_done; //每次读完一个完整的消req_msg被调用
 
-        conn->close = client_close;
+        conn->send = msg_send; //// 将从server收到的响应rsp_msg发给客户端 注册回调函数
+        conn->send_next = rsp_send_next; // 每次发送rsp_msg之前需要首先确定从哪个开始发
+        conn->send_done = rsp_send_done;  // 每次发送完成一个rsp_msg给客户端，调一次
+
+        conn->close = client_close; //用于proxy断开和client的半连接
         conn->active = client_active;
 
-        conn->ref = client_ref;
+        conn->ref = client_ref; //获取conn后将conn丢进客户端连接队列
         conn->unref = client_unref;
 
         conn->enqueue_inq = NULL;
         conn->dequeue_inq = NULL;
-        conn->enqueue_outq = req_client_enqueue_omsgq;
-        conn->dequeue_outq = req_client_dequeue_omsgq;
+        conn->enqueue_outq = req_client_enqueue_omsgq; // proxy每次接收到一个client发过来的req_msg，将req_msg入conn的output 队列
+        conn->dequeue_outq = req_client_dequeue_omsgq; // 给客户端发送完rsp_msg后将其对应的req_msg从conn的output队列中删除
         conn->post_connect = NULL;
         conn->swallow_msg = NULL;
 
@@ -212,12 +212,12 @@ conn_get(void *owner, bool client, bool redis)
          * request upstream.
          */
         conn->recv = msg_recv;
-        conn->recv_next = rsp_recv_next;
-        conn->recv_done = rsp_recv_done;
+        conn->recv_next = rsp_recv_next; //从后端server接收数据之前需要先得到一个rsp_msg，用于承载读到的数据
+        conn->recv_done = rsp_recv_done;// 每次读完一个完整的rsp_msg，则回调
 
-        conn->send = msg_send;
-        conn->send_next = req_send_next;
-        conn->send_done = req_send_done;
+        conn->send = msg_send; // 将req_msg往后端server发
+        conn->send_next = req_send_next;// 确定发哪个req_msg
+        conn->send_done = req_send_done;// 每转发完一个即回调
 
         conn->close = server_close;
         conn->active = server_active;
@@ -225,10 +225,12 @@ conn_get(void *owner, bool client, bool redis)
         conn->ref = server_ref;
         conn->unref = server_unref;
 
-        conn->enqueue_inq = req_server_enqueue_imsgq;
-        conn->dequeue_inq = req_server_dequeue_imsgq;
+        conn->       = req_server_enqueue_imsgq;// proxy将需要转发的req_msg放入对应后端server连接的input队列
+        conn->dequeue_inq = req_server_dequeue_imsgq; //proxy从input队列中取出req_msg发送给后端server完成后，需要将req_msg从这个后端连接的input队列中删除
+      
         conn->enqueue_outq = req_server_enqueue_omsgq;
         conn->dequeue_outq = req_server_dequeue_omsgq;
+        //代码很简洁，很抽象
         if (redis) {
           conn->post_connect = redis_post_connect;
           conn->swallow_msg = redis_swallow_msg;
@@ -309,14 +311,12 @@ conn_put(struct conn *conn)
     ncurr_conn--;
 }
 
-void
-conn_init(void)
+void conn_init(void)
 {
     log_debug(LOG_DEBUG, "conn size %d", sizeof(struct conn));
     nfree_connq = 0;
     TAILQ_INIT(&free_connq);
 }
-
 void
 conn_deinit(void)
 {

@@ -1,19 +1,76 @@
 
 
+## 目录
 
+SGI STL 六大组件的代码测试
 
-# 版本
+* [配置器(allocator)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/allocator_test)
+* [迭代器(iterator)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/iterator_test)
+* [容器(container)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/container_test)
+* [算法(algorithm)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/algorithm_test)
+* [仿函数(functor)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/functor_test)
+* [配接器(adapter)-Test](https://github.com/steveLauwh/SGI-STL/tree/master/SGI-STL%20Test/adapter_test)
 
-gcc 使用 4.8.4 版本，
+在 gcc version 4.8.4 下编译，C++11 标准，编译带 `-std=c++11`
 
 STL源码 在 Linux 系统的位置是：/usr/include/c++/4.8.4/bits (79个文件)
 
 
 
-参考 ：[STL源码分析](https://www.kancloud.cn/digest/mystl/192549)
+--------------------------------------------------------------------------
+
+### 容器
+
+
+STL对定义的通用容器分三类：
+顺序性容器、关联式容器和容器适配器。
+
+- 顺序性容器：vector、list、deque 双向队列
+
+- 关联性容器：set、multiset、map、multimap
+
+- 容器适配器：stack、queue、priority_queue
+
+  stack 模板类的底层容器是:deque/list 容器
+  queue 模板类的底层容器是:deque/list 容器
+  priority_queue 模板类底层容器是array/vector 模拟二叉树
+  
 
 
 
+--------------------------------------------------------------------------
+堆排序：
+https://www.cnblogs.com/chengxiao/p/6129630.html
+
+--------------------------------------------------------------------------
+
+### 适配器
+
+![类型](https://github.com/steveLauwh/SGI-STL/raw/master/The%20Annotated%20STL%20Sources%20V3.3/Other/adapter.PNG)
+
+- 函数适配器
+- 容器适配器
+- 迭代器适配器
+
+
+
+----------------------------------------------------------------------
+
+![容器适配器](https://upload-images.jianshu.io/upload_images/1837968-341ccb6ba217e986.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+QA
+
+为什么priortiy_queue 适配类型 不用list？ 因为list 访问是o(n)
+为什么priortiy_queue 适配类型 必杀技红黑树？是大材小用
+
+
+
+Adapter Design Pattern（相同的放在一起）
+https://sourcemaking.com/design_patterns/adapter
+
+
+
+----------------------------------------------------------------------
 # 目录：
 
 [小王职场记 谈谈你的STL理解（1）](https://mp.weixin.qq.com/s/yOyLsW1PZfLZJqXeWR0Y6w)
@@ -512,7 +569,10 @@ std::unary_function<int,bool>
 
 \> 用于成员函数指针：mem_fun, mem_fun_ref
 
+作用：克服类组合和基础的编译依赖问题
 
+
+https://blog.csdn.net/ww32zz/article/details/49277605
 
 | 成员类型      | 定义                   | 注释                     |
 | ------------- | ---------------------- | ------------------------ |
@@ -526,7 +586,7 @@ std::unary_function<int,bool>
 | return_type          | 第一个模板参数(Result) | `()重载函数的返回值类型`     |
 
 - class binder2nd
-
+-不过bind1st和bind2nd在C++ 11中已经被deprecated，被std::bind取代。
 
 
 ```c++
@@ -616,8 +676,26 @@ int count  = std::count_if(vec.begin(), vec.end(), [](int x) {return x >  3;})
 ![1548330412420](https://github.com/wangcy6/reading_code_note/blob/master/SGI-STL/images/1548330412420.png)
 
 
+STL源码——function adapter函数适配器/函数配接器
+
+function adapters是指能够将function objects(函数对象)与另一个function objects、某个值、某个一般函数结合起来的function objects
+通过function adapter的绑定、组合、修饰能力，可以创造出用户所需的各种表达式
 
 
+https://blog.csdn.net/huazhongkejidaxuezpp/article/details/19420727
+用于成员函数指针
+
+c++ 对象与对象之间传递方式
+这里不socket等方式。
+指针和引用
+
+>这种配接器使我们能够将成员函数当做仿函数来使用，于是成员函数可以搭配各种泛型算法。当容器的元素型式是X& 或X* ，而我们又以虚拟成员函数作为仿函数，便可以藉由泛型算法完成所谓的多态调用。这是泛型与多态之间的一个重要接轨。
+
+c语言中 声明一个函数指针，并且规定参数类型 ,调用op(10,20),在函数之间进程传递--函数传递
+在c++中，声明一个函数对象，自定义opeartor（）操作，通过像函数一样调用 A a a（10，20） 在对象构造时候传递 对象传递
+A[1] A++ A()
+
+函数适配器
 
 # lambda表达式的本质(函数对象)
 
@@ -659,4 +737,73 @@ https://jiadebin.github.io/2017/04/03/%E5%A4%B4%E6%96%87%E4%BB%B6%E4%B8%AD%E5%AE
 
 
 https://zybuluo.com/uuprince/note/81709
+
+
+
+ status = array_each(&ctx->pool, server_pool_each_preconnect, NULL);
+
+
+
+------------------------------------------------------------------------
+### std::function
+
+类模版std::function是一种通用、多态的函数封装
+
+C++11中，callable object 包括传统
+1 C函数， 
+2 C++成员函数，
+3 函数对象（实现了（）运算符的类的实例），
+4 lambda表达式（特殊函数对象）
+
+----------------------------------------------------------
+`void print( State* pstate )
+{
+    pstate->print();
+}
+
+于是就可以简化为下面代码：
+std::for_each( vect.begin(), vect.end(), &print );
+
+上面这段代码有点丑陋，看起来不太爽，主要是函数指针的原因。
+在这种应用环境下，C++有仿函数来替代，我们定义一个仿函数，如下：
+
+struct Printer
+{
+    template<typename T> void operator()( T* t ) { t->print(); }
+};
+
+于是就可以简化为下面代码：
+std::for_each( vect.begin(), vect.end(), Printer() );`
+
+
+---------------------------------------------------------
+
+~~~
+
+// for_each.  Apply a function to every element of a range.
+template <class _InputIter, class _Function>
+
+_Function for_each(_InputIter __first, _InputIter __last, _Function __f) {
+  __STL_REQUIRES(_InputIter, _InputIterator);
+  
+  for ( ; __first != __last; ++__first)
+    
+    __f(*__first);
+    
+  return __f;
+}
+~~~
+---------------------------------------------s
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -5,7 +5,7 @@ deque 是一种双向进出的连续线性空间。它是动态地分段连续�
 特点：
 
 * deque(double-ended queue ，双端队列)是有下标顺序容器，它允许在其首尾两段快速插入及删除
-* deque 的元素不是相接存储的，典型实现用单独分配的固定大小数组的序列，外加额外的标记，这表示下标访问必须进行二次指针解引用，与之相比 vector 的下标访问只进行一次
+  * deque 的元素不是相接存储的，典型实现用单独分配的固定大小数组的序列，外加额外的标记，这表示下标访问必须进行二次指针解引用，与之相比 vector 的下标访问只进行一次
 
 ![](https://github.com/steveLauwh/SGI-STL/raw/master/The%20Annotated%20STL%20Sources%20V3.3/Other/deque.PNG)
 

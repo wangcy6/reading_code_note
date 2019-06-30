@@ -24,8 +24,7 @@
 
 static uint32_t ctx_id; /* context generation */
 
-static rstatus_t
-core_calc_connections(struct context *ctx)
+static rstatus_t core_calc_connections(struct context *ctx)
 {
     int status;
     struct rlimit limit;
@@ -45,8 +44,7 @@ core_calc_connections(struct context *ctx)
     return NC_OK;
 }
 
-static struct context *
-core_ctx_create(struct instance *nci)
+static struct context * core_ctx_create(struct instance *nci)
 {
     rstatus_t status;
     struct context *ctx;
@@ -154,16 +152,18 @@ core_ctx_destroy(struct context *ctx)
     conf_destroy(ctx->cf);
     nc_free(ctx);
 }
-
-struct context *
-core_start(struct instance *nci)
+/**
+ * 其中core_start用来初始化conn，mbuf，msg这些重要数据结构的基本参数值，
+ * 更重要的是根据配置文件以及命令行参数设置该实例中的context变量（上一节我们提到过一个twemproxy实例对应于一个context变量ctx）
+ ***/
+struct context * core_start(struct instance *nci)
 {
     struct context *ctx;
 
     mbuf_init(nci);
     msg_init();
-    conn_init();
-
+    conn_init(); //目前没有一个连接 nfree_connq=0
+    //ctx中的cf变量赋值。
     ctx = core_ctx_create(nci);
     if (ctx != NULL) {
         nci->ctx = ctx;
@@ -261,8 +261,7 @@ core_error(struct context *ctx, struct conn *conn)
     core_close(ctx, conn);
 }
 
-static void
-core_timeout(struct context *ctx)
+static void core_timeout(struct context *ctx)
 {
     for (;;) {
         struct msg *msg;
@@ -351,8 +350,7 @@ core_core(void *arg, uint32_t events)
     return NC_OK;
 }
 
-rstatus_t
-core_loop(struct context *ctx)
+rstatus_t core_loop(struct context *ctx)
 {
     int nsd;
 

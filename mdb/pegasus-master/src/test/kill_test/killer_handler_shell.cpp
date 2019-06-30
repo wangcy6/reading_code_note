@@ -1,0 +1,182 @@
+// Copyright (c) 2017, Xiaomi, Inc.  All rights reserved.
+// This source code is licensed under the Apache License Version 2.0, which
+// can be found in the LICENSE file in the root directory of this source tree.
+
+#include <cstdlib>
+#include <cstring>
+#include <cerrno>
+#include <sstream>
+#include <fstream>
+
+#include <dsn/utility/config_api.h>
+#include <dsn/c/api_utilities.h>
+
+#include "killer_handler_shell.h"
+
+namespace pegasus {
+namespace test {
+
+killer_handler_shell::killer_handler_shell()
+{
+    const char *section = "killer.handler.shell";
+    _run_script_path = dsn_config_get_value_string(
+        section, "onebox_run_path", "~/pegasus/run.sh", "onebox run path");
+    dassert(_run_script_path.size() > 0, "");
+}
+
+bool killer_handler_shell::has_meta_dumped_core(int index)
+{
+    char find_core[1024];
+    snprintf(find_core,
+             1024,
+             "ls %s/onebox/meta%d | grep core | wc -l",
+             _run_script_path.c_str(),
+             index);
+
+    std::stringstream output;
+    int core_count;
+    assert(dsn::utils::pipe_execute(find_core, output) == 0);
+    output >> core_count;
+
+    return core_count != 0;
+}
+
+bool killer_handler_shell::has_replica_dumped_core(int index)
+{
+    char find_core[1024];
+    snprintf(find_core,
+             1024,
+             "ls %s/onebox/replica%d | grep core | wc -l",
+             _run_script_path.c_str(),
+             index);
+
+    std::stringstream output;
+    int core_count;
+    assert(dsn::utils::pipe_execute(find_core, output) == 0);
+    output >> core_count;
+
+    return core_count != 0;
+}
+
+bool killer_handler_shell::kill_meta(int index)
+{
+    std::string cmd = generate_cmd(index, "meta", "stop");
+    int res = system(cmd.c_str());
+    ddebug("kill meta command: %s", cmd.c_str());
+    if (res != 0) {
+        ddebug("kill meta encounter error(%s)", strerror(errno));
+        return false;
+    }
+    return check("meta", index, "stop");
+}
+
+bool killer_handler_shell::kill_replica(int index)
+{
+    std::string cmd = generate_cmd(index, "replica", "stop");
+    int res = system(cmd.c_str());
+    ddebug("kill replica command: %s", cmd.c_str());
+    if (res != 0) {
+        ddebug("kill meta encounter error(%s)", strerror(errno));
+        return false;
+    }
+    return check("replica", index, "stop");
+}
+
+bool killer_handler_shell::kill_zookeeper(int index)
+{
+    // not implement
+    return true;
+}
+
+bool killer_handler_shell::start_meta(int index)
+{
+    std::string cmd = generate_cmd(index, "meta", "start");
+    int res = system(cmd.c_str());
+    ddebug("start meta command: %s", cmd.c_str());
+    if (res != 0) {
+        ddebug("kill meta encounter error(%s)", strerror(errno));
+        return false;
+    }
+    return check("meta", index, "start");
+}
+
+bool killer_handler_shell::start_replica(int index)
+{
+    std::string cmd = generate_cmd(index, "replica", "start");
+
+    int res = system(cmd.c_str());
+    ddebug("start replica command: %s", cmd.c_str());
+    if (res != 0) {
+        ddebug("kill meta encounter error(%s)", strerror(errno));
+        return false;
+    }
+    return check("meta", index, "start");
+}
+
+bool killer_handler_shell::start_zookeeper(int index)
+{
+    // not implement.
+    return true;
+}
+
+bool killer_handler_shell::kill_all_meta(std::unordered_set<int> &indexs)
+{
+    // not implement
+    return false;
+}
+
+bool killer_handler_shell::kill_all_replica(std::unordered_set<int> &indexs)
+{
+    // not implement.
+    return false;
+}
+
+bool killer_handler_shell::kill_all_zookeeper(std::unordered_set<int> &indexs)
+{
+    // not implement.
+    return false;
+}
+
+bool killer_handler_shell::start_all_meta(std::unordered_set<int> &indexs)
+{
+    // not implement.
+    return false;
+}
+
+bool killer_handler_shell::start_all_replica(std::unordered_set<int> &indexs)
+{
+    // not implement.
+    return false;
+}
+
+bool killer_handler_shell::start_all_zookeeper(std::unordered_set<int> &indexs)
+{
+    // not implement.
+    return false;
+}
+
+std::string
+killer_handler_shell::generate_cmd(int index, const std::string &job, const std::string &action)
+{
+    std::stringstream res;
+    res << "cd " << _run_script_path << "; "
+        << "bash run.sh";
+    if (action == "stop")
+        res << " stop_onebox_instance ";
+    else
+        res << " start_onebox_instance ";
+    if (job == "replica")
+        res << "-r " << index;
+    else
+        res << "-m " << index;
+    return res.str();
+}
+
+// type = stop / start
+bool killer_handler_shell::check(const std::string &job, int index, const std::string &type)
+{
+    // not implement, just return true
+    return true;
+}
+}
+} // end namespace

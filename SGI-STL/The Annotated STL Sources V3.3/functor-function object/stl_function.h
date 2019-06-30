@@ -267,7 +267,7 @@ bind1st(const _Operation& __fn, const _Tp& __x)
 而这个类型正好需要用在binder2nd中，以保存（绑定）某个参数。这样，less_equal就变为了可配接的。
 纵观整个适配器系统，基本上都是把某个对象或指向对象的指针封装在一个适配器类中，对适配器的操作最终都会传递到对所包含对象的操作
 **/
-
+//https://en.cppreference.com/w/cpp/language/dependent_name?tdsourcetag=s_pctim_aiomsg
 template <class _Operation>
 class binder2nd
   : public unary_function<typename _Operation::first_argument_type,

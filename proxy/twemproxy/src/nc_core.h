@@ -123,7 +123,7 @@ struct context {
     struct conf        *cf;         /* configuration */
     struct stats       *stats;      /* stats */
 
-    struct array       pool;        /* server_pool[] */
+    struct array       pool;        /* server_pool[] 个context维护一个server pool列表* /
     struct event_base  *evb;        /* event base */
     int                max_timeout; /* max timeout in msec */
     int                timeout;     /* timeout in msec */
@@ -135,7 +135,7 @@ struct context {
 
 
 struct instance {
-    struct context  *ctx;                        /* active context */
+    struct context  *ctx;                        /* active context 这里面 一个 instance对应于一个context */
     int             log_level;                   /* log level */
     char            *log_filename;               /* log filename */
     char            *conf_filename;              /* configuration filename */

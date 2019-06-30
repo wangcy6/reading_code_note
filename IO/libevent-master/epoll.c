@@ -24,6 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+//https://www.cnblogs.com/yangang92/p/5712810.html
 #include "event2/event-config.h"
 #include "evconfig-private.h"
 
@@ -84,9 +85,9 @@
 #endif
 
 struct epollop {
-	struct epoll_event *events;
-	int nevents;
-	int epfd;
+	struct epoll_event *events;////epoll_event数组
+	int nevents;//事件数量
+	int epfd;//epollfd
 #ifdef USING_TIMERFD
 	int timerfd;
 #endif
@@ -95,7 +96,10 @@ struct epollop {
 static void *epoll_init(struct event_base *);
 static int epoll_dispatch(struct event_base *, struct timeval *);
 static void epoll_dealloc(struct event_base *);
-
+/**
+ * 是因为libevent对多路复用IO封装成统一的接口，在安装libevent的时候根据系统对IO复用的支持选择合适的函数。
+统一封装的接口为eventop，其每一个成员都是一个函数指针
+ ***/
 static const struct eventop epollops_changelist = {
 	"epoll (with changelist)",
 	epoll_init,
@@ -262,9 +266,8 @@ epoll_op_to_string(int op)
 	change_to_string(ch->write_change),        \
 	ch->close_change,                          \
 	change_to_string(ch->close_change)
-
-static int
-epoll_apply_one_change(struct event_base *base,
+//实际是对epoll_ctl的封装，采用了ADD和MOD的方式进行尝试，最后都是调用epoll_ctl完成事件的添加
+static int epoll_apply_one_change(struct event_base *base,
     struct epollop *epollop,
     const struct event_change *ch)
 {
@@ -280,7 +283,7 @@ epoll_apply_one_change(struct event_base *base,
 		EVUTIL_ASSERT(op == 0);
 		return 0;
 	}
-
+   //是否边缘触发
 	if ((ch->read_change|ch->write_change) & EV_CHANGE_ET)
 		events |= EPOLLET;
 
@@ -412,9 +415,10 @@ epoll_nochangelist_del(struct event_base *base, evutil_socket_t fd,
 
 	return epoll_apply_one_change(base, base->evbase, &ch);
 }
-
-static int
-epoll_dispatch(struct event_base *base, struct timeval *tv)
+//epoll_dispatch函数，实际是对epoll_wait的封装
+//实际是对epoll_wait的封装，对反应堆中已经注册添加的监听事件调用epoll_wait，同时设置超时时间，对监听到的事件，
+//加入反应堆的激活队列中（反应堆会处理激活队列中中的事件）
+static int epoll_dispatch(struct event_base *base, struct timeval *tv)
 {
 	struct epollop *epollop = base->evbase;
 	struct epoll_event *events = epollop->events;
@@ -485,24 +489,24 @@ epoll_dispatch(struct event_base *base, struct timeval *tv)
 		if (events[i].data.fd == epollop->timerfd)
 			continue;
 #endif
-
+        ////EPOLLHUP是文件描述符被挂断    EPOLLERR是文件描述符出现错误
 		if (what & (EPOLLHUP|EPOLLERR)) {
 			ev = EV_READ | EV_WRITE;
 		} else {
 			if (what & EPOLLIN)
-				ev |= EV_READ;
+				ev |= EV_READ; //EPOLLIN  EV_READ
 			if (what & EPOLLOUT)
-				ev |= EV_WRITE;
+				ev |= EV_WRITE;// EPOLLOUT  EV_WRITE
 			if (what & EPOLLRDHUP)
-				ev |= EV_CLOSED;
+				ev |= EV_CLOSED; // EPOLLRDHUP  EV_CLOSED
 		}
 
 		if (!ev)
 			continue;
-
+        //将事件加入激活队列中
 		evmap_io_active_(base, events[i].data.fd, ev | EV_ET);
 	}
-
+    //epollop中注册监听的事件都触发，表明需要增加epollop中能够容纳的事件大小
 	if (res == epollop->nevents && epollop->nevents < MAX_NEVENT) {
 		/* We used all of the event space this time.  We should
 		   be ready for more events next time. */

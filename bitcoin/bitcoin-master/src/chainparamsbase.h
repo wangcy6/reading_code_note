@@ -28,8 +28,8 @@ public:
     CBaseChainParams(const std::string& data_dir, int rpc_port) : nRPCPort(rpc_port), strDataDir(data_dir) {}
 
 private:
-    int nRPCPort;
-    std::string strDataDir;
+    int nRPCPort;//RPCPort定义了客户端和服务端通信的rpc端口
+    std::string strDataDir;//义了数据存储的目录
 };
 
 /**

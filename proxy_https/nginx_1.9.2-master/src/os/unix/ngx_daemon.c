@@ -9,21 +9,20 @@
 #include <ngx_core.h>
 
 
-ngx_int_t
-ngx_daemon(ngx_log_t *log)
+ngx_int_t ngx_daemon(ngx_log_t *log)
 {
     int  fd;
 
     switch (fork()) {
-    case -1:
+    case -1: //失败了
         ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "fork() failed");
         return NGX_ERROR;
 
-    case 0:
+    case 0: //子进程
         break;
 
     default:
-        exit(0);
+        exit(0);// pid>0 代表是父进程 
     }
 
     ngx_pid = ngx_getpid();

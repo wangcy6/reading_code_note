@@ -230,8 +230,7 @@ event_del_conn(struct event_base *evb, struct conn *c)
     return status;
 }
 
-int
-event_wait(struct event_base *evb, int timeout)
+int event_wait(struct event_base *evb, int timeout)
 {
     int ep = evb->ep;
     struct epoll_event *event = evb->event;

@@ -1,0 +1,11 @@
+*.pyc
+log/*.log
+log/*.conf
+list
+t
+conf/conf_inner.py
+script/*
+tmp/*
+data/*
+nohup.out
+core

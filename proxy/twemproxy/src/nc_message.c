@@ -135,8 +135,7 @@ msg_from_rbe(struct rbnode *node)
     return msg;
 }
 
-struct msg *
-msg_tmo_min(void)
+struct msg *msg_tmo_min(void)
 {
     struct rbnode *node;
 
@@ -416,8 +415,7 @@ msg_dump(struct msg *msg, int level)
     }
 }
 
-void
-msg_init(void)
+void msg_init(void)
 {
     log_debug(LOG_DEBUG, "msg size %d", sizeof(struct msg));
     msg_id = 0;
@@ -711,9 +709,8 @@ msg_recv_chain(struct context *ctx, struct conn *conn, struct msg *msg)
 
     return NC_OK;
 }
-
-rstatus_t
-msg_recv(struct context *ctx, struct conn *conn)
+//从client读取数据
+rstatus_t msg_recv(struct context *ctx, struct conn *conn)
 {
     rstatus_t status;
     struct msg *msg;

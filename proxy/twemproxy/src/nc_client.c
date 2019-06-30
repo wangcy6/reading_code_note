@@ -65,8 +65,7 @@ client_unref(struct conn *conn)
               pool, pool->name.len, pool->name.data);
 }
 
-bool
-client_active(struct conn *conn)
+bool client_active(struct conn *conn)
 {
     ASSERT(conn->client && !conn->proxy);
 

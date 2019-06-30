@@ -98,7 +98,7 @@ int StartWorker(PHXSqlProxyConfig * config, WorkerConfig_t * worker_config) {
     for (int i = 0; i < fork_proc_count; ++i) {
         pid_t pid = fork();
         if (pid > 0) {
-            continue;
+            continue; //parent 
         } else if (pid < 0) {
             break;
         }
@@ -142,7 +142,7 @@ int StartWorker(PHXSqlProxyConfig * config, WorkerConfig_t * worker_config) {
     }
     return 0;
 }
-
+//主要逻辑：
 int phxsqlproxymain(int argc, char *argv[], PHXSqlProxyConfig * config) {
     if (argc < 2) {
         printf("Usage %s <config>\n", argv[0]);

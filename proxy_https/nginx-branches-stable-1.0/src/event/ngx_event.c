@@ -195,6 +195,7 @@ ngx_module_t  ngx_event_core_module = {
     NGX_MODULE_V1_PADDING
 };
 //https://blog.csdn.net/lengzijian/article/details/7601730
+// 抢锁 ----- 分发事件---处理事件
 void ngx_process_events_and_timers(ngx_cycle_t *cycle)
 {
     ngx_uint_t  flags;
@@ -223,8 +224,9 @@ void ngx_process_events_and_timers(ngx_cycle_t *cycle)
     if (ngx_use_accept_mutex) {
         if (ngx_accept_disabled > 0) {
             ngx_accept_disabled--;
-
-        } else {
+           //处理已经分配的连接，不处理新连接
+        } else {  
+            // 抢锁
             if (ngx_trylock_accept_mutex(cycle) == NGX_ERROR) {
                 return; // 不同进程如何抢同一个锁 文件锁
             }
@@ -262,7 +264,7 @@ void ngx_process_events_and_timers(ngx_cycle_t *cycle)
     ngx_process_events的具体实现是对应到epoll模块中的ngx_epoll_process_events函数
     这里之后会详细讲解的哦
     */
-    (void) ngx_process_events(cycle, timer, flags);
+    (void) ngx_process_events(cycle, timer, flags);  // 分发事件
 
     delta = ngx_current_msec - delta;
 
@@ -295,10 +297,10 @@ void ngx_process_events_and_timers(ngx_cycle_t *cycle)
 
  
     /*
+    // 处理事件
     处理普通事件(连接上获得的读写事件)，
     因为每个事件都有自己的handler方法，
     */
-
     if (ngx_posted_events) {
         if (ngx_threaded) {
             ngx_wakeup_worker_thread(cycle);

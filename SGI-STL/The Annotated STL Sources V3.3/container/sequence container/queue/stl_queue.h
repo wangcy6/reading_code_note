@@ -82,7 +82,7 @@ public:
   typedef typename _Sequence::reference       reference;
   typedef typename _Sequence::const_reference const_reference;
 protected:
-  _Sequence c;  // 底层容器
+  _Sequence c;  // 底层容器 构造
 public:
   queue() : c() {}
   explicit queue(const _Sequence& __c) : c(__c) {}

@@ -259,8 +259,7 @@ stats_pool_init(struct stats_pool *stp, struct server_pool *sp)
     return NC_OK;
 }
 
-static void
-stats_pool_reset(struct array *stats_pool)
+static void stats_pool_reset(struct array *stats_pool)
 {
     uint32_t i, npool;
 
@@ -978,8 +977,7 @@ stats_destroy(struct stats *st)
     nc_free(st);
 }
 
-void
-stats_swap(struct stats *st)
+void stats_swap(struct stats *st)
 {
     if (!stats_enabled) {
         return;
