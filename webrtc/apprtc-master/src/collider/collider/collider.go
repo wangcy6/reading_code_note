@@ -8,7 +8,6 @@ package collider
 
 import (
 	"crypto/tls"
-	"golang.org/x/net/websocket"
 	"encoding/json"
 	"errors"
 	"html"
@@ -19,6 +18,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/net/websocket"
 )
 
 const registerTimeoutSec = 10
@@ -41,18 +42,22 @@ func NewCollider(rs string) *Collider {
 
 // Run starts the collider server and blocks the thread until the program exits.
 func (c *Collider) Run(p int, useTls bool) {
-	http.Handle("/ws", websocket.Handler(c.wsHandler))
-	http.HandleFunc("/status", c.httpStatusHandler)
+	http.Handle("/ws", websocket.Handler(c.wsHandler)) //websocket服务, 消息是json格式,
+	http.HandleFunc("/status", c.httpStatusHandler)    ///status
+	//返回服务器的一些状态信息, 比如服务过了多久, 有几个ws连接等.
 	http.HandleFunc("/", c.httpHandler)
-
+	/**
+	路由为: /roomid/clientid
+	使用POST方法, post的body就是msg, 等同于上面ws命令一样的send方法
+	使用DELET方法, 删除room和client**/
 	var e error
-
+	//从上面可以看出collider创建了房间, 然后转发客户端send的消息给同一个房间的其他用户.
 	pstr := ":" + strconv.Itoa(p)
 	if useTls {
-		config := &tls.Config {
+		config := &tls.Config{
 			// Only allow ciphers that support forward secrecy for iOS9 compatibility:
 			// https://developer.apple.com/library/prerelease/ios/technotes/App-Transport-Security-Technote/
-			CipherSuites: []uint16 {
+			CipherSuites: []uint16{
 				tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
 				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
 				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
@@ -63,7 +68,7 @@ func (c *Collider) Run(p int, useTls bool) {
 			},
 			PreferServerCipherSuites: true,
 		}
-		server := &http.Server{ Addr: pstr, Handler: nil, TLSConfig: config }
+		server := &http.Server{Addr: pstr, Handler: nil, TLSConfig: config}
 
 		e = server.ListenAndServeTLS("/cert/cert.pem", "/cert/key.pem")
 	} else {
