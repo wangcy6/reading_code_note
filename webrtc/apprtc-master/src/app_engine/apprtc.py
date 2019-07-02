@@ -591,7 +591,7 @@ def checkIfRedirect(self):
       parsed_args += argument + parameter
     redirect_url = constants.REDIRECT_URL + self.request.path + parsed_args
     webapp2.redirect(redirect_url, permanent=True, abort=True)
-
+  #原来这也是个web服务器. 使用了jinja2模板引擎
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/a/', analytics_page.AnalyticsPage),

@@ -198,7 +198,7 @@ class ProbeColliderPage(webapp2.RequestHandler):
 
     return self.handle_collider_response(
         error_message, status_code, collider_instance)
-
+# probers.py又实现了这个路由:
 app = webapp2.WSGIApplication([
     ('/probe/collider', ProbeColliderPage),
 ], debug=True)
