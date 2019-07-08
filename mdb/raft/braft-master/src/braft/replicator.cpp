@@ -516,6 +516,7 @@ int Replicator::_fill_common_fields(AppendEntriesRequest* request,
                                     int64_t prev_log_index,
                                     bool is_heartbeat) {
     const int64_t prev_log_term = _options.log_manager->get_term(prev_log_index);
+    
     if (prev_log_term == 0 && prev_log_index != 0) {
         if (!is_heartbeat) {
             CHECK_LT(prev_log_index, _options.log_manager->first_log_index());

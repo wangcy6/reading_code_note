@@ -444,9 +444,10 @@ int replicationSetupSlaveForFullResync(client *slave, long long offset) {
  *
  * On success return C_OK, otherwise C_ERR is returned and we proceed
  * with the usual full resync. */
+// 增量同步命令 PSYNC 执行过程 
 int masterTryPartialResynchronization(client *c) {
     long long psync_offset, psync_len;
-    char *master_replid = c->argv[1]->ptr;
+    char *master_replid = c->argv[1]->ptr; 
     char buf[128];
     int buflen;
 
@@ -456,12 +457,43 @@ int masterTryPartialResynchronization(client *c) {
     if (getLongLongFromObjectOrReply(c,c->argv[2],&psync_offset,NULL) !=
        C_OK) goto need_full_resync;
 
+
+
+
     /* Is the replication ID of this master the same advertised by the wannabe
      * slave via PSYNC? If the replication ID changed this master has a
      * different replication history, and there is no way to continue.
      *
      * Note that there are two potentially valid replication IDs: the ID1
-     * and the ID2. The ID2 however is only valid up to a specific offset. */
+     * and the ID2. The ID2 however is only valid up to a specific offset. 
+     * 
+     * T(0):        Master <--------- Slave
+        repl_id1:      ID0               ID0
+        repl_id2:                    
+        offset:        100                30
+        offset2:
+        And suddenly the master crushed, leave the slave alone, then the slave became the master:
+
+        T(1):                                [Master]
+        repl_id1:                             ID1
+        repl_id2:                             ID0
+        offset:                               30
+        offset2:                              31
+
+        The  new master apply new write commands, and the offset increases:
+
+        T(2):                                [Master]
+        repl_id1:                             ID1
+        repl_id2:                             ID0
+        offset:                               200
+        offset2:                              31
+
+     * T(3):        [Slave] --------->  [Master]
+        repl_id1:     ID0                    ID1
+        repl_id2:                            ID0
+        offset:       100                    200
+        offset2:                              31
+     * */
     if (strcasecmp(master_replid, server.replid) &&
         (strcasecmp(master_replid, server.replid2) ||
          psync_offset > server.second_replid_offset))
@@ -505,6 +537,20 @@ int masterTryPartialResynchronization(client *c) {
      * 1) Set client state to make it a slave.
      * 2) Inform the client we can continue with +CONTINUE
      * 3) Send the backlog data (from the offset to the end) to the slave. */
+
+     /* If we reached this point, we are able to perform a partial resync:
+     * 程序运行到这里，说明可以执行 partial resync
+     *
+     * 1) Set client state to make it a slave.
+     *    将客户端状态设为 salve  
+     *
+     * 2) Inform the client we can continue with +CONTINUE
+     *    向 slave 发送 +CONTINUE ，表示 partial resync 的请求被接受
+     *
+     * 3) Send the backlog data (from the offset to the end) to the slave. 
+     *    发送 backlog 中，客户端所需要的数据
+     */
+
     c->flags |= CLIENT_SLAVE;
     c->replstate = SLAVE_STATE_ONLINE;
     c->repl_ack_time = server.unixtime;
@@ -518,10 +564,12 @@ int masterTryPartialResynchronization(client *c) {
     } else {
         buflen = snprintf(buf,sizeof(buf),"+CONTINUE\r\n");
     }
+    // 向从服务器发送一个同步 +CONTINUE ，表示 PSYNC 可以执行
     if (write(c->fd,buf,buflen) != buflen) {
         freeClientAsync(c);
         return C_OK;
     }
+    // 发送 backlog 中的内容（也即是从服务器缺失的那些内容）到从服务器
     psync_len = addReplyReplicationBacklog(c,psync_offset);
     serverLog(LL_NOTICE,
         "Partial resynchronization request from %s accepted. Sending %lld bytes of backlog starting from offset %lld.",
@@ -1422,6 +1470,7 @@ char *sendSynchronousCommand(int flags, int fd, ...) {
 #define PSYNC_FULLRESYNC 3
 #define PSYNC_NOT_SUPPORTED 4
 #define PSYNC_TRY_LATER 5
+
 int slaveTryPartialResynchronization(int fd, int read_reply) {
     char *psync_replid;
     char psync_offset[32];
@@ -1540,12 +1589,15 @@ int slaveTryPartialResynchronization(int fd, int read_reply) {
 
         /* Setup the replication to continue. */
         sdsfree(reply);
+        
         replicationResurrectCachedMaster(fd);
 
         /* If this instance was restarted and we read the metadata to
          * PSYNC from the persistence file, our replication backlog could
          * be still not initialized. Create it. */
         if (server.repl_backlog == NULL) createReplicationBacklog();
+
+
         return PSYNC_CONTINUE;
     }
 

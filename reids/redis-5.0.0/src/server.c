@@ -3845,13 +3845,27 @@ int checkForSentinelMode(int argc, char **argv) {
 
 /* Function called at startup to load RDB or AOF file in memory. */
 void loadDataFromDisk(void) {
-    long long start = ustime();
+    long long start = ustime(); // 记录开始时间
+
+      // AOF 持久化已已经 打开
     if (server.aof_state == AOF_ON) {
+        // 尝试载入 AOF 文件
+        /**  //为什么没考虑 AOF 和rdb同时打开的情况呀
+         * Redis 4.0 推出了一个能够“鱼和熊掌兼得”的持久化方案 —— RDB-AOF 混合持久化： 
+         * 这种持久化能够通过 AOF 重写操作创建出一个同时包含 RDB 数据和 AOF 数据的 AOF 文件， 
+         * 其中 RDB 数据位于 AOF 文件的开头， 它们储存了服务器开始执行重写操作时的数据库状态： 至
+         * 于那些在重写操作执行之后执行的 Redis 命令， 则会继续以 AOF 格式追加到 AOF 文件的末尾， 也即是 RDB 数据之后。
+         */
         if (loadAppendOnlyFile(server.aof_filename) == C_OK)
+            // 打印载入信息，并计算载入耗时长度
             serverLog(LL_NOTICE,"DB loaded from append only file: %.3f seconds",(float)(ustime()-start)/1000000);
     } else {
+        // AOF 持久化未打开
         rdbSaveInfo rsi = RDB_SAVE_INFO_INIT;
+        // 尝试载入 RDB 文件
         if (rdbLoad(server.rdb_filename,&rsi) == C_OK) {
+
+             //打印载入信息，并计算载入耗时长度
             serverLog(LL_NOTICE,"DB loaded from disk: %.3f seconds",
                 (float)(ustime()-start)/1000000);
 
@@ -3859,17 +3873,27 @@ void loadDataFromDisk(void) {
             if (server.masterhost &&
                 rsi.repl_id_is_set &&
                 rsi.repl_offset != -1 &&
+
                 /* Note that older implementations may save a repl_stream_db
                  * of -1 inside the RDB file in a wrong way, see more information
                  * in function rdbPopulateSaveInfo. */
                 rsi.repl_stream_db != -1)
-            {
+            {   
+
+                //在loadDataFromDisk函数中会把RDB文件中的replid和repl_offset加载进redis中相应的变量。
+
                 memcpy(server.replid,rsi.repl_id,sizeof(server.replid));
                 server.master_repl_offset = rsi.repl_offset;
+
+
                 /* If we are a slave, create a cached master from this
                  * information, in order to allow partial resynchronizations
                  * with masters. */
+                //将这些变量的值复制到server.cached_master
                 replicationCacheMasterUsingMyself();
+                //https://luoming1224.github.io/2018/11/20/[redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0]redis4.0%E6%96%B0%E7%89%B9%E6%80%A7-psync2/
+
+
                 selectDb(server.cached_master,rsi.repl_stream_db);
             }
         } else if (errno != ENOENT) {
@@ -4167,7 +4191,9 @@ int main(int argc, char **argv) {
         linuxMemoryWarnings();
     #endif
         moduleLoadFromQueue();
+
         loadDataFromDisk();
+        
         if (server.cluster_enabled) {
             if (verifyClusterConfigWithData() == C_ERR) {
                 serverLog(LL_WARNING,

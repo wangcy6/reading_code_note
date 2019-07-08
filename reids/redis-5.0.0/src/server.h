@@ -1122,8 +1122,10 @@ struct redisServer {
     /* Replication (master) */
     char replid[CONFIG_RUN_ID_SIZE+1];  /* My current replication ID. */
     char replid2[CONFIG_RUN_ID_SIZE+1]; /* replid inherited from master*/
+   
     long long master_repl_offset;   /* My current replication offset */
     long long second_replid_offset; /* Accept offsets up to this for replid2. */
+   
     int slaveseldb;                 /* Last SELECTed DB in replication output */
     int repl_ping_slave_period;     /* Master pings the slave every N seconds */
     char *repl_backlog;             /* Replication backlog for partial syncs */
@@ -1148,7 +1150,9 @@ struct redisServer {
     int masterport;                 /* Port of master */
     int repl_timeout;               /* Timeout after N seconds of master idle */
     client *master;     /* Client that is master for this slave */
+    
     client *cached_master; /* Cached master to be reused for PSYNC. */
+
     int repl_syncio_timeout; /* Timeout for synchronous I/O calls */
     int repl_state;          /* Replication status if the instance is a slave */
     off_t repl_transfer_size; /* Size of RDB to read from master during sync. */
