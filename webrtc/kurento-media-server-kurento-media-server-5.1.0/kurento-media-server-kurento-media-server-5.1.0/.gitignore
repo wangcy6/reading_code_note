@@ -1,0 +1,12 @@
+*.kdev4
+build
+*swp
+/nbproject/
+*~
+*orig
+obj-x86_64-linux-gnu
+debian/kurento
+.excludes
+CMakeLists.txt.user
+manifest.json
+kurento-media-server.json

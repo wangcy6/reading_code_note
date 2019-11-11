@@ -24,8 +24,7 @@ bool pm_terminate= false; // quit after worker_shutdown_timeout
 
 struct instance *master_nci = NULL;
 
-static rstatus_t
-nc_clone_instance(int worker_id, struct instance *dst, struct instance *src)
+static rstatus_t nc_clone_instance(int worker_id, struct instance *dst, struct instance *src)
 {
     struct context *new_ctx;
     if (dst == NULL || src == NULL) {

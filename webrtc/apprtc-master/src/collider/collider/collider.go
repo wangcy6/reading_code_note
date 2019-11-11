@@ -28,6 +28,7 @@ const registerTimeoutSec = 10
 // setting a 1 day timeout on reading from the WebSocket connection.
 const wsReadTimeoutSec = 60 * 60 * 24
 
+//
 type Collider struct {
 	*roomTable
 	dash *dashboard
@@ -67,6 +68,7 @@ func (c *Collider) Run(p int, useTls bool) {
 				tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
 			},
 			PreferServerCipherSuites: true,
+			InsecureSkipVerify:       true,
 		}
 		server := &http.Server{Addr: pstr, Handler: nil, TLSConfig: config}
 

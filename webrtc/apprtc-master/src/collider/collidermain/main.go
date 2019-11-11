@@ -9,6 +9,8 @@ import (
 	"collider"
 	"flag"
 	"log"
+	"net/http"
+	"crypto/tls"
 )
 
 var tls = flag.Bool("tls", true, "whether TLS is used")
@@ -17,7 +19,7 @@ var roomSrv = flag.String("room-server", "http://10.112.178.190:8080", "The orig
 
 func main() {
 	flag.Parse()
-
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	log.Printf("Starting collider: tls = %t, port = %d, room-server=%s", *tls, *port, *roomSrv)
 	//问题 到目前为止我不知道这个是干什么的，请继续看
 	c := collider.NewCollider(*roomSrv)

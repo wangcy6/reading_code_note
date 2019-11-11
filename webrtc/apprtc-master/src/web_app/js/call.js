@@ -277,8 +277,10 @@ Call.prototype.toggleAudioMute = function() {
   trace('Audio ' + (audioTracks[0].enabled ? 'unmuted.' : 'muted.'));
 };
 
-// Connects client to the room. This happens by simultaneously requesting
-// media, requesting turn, and join the room. Once all three of those
+// Connects client to the room. This happens by simultaneously 
+ //A requesting media, 
+ //B requesting turn,
+ //C and join the room. Once all three of those
 // tasks is complete, the signaling process begins. At the same time, a
 // WebSocket connection is opened using |wss_url| followed by a subsequent
 // registration once GAE registration completes.
@@ -333,7 +335,7 @@ Call.prototype.connectToRoom_ = function(roomId) {
           this.onError_('Failed to start signaling: ' + error.message);
         }.bind(this));
   }.bind(this)).catch(function(error) {
-    this.onError_('WebSocket register error: ' + error.message);
+    this.onError_('WebSocket register error:WebSocket register error: ' + error.message);
   }.bind(this));
 };
 

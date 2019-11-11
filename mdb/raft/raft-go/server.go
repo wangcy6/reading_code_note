@@ -231,6 +231,7 @@ func (s *Server) Stop() {
 	s.logGeneric("server stopped")
 }
 
+
 type commandTuple struct {
 	Command         []byte
 	CommandResponse chan<- []byte

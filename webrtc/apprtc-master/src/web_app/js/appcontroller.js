@@ -469,7 +469,7 @@ AppController.prototype.toggleAudioMute_ = function() {
   this.muteAudioIconSet_.toggle();
 };
 
-AppController.prototype.toggleVideoMute_ = function() {
+// AppController.prototype.toggleVideoMute_ = function() {
   this.call_.toggleVideoMute();
   this.muteVideoIconSet_.toggle();
 };
