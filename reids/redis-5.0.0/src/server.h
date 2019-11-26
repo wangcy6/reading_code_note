@@ -165,8 +165,9 @@ typedef long long mstime_t; /* millisecond time type. */
   100 /* maximum defrag force at 100% fragmentation */
 #define CONFIG_DEFAULT_DEFRAG_IGNORE_BYTES                                     \
   (100 << 20) /* don't defrag if frag overhead is below 100mb */
-#define CONFIG_DEFAULT_DEFRAG_CYCLE_MIN 5 /* 5% CPU min (at lower threshold)   \
-                                           */
+#define CONFIG_DEFAULT_DEFRAG_CYCLE_MIN                                        \
+  5 /* 5% CPU min (at lower threshold)                                         \
+     */
 #define CONFIG_DEFAULT_DEFRAG_CYCLE_MAX                                        \
   75 /* 75% CPU max (at upper threshold) */
 #define CONFIG_DEFAULT_DEFRAG_MAX_SCAN_FIELDS                                  \
@@ -189,8 +190,9 @@ typedef long long mstime_t; /* millisecond time type. */
 #define STATS_METRIC_COUNT 3
 
 /* Protocol and I/O related defines */
-#define PROTO_MAX_QUERYBUF_LEN (1024 * 1024 * 1024) /* 1GB max query buffer.   \
-                                                     */
+#define PROTO_MAX_QUERYBUF_LEN                                                 \
+  (1024 * 1024 * 1024)                      /* 1GB max query buffer.           \
+                                             */
 #define PROTO_IOBUF_LEN (1024 * 16)         /* Generic I/O buffer size */
 #define PROTO_REPLY_CHUNK_BYTES (16 * 1024) /* 16k output buffer */
 #define PROTO_INLINE_MAX_SIZE (1024 * 64)   /* Max size of inline reads */
@@ -273,8 +275,9 @@ typedef long long mstime_t; /* millisecond time type. */
 #define CLIENT_REPLY_SKIP (1 << 24)     /* Don't send just this reply. */
 #define CLIENT_LUA_DEBUG (1 << 25)      /* Run EVAL in debug mode. */
 #define CLIENT_LUA_DEBUG_SYNC (1 << 26) /* EVAL debugging without fork() */
-#define CLIENT_MODULE (1 << 27) /* Non connected client used by some module.   \
-                                 */
+#define CLIENT_MODULE                                                          \
+  (1 << 27) /* Non connected client used by some module.                       \
+             */
 #define CLIENT_PROTECTED (1 << 28) /* Client should not be freed for now. */
 
 /* Client block type (btype field in client structure)
@@ -327,11 +330,13 @@ typedef long long mstime_t; /* millisecond time type. */
  * In SEND_BULK and ONLINE state the slave receives new updates
  * in its output queue. In the WAIT_BGSAVE states instead the server is waiting
  * to start the next background saving in order to send updates to it. */
-#define SLAVE_STATE_WAIT_BGSAVE_START 6 /* We need to produce a new RDB file.  \
-                                         */
-#define SLAVE_STATE_WAIT_BGSAVE_END 7 /* Waiting RDB file creation to finish.  \
-                                       */
-#define SLAVE_STATE_SEND_BULK 8       /* Sending RDB file to slave. */
+#define SLAVE_STATE_WAIT_BGSAVE_START                                          \
+  6 /* We need to produce a new RDB file.                                      \
+     */
+#define SLAVE_STATE_WAIT_BGSAVE_END                                            \
+  7                             /* Waiting RDB file creation to finish.        \
+                                 */
+#define SLAVE_STATE_SEND_BULK 8 /* Sending RDB file to slave. */
 #define SLAVE_STATE_ONLINE 9 /* RDB file transmitted, sending just updates. */
 
 /* Slave capabilities. */
@@ -834,13 +839,13 @@ struct sharedObjectsStruct {
 
 /* ZSETs use a specialized version of Skiplists */
 typedef struct zskiplistNode {
-  sds ele;
-  double score;
-  struct zskiplistNode *backward;
+  sds ele;                        //内容
+  double score;                   //排序分值
+  struct zskiplistNode *backward; //后面
   struct zskiplistLevel {
     struct zskiplistNode *forward;
     unsigned long span;
-  } level[];
+  } level[]; //前面
 } zskiplistNode;
 
 typedef struct zskiplist {
@@ -850,8 +855,8 @@ typedef struct zskiplist {
 } zskiplist;
 
 typedef struct zset {
-  dict *dict;
-  zskiplist *zsl;
+  dict *dict;     //无需排列，单key查找
+  zskiplist *zsl; //有序排列，范围查找
 } zset;
 
 typedef struct clientBufferLimitsConfig {
@@ -1082,8 +1087,7 @@ struct redisServer {
   int tcpkeepalive;          /* Set SO_KEEPALIVE if non-zero. */
   int active_expire_enabled; /* Can be disabled for testing purposes. */
   int active_defrag_enabled;
-  size_t
-      active_defrag_ignore_bytes;    /* minimum amount of fragmentation waste to
+  size_t active_defrag_ignore_bytes; /* minimum amount of fragmentation waste to
                                         start active defrag */
   int active_defrag_threshold_lower; /* minimum percentage of fragmentation to
                                         start active defrag */
@@ -1709,12 +1713,14 @@ void receiveChildInfo(void);
 #define ZADD_XX (1 << 2)   /* Only touch elements already existing. */
 
 /* Output flags. */
-#define ZADD_NOP (1 << 3)     /* Operation not performed because of            \
-                                 conditionals.*/
-#define ZADD_NAN (1 << 4)     /* Only touch elements already existing. */
-#define ZADD_ADDED (1 << 5)   /* The element was new and was added. */
-#define ZADD_UPDATED (1 << 6) /* The element already existed, score updated.   \
-                               */
+#define ZADD_NOP                                                               \
+  (1 << 3)                  /* Operation not performed because of              \
+                               conditionals.*/
+#define ZADD_NAN (1 << 4)   /* Only touch elements already existing. */
+#define ZADD_ADDED (1 << 5) /* The element was new and was added. */
+#define ZADD_UPDATED                                                           \
+  (1 << 6) /* The element already existed, score updated.                      \
+            */
 
 /* Flags only used by the ZADD command but not by zsetAdd() API: */
 #define ZADD_CH (1 << 16) /* Return num of elements added or updated. */

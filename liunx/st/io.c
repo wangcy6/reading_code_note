@@ -1,30 +1,30 @@
-/* 
+/*
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
  * the License at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the License is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
- * 
+ *
  * The Original Code is the Netscape Portable Runtime library.
- * 
+ *
  * The Initial Developer of the Original Code is Netscape
- * Communications Corporation.  Portions created by Netscape are 
+ * Communications Corporation.  Portions created by Netscape are
  * Copyright (C) 1994-2000 Netscape Communications Corporation.  All
  * Rights Reserved.
- * 
+ *
  * Contributor(s):  Silicon Graphics, Inc.
- * 
+ *
  * Portions created by SGI are Copyright (C) 2000-2001 Silicon
  * Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License Version 2 or later (the
- * "GPL"), in which case the provisions of the GPL are applicable 
- * instead of those above.  If you wish to allow use of your 
+ * "GPL"), in which case the provisions of the GPL are applicable
+ * instead of those above.  If you wish to allow use of your
  * version of this file only under the terms of the GPL and not to
  * allow others to use your version of this file under the MPL,
  * indicate your decision by deleting the provisions above and
@@ -52,14 +52,13 @@
 #include <errno.h>
 #include "common.h"
 
-
 #if EAGAIN != EWOULDBLOCK
-#define _IO_NOT_READY_ERROR  ((errno == EAGAIN) || (errno == EWOULDBLOCK))
+#define _IO_NOT_READY_ERROR ((errno == EAGAIN) || (errno == EWOULDBLOCK))
 #else
-#define _IO_NOT_READY_ERROR  (errno == EAGAIN)
+#define _IO_NOT_READY_ERROR (errno == EAGAIN)
 #endif
 
-#define _LOCAL_MAXIOV  16
+#define _LOCAL_MAXIOV 16
 
 /* File descriptor object free list */
 static _st_netfd_t *_st_netfd_freelist = NULL;
@@ -68,8 +67,7 @@ static int _st_osfd_limit = -1;
 
 static void _st_netfd_free_aux_data(_st_netfd_t *fd);
 
-int _st_io_init(void)
-{
+int _st_io_init(void) {
   struct sigaction sigact;
   struct rlimit rlim;
   int fdlim;
@@ -86,34 +84,28 @@ int _st_io_init(void)
     return -1;
 
   fdlim = (*_st_eventsys->fd_getlimit)();
-  if (fdlim > 0 && rlim.rlim_max > (rlim_t) fdlim) {
+  if (fdlim > 0 && rlim.rlim_max > (rlim_t)fdlim) {
     rlim.rlim_max = fdlim;
   }
 
   /* when rlimit max is negative, for example, osx, use cur directly. */
   /* @see https://github.com/winlinvip/simple-rtmp-server/issues/336 */
   if ((int)rlim.rlim_max < 0) {
-    _st_osfd_limit = (int)(fdlim > 0? fdlim : rlim.rlim_cur);
+    _st_osfd_limit = (int)(fdlim > 0 ? fdlim : rlim.rlim_cur);
     return 0;
   }
 
   rlim.rlim_cur = rlim.rlim_max;
   if (setrlimit(RLIMIT_NOFILE, &rlim) < 0)
     return -1;
-  _st_osfd_limit = (int) rlim.rlim_max;
+  _st_osfd_limit = (int)rlim.rlim_max;
 
   return 0;
 }
 
+int st_getfdlimit(void) { return _st_osfd_limit; }
 
-int st_getfdlimit(void)
-{
-  return _st_osfd_limit;
-}
-
-
-void st_netfd_free(_st_netfd_t *fd)
-{
+void st_netfd_free(_st_netfd_t *fd) {
   if (!fd->inuse)
     return;
 
@@ -128,27 +120,23 @@ void st_netfd_free(_st_netfd_t *fd)
   _st_netfd_freelist = fd;
 }
 
-
-static _st_netfd_t *_st_netfd_new(int osfd, int nonblock, int is_socket)
-{
+static _st_netfd_t *_st_netfd_new(int osfd, int nonblock, int is_socket) {
   _st_netfd_t *fd;
   int flags = 1;
 
-  if ((*_st_eventsys->fd_new)(osfd) < 0)
-{
-  //printf("point 9  osfd :%d \n",osfd); 
-   return NULL;
-}
+  if ((*_st_eventsys->fd_new)(osfd) < 0) {
+    // printf("point 9  osfd :%d \n",osfd);
+    return NULL;
+  }
   if (_st_netfd_freelist) {
     fd = _st_netfd_freelist;
     _st_netfd_freelist = _st_netfd_freelist->next;
   } else {
     fd = calloc(1, sizeof(_st_netfd_t));
-    if (!fd)
-{    
-// printf("point 9-1 \n");
- return NULL;
-}
+    if (!fd) {
+      // printf("point 9-1 \n");
+      return NULL;
+    }
   }
 
   fd->osfd = osfd;
@@ -161,7 +149,7 @@ static _st_netfd_t *_st_netfd_new(int osfd, int nonblock, int is_socket)
       return fd;
     /* Do it the Posix way */
     if ((flags = fcntl(osfd, F_GETFL, 0)) < 0 ||
-	fcntl(osfd, F_SETFL, flags | O_NONBLOCK) < 0) {
+        fcntl(osfd, F_SETFL, flags | O_NONBLOCK) < 0) {
       st_netfd_free(fd);
       return NULL;
     }
@@ -170,21 +158,13 @@ static _st_netfd_t *_st_netfd_new(int osfd, int nonblock, int is_socket)
   return fd;
 }
 
+_st_netfd_t *st_netfd_open(int osfd) { return _st_netfd_new(osfd, 1, 0); }
 
-_st_netfd_t *st_netfd_open(int osfd)
-{
-  return _st_netfd_new(osfd, 1, 0);
-}
-
-
-_st_netfd_t *st_netfd_open_socket(int osfd)
-{
+_st_netfd_t *st_netfd_open_socket(int osfd) {
   return _st_netfd_new(osfd, 1, 1);
 }
 
-
-int st_netfd_close(_st_netfd_t *fd)
-{
+int st_netfd_close(_st_netfd_t *fd) {
   if ((*_st_eventsys->fd_close)(fd->osfd) < 0)
     return -1;
 
@@ -192,16 +172,10 @@ int st_netfd_close(_st_netfd_t *fd)
   return close(fd->osfd);
 }
 
-
-int st_netfd_fileno(_st_netfd_t *fd)
-{
-  return (fd->osfd);
-}
-
+int st_netfd_fileno(_st_netfd_t *fd) { return (fd->osfd); }
 
 void st_netfd_setspecific(_st_netfd_t *fd, void *value,
-			  _st_destructor_t destructor)
-{
+                          _st_destructor_t destructor) {
   if (value != fd->private_data) {
     /* Free up previously set non-NULL data value */
     if (fd->private_data && fd->destructor)
@@ -211,23 +185,17 @@ void st_netfd_setspecific(_st_netfd_t *fd, void *value,
   fd->destructor = destructor;
 }
 
-
-void *st_netfd_getspecific(_st_netfd_t *fd)
-{
-  return (fd->private_data);
-}
-
+void *st_netfd_getspecific(_st_netfd_t *fd) { return (fd->private_data); }
 
 /*
  * Wait for I/O on a single descriptor.
  */
-int st_netfd_poll(_st_netfd_t *fd, int how, st_utime_t timeout)
-{
+int st_netfd_poll(_st_netfd_t *fd, int how, st_utime_t timeout) {
   struct pollfd pd;
   int n;
 
   pd.fd = fd->osfd;
-  pd.events = (short) how;
+  pd.events = (short)how;
   pd.revents = 0;
 
   if ((n = st_poll(&pd, 1, timeout)) < 0)
@@ -245,57 +213,49 @@ int st_netfd_poll(_st_netfd_t *fd, int how, st_utime_t timeout)
   return 0;
 }
 
-
 #ifdef MD_ALWAYS_UNSERIALIZED_ACCEPT
 /* No-op */
-int st_netfd_serialize_accept(_st_netfd_t *fd)
-{
+int st_netfd_serialize_accept(_st_netfd_t *fd) {
   fd->aux_data = NULL;
   return 0;
 }
 
 /* No-op */
-static void _st_netfd_free_aux_data(_st_netfd_t *fd)
-{
-  fd->aux_data = NULL;
-}
+static void _st_netfd_free_aux_data(_st_netfd_t *fd) { fd->aux_data = NULL; }
 
 _st_netfd_t *st_accept(_st_netfd_t *fd, struct sockaddr *addr, int *addrlen,
-		       st_utime_t timeout)
-{
+                       st_utime_t timeout) {
   int osfd, err;
   _st_netfd_t *newfd;
- // printf("point 1 \n");
+  // printf("point 1 \n");
   while ((osfd = accept(fd->osfd, addr, (socklen_t *)addrlen)) < 0) {
     if (errno == EINTR)
       continue;
-    if (!_IO_NOT_READY_ERROR)
-{
- //    printf("point 2 \n");
+    if (!_IO_NOT_READY_ERROR) {
+      //    printf("point 2 \n");
       return NULL;
-}
+    }
     /* Wait until the socket becomes readable */
-    if (st_netfd_poll(fd, POLLIN, timeout) < 0)
-{
- //     printf("point 3 \n");
+    if (st_netfd_poll(fd, POLLIN, timeout) < 0) {
+      //     printf("point 3 \n");
       return NULL;
-}
+    }
   }
- // printf("osfd %d fd %d \n",osfd,fd->osfd);
-  /* On some platforms the new socket created by accept() inherits */
-  /* the nonblocking attribute of the listening socket */
-#if defined (MD_ACCEPT_NB_INHERITED)
+    // printf("osfd %d fd %d \n",osfd,fd->osfd);
+    /* On some platforms the new socket created by accept() inherits */
+    /* the nonblocking attribute of the listening socket */
+#if defined(MD_ACCEPT_NB_INHERITED)
   newfd = _st_netfd_new(osfd, 0, 1);
- // printf("point 5 \n");
-#elif defined (MD_ACCEPT_NB_NOT_INHERITED)
+  // printf("point 5 \n");
+#elif defined(MD_ACCEPT_NB_NOT_INHERITED)
   newfd = _st_netfd_new(osfd, 1, 1);
- // printf("point 6  \n");
+  // printf("point 6  \n");
 #else
 #error Unknown OS
 #endif
 
   if (!newfd) {
-   printf("no new fd \n");
+    printf("no new fd \n");
     err = errno;
     close(osfd);
     errno = err;
@@ -311,8 +271,7 @@ _st_netfd_t *st_accept(_st_netfd_t *fd, struct sockaddr *addr, int *addrlen,
  * The following code serializes accept()'s without process blocking.
  * A pipe is used as an inter-process semaphore.
  */
-int st_netfd_serialize_accept(_st_netfd_t *fd)
-{
+int st_netfd_serialize_accept(_st_netfd_t *fd) {
   _st_netfd_t **p;
   int osfd[2], err;
 
@@ -327,8 +286,7 @@ int st_netfd_serialize_accept(_st_netfd_t *fd)
     return -1;
   }
   if ((p[0] = st_netfd_open(osfd[0])) != NULL &&
-      (p[1] = st_netfd_open(osfd[1])) != NULL &&
-      write(osfd[1], " ", 1) == 1) {
+      (p[1] = st_netfd_open(osfd[1])) != NULL && write(osfd[1], " ", 1) == 1) {
     fd->aux_data = p;
     return 0;
   }
@@ -346,9 +304,8 @@ int st_netfd_serialize_accept(_st_netfd_t *fd)
   return -1;
 }
 
-static void _st_netfd_free_aux_data(_st_netfd_t *fd)
-{
-  _st_netfd_t **p = (_st_netfd_t **) fd->aux_data;
+static void _st_netfd_free_aux_data(_st_netfd_t *fd) {
+  _st_netfd_t **p = (_st_netfd_t **)fd->aux_data;
 
   st_netfd_close(p[0]);
   st_netfd_close(p[1]);
@@ -357,22 +314,21 @@ static void _st_netfd_free_aux_data(_st_netfd_t *fd)
 }
 
 _st_netfd_t *st_accept(_st_netfd_t *fd, struct sockaddr *addr, int *addrlen,
-		       st_utime_t timeout)
-{
+                       st_utime_t timeout) {
   int osfd, err;
   _st_netfd_t *newfd;
-  _st_netfd_t **p = (_st_netfd_t **) fd->aux_data;
+  _st_netfd_t **p = (_st_netfd_t **)fd->aux_data;
   ssize_t n;
   char c;
 
-  for ( ; ; ) {
+  for (;;) {
     if (p == NULL) {
       osfd = accept(fd->osfd, addr, (socklen_t *)addrlen);
     } else {
       /* Get the lock */
       n = st_read(p[0], &c, 1, timeout);
       if (n < 0)
-	return NULL;
+        return NULL;
       ST_ASSERT(n == 1);
       /* Got the lock */
       osfd = accept(fd->osfd, addr, (socklen_t *)addrlen);
@@ -393,11 +349,11 @@ _st_netfd_t *st_accept(_st_netfd_t *fd, struct sockaddr *addr, int *addrlen,
       return NULL;
   }
 
-  /* On some platforms the new socket created by accept() inherits */
-  /* the nonblocking attribute of the listening socket */
-#if defined (MD_ACCEPT_NB_INHERITED)
+    /* On some platforms the new socket created by accept() inherits */
+    /* the nonblocking attribute of the listening socket */
+#if defined(MD_ACCEPT_NB_INHERITED)
   newfd = _st_netfd_new(osfd, 0, 1);
-#elif defined (MD_ACCEPT_NB_NOT_INHERITED)
+#elif defined(MD_ACCEPT_NB_NOT_INHERITED)
   newfd = _st_netfd_new(osfd, 1, 1);
 #else
 #error Unknown OS
@@ -413,10 +369,8 @@ _st_netfd_t *st_accept(_st_netfd_t *fd, struct sockaddr *addr, int *addrlen,
 }
 #endif /* MD_ALWAYS_UNSERIALIZED_ACCEPT */
 
-
 int st_connect(_st_netfd_t *fd, const struct sockaddr *addr, int addrlen,
-	       st_utime_t timeout)
-{
+               st_utime_t timeout) {
   int n, err = 0;
 
   while (connect(fd->osfd, addr, addrlen) < 0) {
@@ -429,31 +383,26 @@ int st_connect(_st_netfd_t *fd, const struct sockaddr *addr, int addrlen,
        * "UNIX Network Programming," Vol. 1, 2nd edition, p. 413
        * ("Interrupted connect").
        */
-      if (errno != EINPROGRESS && (errno != EADDRINUSE || err == 0))
-{
+      if (errno != EINPROGRESS && (errno != EADDRINUSE || err == 0)) {
         printf("connect 4 \n");
-	return -1;
-
-
-}
+        return -1;
+      }
       /* Wait until the socket becomes writable */
-      if (st_netfd_poll(fd, POLLOUT, timeout) < 0)
-{
-       printf("connect 3 \n");
-	return -1;
- 
-}     /* Try to find out whether the connection setup succeeded or failed */
+      if (st_netfd_poll(fd, POLLOUT, timeout) < 0) {
+        printf("connect 3 \n");
+        return -1;
+
+      } /* Try to find out whether the connection setup succeeded or failed */
       n = sizeof(int);
       if (getsockopt(fd->osfd, SOL_SOCKET, SO_ERROR, (char *)&err,
-		     (socklen_t *)&n) < 0)
-{
-       printf("connect 2 \n");
-	return -1;
-}
+                     (socklen_t *)&n) < 0) {
+        printf("connect 2 \n");
+        return -1;
+      }
       if (err) {
         printf("connect 1 \n");
-	errno = err;
-	return -1;
+        errno = err;
+        return -1;
       }
       break;
     }
@@ -463,9 +412,7 @@ int st_connect(_st_netfd_t *fd, const struct sockaddr *addr, int addrlen,
   return 0;
 }
 
-
-ssize_t st_read(_st_netfd_t *fd, void *buf, size_t nbyte, st_utime_t timeout)
-{
+ssize_t st_read(_st_netfd_t *fd, void *buf, size_t nbyte, st_utime_t timeout) {
   ssize_t n;
 
   while ((n = read(fd->osfd, buf, nbyte)) < 0) {
@@ -481,10 +428,8 @@ ssize_t st_read(_st_netfd_t *fd, void *buf, size_t nbyte, st_utime_t timeout)
   return n;
 }
 
-
 int st_read_resid(_st_netfd_t *fd, void *buf, size_t *resid,
-		  st_utime_t timeout)
-{
+                  st_utime_t timeout) {
   struct iovec iov, *riov;
   int riov_size, rv;
 
@@ -497,10 +442,8 @@ int st_read_resid(_st_netfd_t *fd, void *buf, size_t *resid,
   return rv;
 }
 
-
 ssize_t st_readv(_st_netfd_t *fd, const struct iovec *iov, int iov_size,
-		 st_utime_t timeout)
-{
+                 st_utime_t timeout) {
   ssize_t n;
 
   while ((n = readv(fd->osfd, iov, iov_size)) < 0) {
@@ -517,8 +460,7 @@ ssize_t st_readv(_st_netfd_t *fd, const struct iovec *iov, int iov_size,
 }
 
 int st_readv_resid(_st_netfd_t *fd, struct iovec **iov, int *iov_size,
-		   st_utime_t timeout)
-{
+                   st_utime_t timeout) {
   ssize_t n;
 
   while (*iov_size > 0) {
@@ -528,24 +470,24 @@ int st_readv_resid(_st_netfd_t *fd, struct iovec **iov, int *iov_size,
       n = readv(fd->osfd, *iov, *iov_size);
     if (n < 0) {
       if (errno == EINTR)
-	continue;
+        continue;
       if (!_IO_NOT_READY_ERROR)
-	return -1;
+        return -1;
     } else if (n == 0)
       break;
     else {
-      while ((size_t) n >= (*iov)->iov_len) {
-	n -= (*iov)->iov_len;
-	(*iov)->iov_base = (char *) (*iov)->iov_base + (*iov)->iov_len;
-	(*iov)->iov_len = 0;
-	(*iov)++;
-	(*iov_size)--;
-	if (n == 0)
-	  break;
+      while ((size_t)n >= (*iov)->iov_len) {
+        n -= (*iov)->iov_len;
+        (*iov)->iov_base = (char *)(*iov)->iov_base + (*iov)->iov_len;
+        (*iov)->iov_len = 0;
+        (*iov)++;
+        (*iov_size)--;
+        if (n == 0)
+          break;
       }
       if (*iov_size == 0)
-	break;
-      (*iov)->iov_base = (char *) (*iov)->iov_base + n;
+        break;
+      (*iov)->iov_base = (char *)(*iov)->iov_base + n;
       (*iov)->iov_len -= n;
     }
     /* Wait until the socket becomes readable */
@@ -556,23 +498,19 @@ int st_readv_resid(_st_netfd_t *fd, struct iovec **iov, int *iov_size,
   return 0;
 }
 
-
 ssize_t st_read_fully(_st_netfd_t *fd, void *buf, size_t nbyte,
-		      st_utime_t timeout)
-{
+                      st_utime_t timeout) {
   size_t resid = nbyte;
-  return st_read_resid(fd, buf, &resid, timeout) == 0 ?
-    (ssize_t) (nbyte - resid) : -1;
+  return st_read_resid(fd, buf, &resid, timeout) == 0 ? (ssize_t)(nbyte - resid)
+                                                      : -1;
 }
 
-
 int st_write_resid(_st_netfd_t *fd, const void *buf, size_t *resid,
-		   st_utime_t timeout)
-{
+                   st_utime_t timeout) {
   struct iovec iov, *riov;
   int riov_size, rv;
 
-  iov.iov_base = (void *) buf;	    /* we promise not to modify buf */
+  iov.iov_base = (void *)buf; /* we promise not to modify buf */
   iov.iov_len = *resid;
   riov = &iov;
   riov_size = 1;
@@ -581,19 +519,16 @@ int st_write_resid(_st_netfd_t *fd, const void *buf, size_t *resid,
   return rv;
 }
 
-
 ssize_t st_write(_st_netfd_t *fd, const void *buf, size_t nbyte,
-		 st_utime_t timeout)
-{
+                 st_utime_t timeout) {
   size_t resid = nbyte;
-  return st_write_resid(fd, buf, &resid, timeout) == 0 ?
-    (ssize_t) (nbyte - resid) : -1;
+  return st_write_resid(fd, buf, &resid, timeout) == 0
+             ? (ssize_t)(nbyte - resid)
+             : -1;
 }
 
-
 ssize_t st_writev(_st_netfd_t *fd, const struct iovec *iov, int iov_size,
-		  st_utime_t timeout)
-{
+                  st_utime_t timeout) {
   ssize_t n, rv;
   size_t nleft, nbyte;
   int index, iov_cnt;
@@ -607,40 +542,40 @@ ssize_t st_writev(_st_netfd_t *fd, const struct iovec *iov, int iov_size,
 
   rv = (ssize_t)nbyte;
   nleft = nbyte;
-  tmp_iov = (struct iovec *) iov;	/* we promise not to modify iov */
+  tmp_iov = (struct iovec *)iov; /* we promise not to modify iov */
   iov_cnt = iov_size;
 
   while (nleft > 0) {
     if (iov_cnt == 1) {
-      if (st_write(fd, tmp_iov[0].iov_base, nleft, timeout) != (ssize_t) nleft)
-	rv = -1;
+      if (st_write(fd, tmp_iov[0].iov_base, nleft, timeout) != (ssize_t)nleft)
+        rv = -1;
       break;
     }
     if ((n = writev(fd->osfd, tmp_iov, iov_cnt)) < 0) {
       if (errno == EINTR)
-	continue;
+        continue;
       if (!_IO_NOT_READY_ERROR) {
-	rv = -1;
-	break;
+        rv = -1;
+        break;
       }
     } else {
-      if ((size_t) n == nleft)
-	break;
+      if ((size_t)n == nleft)
+        break;
       nleft -= n;
       /* Find the next unwritten vector */
       n = (ssize_t)(nbyte - nleft);
-      for (index = 0; (size_t) n >= iov[index].iov_len; index++)
-	n -= iov[index].iov_len;
+      for (index = 0; (size_t)n >= iov[index].iov_len; index++)
+        n -= iov[index].iov_len;
 
       if (tmp_iov == iov) {
-	/* Must copy iov's around */
-	if (iov_size - index <= _LOCAL_MAXIOV) {
-	  tmp_iov = local_iov;
-	} else {
-	  tmp_iov = calloc(1, (iov_size - index) * sizeof(struct iovec));
-	  if (tmp_iov == NULL)
-	    return -1;
-	}
+        /* Must copy iov's around */
+        if (iov_size - index <= _LOCAL_MAXIOV) {
+          tmp_iov = local_iov;
+        } else {
+          tmp_iov = calloc(1, (iov_size - index) * sizeof(struct iovec));
+          if (tmp_iov == NULL)
+            return -1;
+        }
       }
 
       /* Fill in the first partial read */
@@ -649,17 +584,16 @@ ssize_t st_writev(_st_netfd_t *fd, const struct iovec *iov, int iov_size,
       index++;
       /* Copy the remaining vectors */
       for (iov_cnt = 1; index < iov_size; iov_cnt++, index++) {
-	tmp_iov[iov_cnt].iov_base = iov[index].iov_base;
-	tmp_iov[iov_cnt].iov_len = iov[index].iov_len;
+        tmp_iov[iov_cnt].iov_base = iov[index].iov_base;
+        tmp_iov[iov_cnt].iov_len = iov[index].iov_len;
       }
     }
     /* Wait until the socket becomes writable */
- 
-   if (st_netfd_poll(fd, POLLOUT, timeout) < 0) {
+
+    if (st_netfd_poll(fd, POLLOUT, timeout) < 0) {
       rv = -1;
       break;
     }
-
   }
 
   if (tmp_iov != iov && tmp_iov != local_iov)
@@ -668,10 +602,8 @@ ssize_t st_writev(_st_netfd_t *fd, const struct iovec *iov, int iov_size,
   return rv;
 }
 
-
 int st_writev_resid(_st_netfd_t *fd, struct iovec **iov, int *iov_size,
-		    st_utime_t timeout)
-{
+                    st_utime_t timeout) {
   ssize_t n;
 
   while (*iov_size > 0) {
@@ -681,22 +613,22 @@ int st_writev_resid(_st_netfd_t *fd, struct iovec **iov, int *iov_size,
       n = writev(fd->osfd, *iov, *iov_size);
     if (n < 0) {
       if (errno == EINTR)
-	continue;
+        continue;
       if (!_IO_NOT_READY_ERROR)
-	return -1;
+        return -1;
     } else {
-      while ((size_t) n >= (*iov)->iov_len) {
-	n -= (*iov)->iov_len;
-	(*iov)->iov_base = (char *) (*iov)->iov_base + (*iov)->iov_len;
-	(*iov)->iov_len = 0;
-	(*iov)++;
-	(*iov_size)--;
-	if (n == 0)
-	  break;
+      while ((size_t)n >= (*iov)->iov_len) {
+        n -= (*iov)->iov_len;
+        (*iov)->iov_base = (char *)(*iov)->iov_base + (*iov)->iov_len;
+        (*iov)->iov_len = 0;
+        (*iov)++;
+        (*iov_size)--;
+        if (n == 0)
+          break;
       }
       if (*iov_size == 0)
-	break;
-      (*iov)->iov_base = (char *) (*iov)->iov_base + n;
+        break;
+      (*iov)->iov_base = (char *)(*iov)->iov_base + n;
       (*iov)->iov_len -= n;
     }
     /* Wait until the socket becomes writable */
@@ -707,17 +639,15 @@ int st_writev_resid(_st_netfd_t *fd, struct iovec **iov, int *iov_size,
   return 0;
 }
 
-
 /*
  * Simple I/O functions for UDP.
  */
 int st_recvfrom(_st_netfd_t *fd, void *buf, int len, struct sockaddr *from,
-		int *fromlen, st_utime_t timeout)
-{
+                int *fromlen, st_utime_t timeout) {
   int n;
 
-  while ((n = recvfrom(fd->osfd, buf, len, 0, from, (socklen_t *)fromlen))
-	 < 0) {
+  while ((n = recvfrom(fd->osfd, buf, len, 0, from, (socklen_t *)fromlen)) <
+         0) {
     if (errno == EINTR)
       continue;
     if (!_IO_NOT_READY_ERROR)
@@ -730,10 +660,8 @@ int st_recvfrom(_st_netfd_t *fd, void *buf, int len, struct sockaddr *from,
   return n;
 }
 
-
 int st_sendto(_st_netfd_t *fd, const void *msg, int len,
-	      const struct sockaddr *to, int tolen, st_utime_t timeout)
-{
+              const struct sockaddr *to, int tolen, st_utime_t timeout) {
   int n;
 
   while ((n = sendto(fd->osfd, msg, len, 0, to, tolen)) < 0) {
@@ -749,10 +677,8 @@ int st_sendto(_st_netfd_t *fd, const void *msg, int len,
   return n;
 }
 
-
 int st_recvmsg(_st_netfd_t *fd, struct msghdr *msg, int flags,
-	       st_utime_t timeout)
-{
+               st_utime_t timeout) {
   int n;
 
   while ((n = recvmsg(fd->osfd, msg, flags)) < 0) {
@@ -767,11 +693,15 @@ int st_recvmsg(_st_netfd_t *fd, struct msghdr *msg, int flags,
 
   return n;
 }
-
-
+/**
+ *  如果正常的 socket wite 接口发送指定数据
+ *  做法一直发送数据，知道能发送出去。（相同）
+ *  如果超时 就返回给调用发。（相同）
+ * @timeout:超时处理 
+ * 超时判断 这个阻塞业务，阻塞放弃
+ */
 int st_sendmsg(_st_netfd_t *fd, const struct msghdr *msg, int flags,
-	       st_utime_t timeout)
-{
+               st_utime_t timeout) {
   int n;
 
   while ((n = sendmsg(fd->osfd, msg, flags)) < 0) {
@@ -779,21 +709,21 @@ int st_sendmsg(_st_netfd_t *fd, const struct msghdr *msg, int flags,
       continue;
     if (!_IO_NOT_READY_ERROR)
       return -1;
+    // st函数都是以异步接口+ st_netfd_poll来实现的
+    // 在st_netfd_poll以内，会去调用st_poll，
+    //而st_poll本质上会调用并且切换线程。
     /* Wait until the socket becomes writable */
     if (st_netfd_poll(fd, POLLOUT, timeout) < 0)
       return -1;
   }
 
-  return n;
+  return n; // ok
 }
-
-
 
 /*
  * To open FIFOs or other special files.
  */
-_st_netfd_t *st_open(const char *path, int oflags, mode_t mode)
-{
+_st_netfd_t *st_open(const char *path, int oflags, mode_t mode) {
   int osfd, err;
   _st_netfd_t *newfd;
 
@@ -811,4 +741,3 @@ _st_netfd_t *st_open(const char *path, int oflags, mode_t mode)
 
   return newfd;
 }
-

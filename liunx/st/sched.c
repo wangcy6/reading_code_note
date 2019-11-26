@@ -1,30 +1,30 @@
-/* 
+/*
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
  * the License at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the License is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
- * 
+ *
  * The Original Code is the Netscape Portable Runtime library.
- * 
+ *
  * The Initial Developer of the Original Code is Netscape
- * Communications Corporation.  Portions created by Netscape are 
+ * Communications Corporation.  Portions created by Netscape are
  * Copyright (C) 1994-2000 Netscape Communications Corporation.  All
  * Rights Reserved.
- * 
+ *
  * Contributor(s):  Silicon Graphics, Inc.
- * 
+ *
  * Portions created by SGI are Copyright (C) 2000-2001 Silicon
  * Graphics, Inc.  All Rights Reserved.
- * 
+ *
  * Alternatively, the contents of this file may be used under the
  * terms of the GNU General Public License Version 2 or later (the
- * "GPL"), in which case the provisions of the GPL are applicable 
- * instead of those above.  If you wish to allow use of your 
+ * "GPL"), in which case the provisions of the GPL are applicable
+ * instead of those above.  If you wish to allow use of your
  * version of this file only under the terms of the GPL and not to
  * allow others to use your version of this file under the MPL,
  * indicate your decision by deleting the provisions above and
@@ -47,18 +47,15 @@
 #include <errno.h>
 #include "common.h"
 
-
 /* Global data */
-_st_vp_t _st_this_vp;           /* This VP */
-_st_thread_t *_st_this_thread;  /* Current thread */
-int _st_active_count = 0;       /* Active thread count */
+_st_vp_t _st_this_vp;          /* This VP */
+_st_thread_t *_st_this_thread; /* Current thread */
+int _st_active_count = 0;      /* Active thread count loop标记 */
 
-time_t _st_curr_time = 0;       /* Current time as returned by time(2) */
-st_utime_t _st_last_tset;       /* Last time it was fetched */
+time_t _st_curr_time = 0; /* Current time as returned by time(2) */
+st_utime_t _st_last_tset; /* Last time it was fetched */
 
-
-int st_poll(struct pollfd *pds, int npds, st_utime_t timeout)
-{
+int st_poll(struct pollfd *pds, int npds, st_utime_t timeout) {
   struct pollfd *pd;
   struct pollfd *epd = pds + npds;
   _st_pollq_t pq;
@@ -72,11 +69,10 @@ int st_poll(struct pollfd *pds, int npds, st_utime_t timeout)
     return -1;
   }
 
-  if ((*_st_eventsys->pollset_add)(pds, npds) < 0)
-{
+  if ((*_st_eventsys->pollset_add)(pds, npds) < 0) {
     printf("**************point 3 \n");
     return -1;
-}
+  }
   pq.pds = pds;
   pq.npds = npds;
   pq.thread = me;
@@ -97,7 +93,7 @@ int st_poll(struct pollfd *pds, int npds, st_utime_t timeout)
     /* Count the number of ready descriptors */
     for (pd = pds; pd < epd; pd++) {
       if (pd->revents)
-	n++;
+        n++;
     }
   }
 
@@ -111,9 +107,7 @@ int st_poll(struct pollfd *pds, int npds, st_utime_t timeout)
   return n;
 }
 
-
-void _st_vp_schedule(void)
-{
+void _st_vp_schedule(void) {
   _st_thread_t *thread;
 
   if (_ST_RUNQ.next != &_ST_RUNQ) {
@@ -131,12 +125,22 @@ void _st_vp_schedule(void)
   _ST_RESTORE_CONTEXT(thread);
 }
 
-
 /*
  * Initialize this Virtual Processor
+ * 这段函数一共做了3事情，
+ * 1 创建了一个idle_thread, 
+ * 2 初始化了_ST_RUNQ、_ST_IOQ、_ST_ZOMBIE三个队列，
+ * 3
+把当前调用者初始化成原始函数（通常st_init会在main里面调用,所以这个原始的thread相当于是主线程）。
+ *  idle_thread函数，其实就是整个IO和定时器相关的本体函数了。
+ * st会在每一次_ST_RUNQ运行完成后，调用idle_thread来获取可读写的io和定时器。
+ * 这个我们后续再说。
+作者：网易云信
+链接：https://juejin.im/post/5bdafa1c5188257f497ecf23
+来源：掘金
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
  */
-int st_init(void)
-{
+int st_init(void) {
   _st_thread_t *thread;
 
   if (_st_active_count) {
@@ -168,8 +172,7 @@ int st_init(void)
   /*
    * Create idle thread
    */
-  _st_this_vp.idle_thread = st_thread_create(_st_idle_thread_start,
-					     NULL, 0, 0);
+  _st_this_vp.idle_thread = st_thread_create(_st_idle_thread_start, NULL, 0, 0);
   if (!_st_this_vp.idle_thread)
     return -1;
   _st_this_vp.idle_thread->flags = _ST_FL_IDLE_THREAD;
@@ -179,11 +182,11 @@ int st_init(void)
   /*
    * Initialize primordial thread
    */
-  thread = (_st_thread_t *) calloc(1, sizeof(_st_thread_t) +
-				   (ST_KEYS_MAX * sizeof(void *)));
+  thread = (_st_thread_t *)calloc(1, sizeof(_st_thread_t) +
+                                         (ST_KEYS_MAX * sizeof(void *)));
   if (!thread)
     return -1;
-  thread->private_data = (void **) (thread + 1);
+  thread->private_data = (void **)(thread + 1);
   thread->state = _ST_ST_RUNNING;
   thread->flags = _ST_FL_PRIMORDIAL;
   _ST_SET_CURRENT_THREAD(thread);
@@ -195,30 +198,25 @@ int st_init(void)
   return 0;
 }
 
-
 #ifdef ST_SWITCH_CB
-st_switch_cb_t st_set_switch_in_cb(st_switch_cb_t cb)
-{
+st_switch_cb_t st_set_switch_in_cb(st_switch_cb_t cb) {
   st_switch_cb_t ocb = _st_this_vp.switch_in_cb;
   _st_this_vp.switch_in_cb = cb;
   return ocb;
 }
 
-st_switch_cb_t st_set_switch_out_cb(st_switch_cb_t cb)
-{
+st_switch_cb_t st_set_switch_out_cb(st_switch_cb_t cb) {
   st_switch_cb_t ocb = _st_this_vp.switch_out_cb;
   _st_this_vp.switch_out_cb = cb;
   return ocb;
 }
 #endif
 
-
 /*
  * Start function for the idle thread
  */
 /* ARGSUSED */
-void *_st_idle_thread_start(void *arg)
-{
+void *_st_idle_thread_start(void *arg) {
   _st_thread_t *me = _ST_CURRENT_THREAD();
 
   while (_st_active_count > 0) {
@@ -239,7 +237,6 @@ void *_st_idle_thread_start(void *arg)
   return NULL;
 }
 
-
 void st_thread_exit(void *retval)
 
 {
@@ -248,9 +245,9 @@ void st_thread_exit(void *retval)
 
   thread->retval = retval;
   _st_thread_cleanup(thread);
-  _st_active_count--;
-  printf("point 1 \n"); 
- if (thread->term) {
+  _st_active_count--; //正在运行线程数量
+  printf("point 1 \n");
+  if (thread->term) {
     /* Put thread on the zombie queue */
     thread->state = _ST_ST_ZOMBIE;
     _ST_ADD_ZOMBIEQ(thread);
@@ -269,21 +266,18 @@ void st_thread_exit(void *retval)
 #ifdef DEBUG
   _ST_DEL_THREADQ(thread);
 #endif
- printf("point 3 \n");
-  if (!(thread->flags & _ST_FL_PRIMORDIAL))
-  {
-	printf("free %d mem \n",thread->stack);
-	_st_stack_free(thread->stack);
+  printf("point 3 \n");
+  if (!(thread->flags & _ST_FL_PRIMORDIAL)) {
+    printf("free %d mem \n", thread->stack);
+    _st_stack_free(thread->stack);
   }
- printf("thread flag %d  \n",thread->flags);
+  printf("thread flag %d  \n", thread->flags);
   /* Find another thread to run */
   _ST_SWITCH_CONTEXT(thread);
   /* Not going to land here */
 }
 
-
-int st_thread_join(_st_thread_t *thread, void **retvalp)
-{
+int st_thread_join(_st_thread_t *thread, void **retvalp) {
   _st_cond_t *term = thread->term;
 
   /* Can't join a non-joinable thread */
@@ -321,9 +315,7 @@ int st_thread_join(_st_thread_t *thread, void **retvalp)
   return 0;
 }
 
-
-void _st_thread_main(void)
-{
+void _st_thread_main(void) {
   _st_thread_t *thread = _ST_CURRENT_THREAD();
 
   /*
@@ -339,7 +331,6 @@ void _st_thread_main(void)
   /* All done, time to go away */
   st_thread_exit(thread->retval);
 }
-
 
 /*
  * Insert "thread" into the timeout heap, in the position
@@ -380,7 +371,6 @@ static _st_thread_t **heap_insert(_st_thread_t *thread) {
   thread->left = thread->right = NULL;
   return p;
 }
-
 
 /*
  * Delete "thread" from the timeout heap.
@@ -424,61 +414,55 @@ static void heap_delete(_st_thread_t *thread) {
       _st_thread_t *y; /* The younger child */
       int index_tmp;
       if (t->left == NULL)
-	break;
+        break;
       else if (t->right == NULL)
-	y = t->left;
+        y = t->left;
       else if (t->left->due < t->right->due)
-	y = t->left;
+        y = t->left;
       else
-	y = t->right;
+        y = t->right;
       if (t->due > y->due) {
-	_st_thread_t *tl = y->left;
-	_st_thread_t *tr = y->right;
-	*p = y;
-	if (y == t->left) {
-	  y->left = t;
-	  y->right = t->right;
-	  p = &y->left;
-	} else {
-	  y->left = t->left;
-	  y->right = t;
-	  p = &y->right;
-	}
-	t->left = tl;
-	t->right = tr;
-	index_tmp = t->heap_index;
-	t->heap_index = y->heap_index;
-	y->heap_index = index_tmp;
+        _st_thread_t *tl = y->left;
+        _st_thread_t *tr = y->right;
+        *p = y;
+        if (y == t->left) {
+          y->left = t;
+          y->right = t->right;
+          p = &y->left;
+        } else {
+          y->left = t->left;
+          y->right = t;
+          p = &y->right;
+        }
+        t->left = tl;
+        t->right = tr;
+        index_tmp = t->heap_index;
+        t->heap_index = y->heap_index;
+        y->heap_index = index_tmp;
       } else {
-	break;
+        break;
       }
     }
   }
   thread->left = thread->right = NULL;
 }
 
-
-void _st_add_sleep_q(_st_thread_t *thread, st_utime_t timeout)
-{
+void _st_add_sleep_q(_st_thread_t *thread, st_utime_t timeout) {
   thread->due = _ST_LAST_CLOCK + timeout;
   thread->flags |= _ST_FL_ON_SLEEPQ;
   thread->heap_index = ++_ST_SLEEPQ_SIZE;
   heap_insert(thread);
 }
 
-
-void _st_del_sleep_q(_st_thread_t *thread)
-{
+void _st_del_sleep_q(_st_thread_t *thread) {
   heap_delete(thread);
   thread->flags &= ~_ST_FL_ON_SLEEPQ;
 }
 
-
-void _st_vp_check_clock(void)
-{
+void _st_vp_check_clock(void) {
   _st_thread_t *thread;
   st_utime_t elapsed, now;
- 
+
   now = st_utime();
   elapsed = now - _ST_LAST_CLOCK;
   _ST_LAST_CLOCK = now;
@@ -506,9 +490,7 @@ void _st_vp_check_clock(void)
   }
 }
 
-
-void st_thread_interrupt(_st_thread_t *thread)
-{
+void st_thread_interrupt(_st_thread_t *thread) {
   /* If thread is already dead */
   if (thread->state == _ST_ST_ZOMBIE)
     return;
@@ -526,10 +508,8 @@ void st_thread_interrupt(_st_thread_t *thread)
   _ST_ADD_RUNQ(thread);
 }
 
-
 _st_thread_t *st_thread_create(void *(*start)(void *arg), void *arg,
-			       int joinable, int stk_size)
-{
+                               int joinable, int stk_size) {
   _st_thread_t *thread;
   _st_stack_t *stack;
   void **ptds;
@@ -543,13 +523,13 @@ _st_thread_t *st_thread_create(void *(*start)(void *arg), void *arg,
     stk_size = ST_DEFAULT_STACK_SIZE;
 
   stk_size = ((stk_size + _ST_PAGE_SIZE - 1) / _ST_PAGE_SIZE) * _ST_PAGE_SIZE;
-  printf("alloct %d mem \n",stk_size);
+  printf("alloct %d mem \n", stk_size);
   stack = _st_stack_new(stk_size);
   if (!stack)
     return NULL;
 
-  /* Allocate thread object and per-thread data off the stack */
-#if defined (MD_STACK_GROWS_DOWN)
+    /* Allocate thread object and per-thread data off the stack */
+#if defined(MD_STACK_GROWS_DOWN)
   sp = stack->stk_top;
 #ifdef __ia64__
   /*
@@ -567,19 +547,19 @@ _st_thread_t *st_thread_create(void *(*start)(void *arg), void *arg,
   stack->bsp = bsp + _ST_STACK_PAD_SIZE;
 #endif
   sp = sp - (ST_KEYS_MAX * sizeof(void *));
-  ptds = (void **) sp;
+  ptds = (void **)sp;
   sp = sp - sizeof(_st_thread_t);
-  thread = (_st_thread_t *) sp;
+  thread = (_st_thread_t *)sp;
 
   /* Make stack 64-byte aligned */
   if ((unsigned long)sp & 0x3f)
     sp = sp - ((unsigned long)sp & 0x3f);
   stack->sp = sp - _ST_STACK_PAD_SIZE;
-#elif defined (MD_STACK_GROWS_UP)
+#elif defined(MD_STACK_GROWS_UP)
   sp = stack->stk_bottom;
-  thread = (_st_thread_t *) sp;
+  thread = (_st_thread_t *)sp;
   sp = sp + sizeof(_st_thread_t);
-  ptds = (void **) sp;
+  ptds = (void **)sp;
   sp = sp + (ST_KEYS_MAX * sizeof(void *));
 
   /* Make stack 64-byte aligned */
@@ -625,25 +605,16 @@ _st_thread_t *st_thread_create(void *(*start)(void *arg), void *arg,
   return thread;
 }
 
-
-_st_thread_t *st_thread_self(void)
-{
-  return _ST_CURRENT_THREAD();
-}
-
+_st_thread_t *st_thread_self(void) { return _ST_CURRENT_THREAD(); }
 
 #ifdef DEBUG
 /* ARGSUSED */
-void _st_show_thread_stack(_st_thread_t *thread, const char *messg)
-{
-
-}
+void _st_show_thread_stack(_st_thread_t *thread, const char *messg) {}
 
 /* To be set from debugger */
 int _st_iterate_threads_flag = 0;
 
-void _st_iterate_threads(void)
-{
+void _st_iterate_threads(void) {
   static _st_thread_t *thread = NULL;
   static jmp_buf orig_jb, save_jb;
   _st_clist_t *q;
@@ -681,4 +652,3 @@ void _st_iterate_threads(void)
   MD_LONGJMP(thread->context, 1);
 }
 #endif /* DEBUG */
-
