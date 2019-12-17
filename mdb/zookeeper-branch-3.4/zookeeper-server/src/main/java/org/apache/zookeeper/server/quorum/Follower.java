@@ -55,7 +55,7 @@ public class Follower extends Learner{
 
     /**
      * the main method called by the follower to follow the leader
-     *
+     * 在Follower节点的主要处理流程中：
      * @throws InterruptedException
      */
     void followLeader() throws InterruptedException {

@@ -744,25 +744,34 @@ void slab_stats_aggregate(struct thread_stats *stats, struct slab_stats *out) {
     }
 }
 
-/*
+/*http://luodw.cc/2016/01/11/memcache-startup/
  * Initializes the thread subsystem, creating various worker threads.
  *
  * nthreads  Number of worker event handler threads to spawn
  */
 /******************************************************************
   * 函数功能:  线程初始化
+  * 先介绍下memcache接收到一个客户请求之后，是如何传递给子线程的。
+
+1 主线程主要是监听服务器端套接字，等待客户端的连接到来，子线程已经完成初始化，并且处于loop中，监听的套接字有与主线程通信管道的读端。
+2 假如此时来了一个客户端，主线程将选择一个空闲的子线程，并将这个fd封装成一个CQ_ITEM，然后将这个CQ_ITEM插入这个子线程的CQ_ITEM链表，最后给这个子线程的管道写端写入一个字符'c'；
+3 子线程在一次轮询中，得知管道可读，于是读取管道，如果读取的是字符'c'，则为这个客户端新建一个conn,并将这个客户端的套接字加入libevent事件循环中。
+ 之后，
+ 这个客户端就由这个子线程负责通信了。 在memcache.c文件main函数中，通过调用memcached_thread_init函数来初始化工作线程
   ******************************************************************/
 void memcached_thread_init(int nthreads, void *arg) {
     int         i;
     int         power;
-
+    
+    /* 对多线程中使用到的锁和条件变量初始化  */
     for (i = 0; i < POWER_LARGEST; i++) {
-        pthread_mutex_init(&lru_locks[i], NULL); 
+        pthread_mutex_init(&lru_locks[i], NULL);  //lru链表锁
     }
-    pthread_mutex_init(&worker_hang_lock, NULL);
 
-    pthread_mutex_init(&init_lock, NULL);
-    pthread_cond_init(&init_cond, NULL);
+    pthread_mutex_init(&worker_hang_lock, NULL);//;//可以让工作线程挂起
+
+    pthread_mutex_init(&init_lock, NULL);//工作线程初始化锁
+    pthread_cond_init(&init_cond, NULL);//初始化条件变量，用于主线程等待子线程完成初始化
 
     // 申请一个CQ_ITEM 时需要加锁
     pthread_mutex_init(&cqi_freelist_lock, NULL);

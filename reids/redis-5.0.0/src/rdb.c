@@ -1066,12 +1066,20 @@ ssize_t rdbSaveAuxFieldStrInt(rio *rdb, char *key, long long val) {
     int vlen = ll2string(buf,sizeof(buf),val);
     return rdbSaveAuxField(rdb,key,strlen(key),buf,vlen);
 }
-
+/**
+ * $shell> /src/redis-check-rdb  dump.rdb      
+[offset 0] Checking RDB file dump.rdb
+[offset 26] AUX FIELD redis-ver = '4.0.1'[offset 133] AUX FIELD repl-id = '44873f839ae3a57572920cdaf70399672b842691'
+[offset 148] AUX FIELD repl-offset = '0'[offset 167] \o/ RDB looks OK! \o/
+[info] 1 keys read
+[info] 0 expires
+[info] 0 already expired
+ */
 /* Save a few default AUX fields with information about the RDB generated. */
 int rdbSaveInfoAuxFields(rio *rdb, int flags, rdbSaveInfo *rsi) {
     int redis_bits = (sizeof(void*) == 8) ? 64 : 32;
     int aof_preamble = (flags & RDB_SAVE_AOF_PREAMBLE) != 0;
-
+ //把实例的repl-id和repl-offset作为辅助字段，存储在RDB中
     /* Add a few fields about the state when the RDB was created. */
     if (rdbSaveAuxFieldStrStr(rdb,"redis-ver",REDIS_VERSION) == -1) return -1;
     if (rdbSaveAuxFieldStrInt(rdb,"redis-bits",redis_bits) == -1) return -1;
@@ -1087,7 +1095,12 @@ int rdbSaveInfoAuxFields(rio *rdb, int flags, rdbSaveInfo *rsi) {
         if (rdbSaveAuxFieldStrInt(rdb,"repl-offset",server.master_repl_offset)
             == -1) return -1;
     }
+   
+   
+   
     if (rdbSaveAuxFieldStrInt(rdb,"aof-preamble",aof_preamble) == -1) return -1;
+   
+   
     return 1;
 }
 

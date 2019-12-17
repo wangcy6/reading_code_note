@@ -41,8 +41,14 @@ ZAB协议主要包括消息广播和崩溃恢复两个过程，进一步可以�
 - NEWLEADER：准Leader进程确定自己的领导地位，并发送NEWLEADER消息给各进程
 - ACK-LD：Follower进程反馈Leader进程发来的NEWLEADER消息
 - COMMIT-LD：要求Follower进程提交相应的历史Proposal
+
+
 - PROPOSAL：Leader进程生成一个针对客户端事务请求的Proposal
+
+
 - ACK：Follower进程反馈Leader进程发来的PROPOSAL消息
+
+
 - COMMIT：Leader发送COMMIT消息，要求所有进程提交事务PROPOSE
 
 ### Phase 0: Leader election

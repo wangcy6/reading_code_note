@@ -2534,10 +2534,11 @@ static void reset_cmd_handler(conn *c) {
         item_remove(c->item);
         c->item = NULL;
     }
-    conn_shrink(c);
+    conn_shrink(c);//判断这个客户端连接缓冲区是否过大，是，则要缩小缓冲区
     if (c->rbytes > 0) {
         conn_set_state(c, conn_parse_cmd);
     } else {
+         //因为一开始时，没有读取客户端数据，所以c->rbytes为0
         conn_set_state(c, conn_waiting);
     }
 }
@@ -4622,7 +4623,7 @@ static enum try_read_result try_read_network(conn *c) {
             c->thread->stats.bytes_read += res;
             pthread_mutex_unlock(&c->thread->stats.mutex);
             gotdata = READ_DATA_RECEIVED;
-            c->rbytes += res;
+            c->rbytes += res;//已分配使用的内存+res
             if (res == avail) {
                 continue;
             } else {
@@ -4630,8 +4631,8 @@ static enum try_read_result try_read_network(conn *c) {
             }
         }
         if (res == 0) {
-            return READ_ERROR;
-        }
+            return READ_ERROR;//表明客户端断开连接，所以服务器将关闭这个客户端连接
+        } 
         if (res == -1) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
                 break;
@@ -4641,7 +4642,8 @@ static enum try_read_result try_read_network(conn *c) {
     }
     return gotdata;
 }
-
+//Memcached源码分析之请求处理（状态机）
+//http://calixwu.com/2014/11/memcached-yuanmafenxi-qingqiuchuli-zhuangtaiji.html
 static bool update_event(conn *c, const int new_flags) {
     assert(c != NULL);
 
@@ -4940,12 +4942,13 @@ static void drive_machine(conn *c) {
                 conn_set_state(c, conn_closing);
                 break;
             }
-
-            conn_set_state(c, conn_read);
+           //将这个客户端更新为可读事件
+            conn_set_state(c, conn_read);///状态更新为conn_read
             stop = true;
-            break;
+            break;//退出状态机 http://luodw.cc/2016/01/12/memcache-drive-machine/
 
         case conn_read:
+
             res = IS_UDP(c->transport) ? try_read_udp(c) : try_read_network(c);
 
             switch (res) {
