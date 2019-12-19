@@ -18,6 +18,7 @@
         "string": "cpp",
         "iterator": "cpp",
         "xstddef": "cpp",
-        "xfunctional": "cpp"
+        "xfunctional": "cpp",
+        "xmemory": "cpp"
     }
 }

@@ -43,7 +43,10 @@
 
 /* Unused arguments generate annoying warnings... */
 #define DICT_NOTUSED(V) ((void) V)
-
+//在64位系统中，一个dictEntry对象占24字节（key/val/next各占8字节）。
+//edis中bucket数组的大小计算规则如下：大于dictEntry的、最小的2^n；
+//例如，如果有1000个dictEntry，那么bucket大小为1024；
+//如果有1500个dictEntry，则bucket大小为2048。
 typedef struct dictEntry {
     void *key;
     union {

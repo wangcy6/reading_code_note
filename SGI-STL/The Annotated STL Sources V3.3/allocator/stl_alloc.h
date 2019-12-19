@@ -239,10 +239,18 @@ public:
 
   static void* allocate(size_t __n)
   {
-    char* __result = (char*)_Alloc::allocate(__n + (int) _S_extra);
+    char* __result = (char*)_Alloc::allocate(__n + (int) _S_extra); // 多申请8字节
     *(size_t*)__result = __n;
-    return __result + (int) _S_extra;
-  }
+    return __result + (int) _S_extra;  
+//      ____ The allocated block ____
+// /                             \
+// +--------+--------------------+
+// | Header | Your data area ... |
+// +--------+--------------------+
+//           ^
+//           |
+//           +-- The address you are given
+//   }
 
   static void deallocate(void* __p, size_t __n)
   {

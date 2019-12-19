@@ -193,7 +193,13 @@ void *st_netfd_getspecific(_st_netfd_t *fd) { return (fd->private_data); }
 int st_netfd_poll(_st_netfd_t *fd, int how, st_utime_t timeout) {
   struct pollfd pd;
   int n;
-
+  /**
+   * struct pollfd{
+　int fd； // 文件描述符
+　short event；// 请求的事件
+　short revent；// 返回的事件
+}
+   **/
   pd.fd = fd->osfd;
   pd.events = (short)how;
   pd.revents = 0;
@@ -418,9 +424,15 @@ ssize_t st_read(_st_netfd_t *fd, void *buf, size_t nbyte, st_utime_t timeout) {
   while ((n = read(fd->osfd, buf, nbyte)) < 0) {
     if (errno == EINTR)
       continue;
+    //#define     EINTR  4  /* Interrupted system call */
+    // https://mozillazg.com/2013/10/socket-errno-list.html
     if (!_IO_NOT_READY_ERROR)
-      return -1;
+      return -1; //其他异常错误。连接已经失效等，无法继续读取
+    /*#define EAGAIN  11    Try again */
+    /*#define EWOULDBLOCK     EAGAIN   Operation would block */
     /* Wait until the socket becomes readable */
+
+    // https://stackoverflow.com/questions/2876024/linux-is-there-a-read-or-recv-from-socket-with-timeout
     if (st_netfd_poll(fd, POLLIN, timeout) < 0)
       return -1;
   }

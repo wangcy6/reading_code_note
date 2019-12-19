@@ -4,16 +4,16 @@
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
- * are met: 
+ * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. Neither the name of Silicon Graphics, Inc. nor the names of its
  *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission. 
+ *    this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -44,14 +44,12 @@
 #endif
 
 /* Resolution timeout (in microseconds) */
-#define TIMEOUT (2*1000000LL)
+#define TIMEOUT (2 * 1000000LL)
 
 /* External function defined in the res.c file */
 int dns_getaddr(const char *host, struct in_addr *addr, st_utime_t timeout);
 
-
-void *do_resolve(void *host)
-{
+void *do_resolve(void *host) {
   struct in_addr addr;
 
   /* Use dns_getaddr() instead of gethostbyname(3) to get IP address */
@@ -67,14 +65,12 @@ void *do_resolve(void *host)
   return NULL;
 }
 
-
 /*
  * Asynchronous DNS host name resolution. This program creates one
  * ST thread for each host name (specified as command line arguments).
  * All threads do host name resolution concurrently.
  */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   int i;
 
   if (argc < 2) {
@@ -100,4 +96,3 @@ int main(int argc, char *argv[])
   /* NOTREACHED */
   return 1;
 }
-

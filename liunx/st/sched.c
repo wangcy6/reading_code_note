@@ -82,7 +82,7 @@ int st_poll(struct pollfd *pds, int npds, st_utime_t timeout) {
     _ST_ADD_SLEEPQ(me, timeout);
   me->state = _ST_ST_IO_WAIT;
 
-  _ST_SWITCH_CONTEXT(me);
+  _ST_SWITCH_CONTEXT(me); //切换线程
 
   n = 0;
   if (pq.on_ioq) {
@@ -217,13 +217,14 @@ st_switch_cb_t st_set_switch_out_cb(st_switch_cb_t cb) {
  */
 /* ARGSUSED */
 void *_st_idle_thread_start(void *arg) {
-  _st_thread_t *me = _ST_CURRENT_THREAD();
+  _st_thread_t *me = _ST_CURRENT_THREAD(); //
 
   while (_st_active_count > 0) {
     /* Idle vp till I/O is ready or the smallest timeout expired */
     _ST_VP_IDLE();
 
-    /* Check sleep queue for expired threads */
+    /* Check sleep queue for expired threads
+    通过最小堆形式保存超时等待的任务*/
     _st_vp_check_clock();
 
     me->state = _ST_ST_RUNNABLE;
@@ -241,12 +242,15 @@ void st_thread_exit(void *retval)
 
 {
   printf("st_thread_exit enter \n");
-  _st_thread_t *thread = _ST_CURRENT_THREAD();
+  _st_thread_t *thread = _ST_CURRENT_THREAD(); //只有一个线程同时执行
 
   thread->retval = retval;
+  // 释放线程运行期间调用st_thread_setspecific设置的私有key数据
   _st_thread_cleanup(thread);
   _st_active_count--; //正在运行线程数量
   printf("point 1 \n");
+  // 如果创建了term条件变量，需要通知调用st_thread_join()等待该微线程的微线程为该
+  // 微线程“收尸”
   if (thread->term) {
     /* Put thread on the zombie queue */
     thread->state = _ST_ST_ZOMBIE;
@@ -256,12 +260,15 @@ void st_thread_exit(void *retval)
     st_cond_signal(thread->term);
 
     /* Switch context and come back later */
-    _ST_SWITCH_CONTEXT(thread);
+    // 交出控制权，等到为本线程收尸的微线程调用st_thread_join()返回
+    // 后，本微线程才会switch回来，并恢复运行
+    _ST_SWITCH_CONTEXT(thread); //后面的还执行吗？
 
     /* Continue the cleanup */
     st_cond_destroy(thread->term);
     thread->term = NULL;
   }
+
   printf("point 2 \n");
 #ifdef DEBUG
   _ST_DEL_THREADQ(thread);
@@ -269,10 +276,12 @@ void st_thread_exit(void *retval)
   printf("point 3 \n");
   if (!(thread->flags & _ST_FL_PRIMORDIAL)) {
     printf("free %d mem \n", thread->stack);
+    //释放的栈空间会放到空闲链表中
     _st_stack_free(thread->stack);
   }
   printf("thread flag %d  \n", thread->flags);
   /* Find another thread to run */
+  // 交出控制权，并调度下一个runable状态的微线程，微线程生命周期终止
   _ST_SWITCH_CONTEXT(thread);
   /* Not going to land here */
 }
@@ -458,7 +467,7 @@ void _st_del_sleep_q(_st_thread_t *thread) {
   heap_delete(thread);
   thread->flags &= ~_ST_FL_ON_SLEEPQ;
 }
-
+//超时检测
 void _st_vp_check_clock(void) {
   _st_thread_t *thread;
   st_utime_t elapsed, now;
@@ -475,6 +484,20 @@ void _st_vp_check_clock(void) {
   while (_ST_SLEEPQ != NULL) {
     thread = _ST_SLEEPQ;
     ST_ASSERT(thread->flags & _ST_FL_ON_SLEEPQ);
+    /* 检测该线程的超时时间是否已经到达 */
+    // ST 所有的 timeout，都是用同样的机制实现的。包括 sleep，io 的超时，cond 超时等。
+    // 
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    // 没有发生
     if (thread->due > now)
       break;
     _ST_DEL_SLEEPQ(thread);

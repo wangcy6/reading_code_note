@@ -3090,6 +3090,8 @@ void clusterSendMFStart(clusterNode *node) {
 
 /* Vote for the node asking for our vote if there are the conditions. */
 // 在条件满足的情况下，为请求进行故障转移的节点 node 进行投票，支持它进行故障转移
+
+///主节点投票
 void clusterSendFailoverAuthIfNeeded(clusterNode *node, clusterMsg *request) {
 
     // 请求节点的主节点
@@ -3211,6 +3213,15 @@ int clusterGetSlaveRank(void) {
  * 3) Perform the failover informing all the other nodes.
  *    执行故障转移，并通知其他节点
  */
+/*
+* 从节点发起故障转移，开始拉票
+  本函数用于处理从节点进行故障转移的整个流程，
+  包括：判断是否可以发起选举；
+  发起选举；
+  判断选举是否超时；
+  判断自己是否拉到了足够的选票；使自己升级为新的主节点这些所有流程。首先看一下升级流程之前的代码
+  https://www.cnblogs.com/gqtcgq/p/7247042.html
+ */ 
 void clusterHandleSlaveFailover(void) {
     mstime_t data_age;
     mstime_t auth_age = mstime() - server.cluster->failover_auth_time;
@@ -3350,6 +3361,7 @@ void clusterHandleSlaveFailover(void) {
             (unsigned long long) server.cluster->currentEpoch);
 
         // 向其他所有节点发送信息，看它们是否支持由本节点来对下线主节点进行故障转移
+        // 其他的master吗？？
         clusterRequestFailoverAuth();
 
         // 打开标识，表示已发送信息
@@ -3364,7 +3376,8 @@ void clusterHandleSlaveFailover(void) {
                              CLUSTER_TODO_UPDATE_STATE|
                              CLUSTER_TODO_FSYNC_CONFIG);
         return; /* Wait for replies. */
-    }
+    } 
+    //异步发起请求，然后下次轮询等待，failover_auth_sent 标记如果上次处理过，这次就不重复处理了！！！
 
     /* Check if we reached the quorum. */
     // 如果当前节点获得了足够多的投票，那么对下线主节点进行故障转移
@@ -3565,6 +3578,7 @@ void manualFailoverCheckTimeout(void) {
 
 /* This function is called from the cluster cron function in order to go
  * forward with a manual failover state machine. */
+// 手工触发 程序不是自己故障转移吗？？ 
 void clusterHandleManualFailover(void) {
     /* Return ASAP if no manual failover is in progress. */
     if (server.cluster->mf_end == 0) return;
@@ -3583,6 +3597,18 @@ void clusterHandleManualFailover(void) {
             "All master replication stream processed, "
             "manual failover can start.");
     }
+    /**
+     * 手动故障转移 >>>不会造成数据丢失情况
+         Redis集群支持手动故障转移。也就是向从节点发送”CLUSTER  FAILOVER”命令，
+         使其在主节点未下线的情况下，发起故障转移流程，升级为新的主节点，而原来的主节点降级为从节点。
+         为了不丢失数据，向从节点发送”CLUSTER  FAILOVER”命令后，流程如下：
+         a：从节点收到命令后，向主节点发送CLUSTERMSG_TYPE_MFSTART包；
+
+         b：主节点收到该包后，会将其所有客户端置于阻塞状态，也就是在10s的时间内，不再处理客户端发来的命令；并且在其发送的心跳包中，会带有CLUSTERMSG_FLAG0_PAUSED标记；
+
+         c：从节点收到主节点发来的，带CLUSTERMSG_FLAG0_PAUSED标记的心跳包后，从中获取主节点当前的复制偏移量。从节点等到自己的复制偏移量达到该值后，
+         才会开始执行故障转移流程：发起选举、统计选票、赢得选举、升级为主节点并更新配置；
+     **/ 
 }
 
 /* -----------------------------------------------------------------------------
