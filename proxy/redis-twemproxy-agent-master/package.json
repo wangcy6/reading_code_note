@@ -28,7 +28,7 @@
     "async": "~0.2.5",
     "cli": "~0.4.4-2",
     "redis": "~0.8.2", 
-    "js-yaml": "~2.1.0"
+    "js-yaml": "~3.13.1"
   },
   "devDependencies": {
     "jshint": "~1.0.0",
