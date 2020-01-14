@@ -1,0 +1,5 @@
+---- EWOULDBLOCK Matches (4 in 2 files) ----
+clusterLockConfig in cluster.c (src) :         if (errno == EWOULDBLOCK) {
+clusterAcceptHandler in cluster.c (src) :             if (errno != EWOULDBLOCK)
+acceptTcpHandler in networking.c (src) :             if (errno != EWOULDBLOCK)
+acceptUnixHandler in networking.c (src) :             if (errno != EWOULDBLOCK)

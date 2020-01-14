@@ -1,0 +1,9 @@
+---- RWMutex  Matches (8 in 6 files) ----
+export_test.go (go-go1.11\src\runtime) line 359 : type RWMutex struct {
+import in rwmutex.go (go-go1.11\src\runtime) : // A rwmutex is a reader/writer mutual exclusion lock.
+import in rwmutex.go (go-go1.11\src\runtime) : // Like mutex, rwmutex blocks the calling M.
+import in rwmutex.go (go-go1.11\src\runtime) : type rwmutex struct {
+BenchmarkRWMutexUncontended in rwmutex_test.go (go-go1.11\src\runtime) : 	type PaddedRWMutex struct {
+notifyListAdd in sema.go (go-go1.11\src\runtime) : 	// sync.Cond.Wait while holding a RWMutex in read mode.
+struct in sql.go (go-go1.11\src\database\sql) : 	closemu sync.RWMutex // held exclusively during close, for read otherwise.
+trace.go (go-go1.11\src\runtime) line 47 : 	traceEvGoBlockSync       = 25 // goroutine blocks on Mutex/RWMutex [timestamp, stack]
