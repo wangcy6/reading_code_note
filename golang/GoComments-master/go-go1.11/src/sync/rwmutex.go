@@ -45,6 +45,7 @@ func (rw *RWMutex) RLock() {
 		_ = rw.w.state
 		race.Disable()
 	}
+	//如果有wirte 怎么办？【阻塞写，还是正在写】
 	if atomic.AddInt32(&rw.readerCount, 1) < 0 { //读者数量简单+1，如果readerCount为负值，说明有协程持有了写锁，需要等待协程解除写锁后释放信号量解锁
 		// A writer is pending, wait for it.
 		runtime_SemacquireMutex(&rw.readerSem, false)
@@ -84,6 +85,7 @@ func (rw *RWMutex) RUnlock() {
 // Lock locks rw for writing.
 // If the lock is already locked for reading or writing,
 // Lock blocks until the lock is available.
+//https://fivezh.github.io/2019/04/09/sync_mutex_translation/
 func (rw *RWMutex) Lock() {
 	if race.Enabled {
 		_ = rw.w.state
