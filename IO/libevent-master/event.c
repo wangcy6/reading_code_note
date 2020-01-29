@@ -517,8 +517,7 @@ event_init(void)
 	return (base);
 }
 
-struct event_base *
-event_base_new(void)
+struct event_base * event_base_new(void)
 {
 	struct event_base *base = NULL;
 	struct event_config *cfg = event_config_new();
