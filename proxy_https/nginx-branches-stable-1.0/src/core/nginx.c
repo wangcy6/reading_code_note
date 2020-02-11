@@ -469,8 +469,7 @@ ngx_add_inherited_sockets(ngx_cycle_t *cycle)
 }
 
 
-char **
-ngx_set_environment(ngx_cycle_t *cycle, ngx_uint_t *last)
+char ** ngx_set_environment(ngx_cycle_t *cycle, ngx_uint_t *last)
 {
     char             **p, **env;
     ngx_str_t         *var;
@@ -568,8 +567,7 @@ tz_found:
 }
 
 
-ngx_pid_t
-ngx_exec_new_binary(ngx_cycle_t *cycle, char *const *argv)
+ngx_pid_t ngx_exec_new_binary(ngx_cycle_t *cycle, char *const *argv)
 {
     char             **env, *var;
     u_char            *p;

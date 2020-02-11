@@ -197,7 +197,7 @@ ngx_pid_t ngx_spawn_process(ngx_cycle_t *cycle, ngx_spawn_proc_pt proc, void *da
         ngx_close_channel(ngx_processes[s].channel, cycle->log);
         return NGX_INVALID_PID;
 
-    case 0:
+    case 0: //child
         ////设置当前子进程的进程id
         ngx_pid = ngx_getpid();
 
@@ -451,8 +451,7 @@ ngx_signal_handler(int signo)
 }
 
 
-static void
-ngx_process_get_status(void)
+static void ngx_process_get_status(void)
 {
     int              status;
     char            *process;

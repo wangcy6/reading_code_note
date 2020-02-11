@@ -1,0 +1,6 @@
+---- ngx_change_binary Matches (5 in 3 files) ----
+ngx_signal_handler in ngx_process.c (src\os\unix) :             ngx_change_binary = 1;
+ngx_process_cycle.c (src\os\unix) line 52 : sig_atomic_t  ngx_change_binary;
+ngx_master_process_cycle in ngx_process_cycle.c (src\os\unix) :         if (ngx_change_binary) {
+ngx_master_process_cycle in ngx_process_cycle.c (src\os\unix) :             ngx_change_binary = 0;
+ngx_process_cycle.h (src\os\unix) line 58 : extern sig_atomic_t    ngx_change_binary;

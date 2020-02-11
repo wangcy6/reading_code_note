@@ -177,16 +177,17 @@ void ngx_master_process_cycle(ngx_cycle_t *cycle)
 
         ngx_log_debug1(NGX_LOG_DEBUG_EVENT, cycle->log, 0,
                        "wake up, sigio %i", sigio);
-        /**
+        /** 子进程退出
 		 * 回收子进程,这里的回收是针对全局数组 ngx_processes, 
 		 * 操作系统层面的进程回收已经在信号处理函数 ngx_signal_handler() 中完成, 
 		 * 并对ngx_processes 的相应条目中进行了标记
+		 *http://lxr.nginx.org/ident?_i=ngx_reap
 		 */
         if (ngx_reap) {
             ngx_reap = 0;
             ngx_log_debug0(NGX_LOG_DEBUG_EVENT, cycle->log, 0, "reap children");
 
-            live = ngx_reap_children(cycle);
+            live = ngx_reap_children(cycle); //函数判断是否需要重启worker进程
         }
         /* 没有worker进程存活时，master进程才退出*/
         if (!live && (ngx_terminate || ngx_quit)) {
@@ -235,7 +236,7 @@ void ngx_master_process_cycle(ngx_cycle_t *cycle)
        //收到SIGHUP信号，
         if (ngx_reconfigure) {
             ngx_reconfigure = 0;
-              //如果是平滑升级程序，则重启worker进程，不需要重新初始化配置
+              //如果是平滑升级程序，则重启原来的old的worker进程，不需要重新初始化配置
             if (ngx_new_binary) {
                    //启动ccf->worker_processes个worker子进程，并设置好每个子进程与
                 //master父进程之间使用socketpair系统调用建立起来的socket句柄通信机制
@@ -284,13 +285,19 @@ void ngx_master_process_cycle(ngx_cycle_t *cycle)
             ngx_signal_worker_processes(cycle,
                                         ngx_signal_value(NGX_REOPEN_SIGNAL));
         }
-
+        //向master进程id发送USR2信号
         if (ngx_change_binary) {
             ngx_change_binary = 0;
             ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0, "changing binary");
             ngx_new_binary = ngx_exec_new_binary(cycle, ngx_argv);
         }
-
+		
+         /*
+            如果ngx_noaccept为1(ngx_signal_value(NGX_NOACCEPT_SIGNAL)对应)，
+            设ngx_noaccepting为1，
+            调用ngx_signal_worker_processes()
+            发送ngx_signal_value(NGX_SHUTDOWN_SIGNAL)信号。
+         */
         if (ngx_noaccept) {
             ngx_noaccept = 0;
             ngx_noaccepting = 1;
@@ -1181,8 +1188,7 @@ ngx_channel_handler(ngx_event_t *ev)
 
 #if (NGX_THREADS)
 
-static void
-ngx_wakeup_worker_threads(ngx_cycle_t *cycle)
+static void ngx_wakeup_worker_threads(ngx_cycle_t *cycle)
 {
     ngx_int_t   i;
     ngx_uint_t  live;
@@ -1224,8 +1230,7 @@ ngx_wakeup_worker_threads(ngx_cycle_t *cycle)
 }
 
 
-static ngx_thread_value_t
-ngx_worker_thread_cycle(void *data)
+static ngx_thread_value_t ngx_worker_thread_cycle(void *data)
 {
     ngx_thread_t  *thr = data;
 
