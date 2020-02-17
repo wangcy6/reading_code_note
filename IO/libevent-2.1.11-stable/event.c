@@ -611,7 +611,7 @@ event_base_new_with_config(const struct event_config *cfg)
 #ifndef EVENT__DISABLE_DEBUG_MODE
 	event_debug_mode_too_late = 1;
 #endif
-
+      // 
 	if ((base = mm_calloc(1, sizeof(struct event_base))) == NULL) {
 		event_warn("%s: calloc", __func__);
 		return NULL;

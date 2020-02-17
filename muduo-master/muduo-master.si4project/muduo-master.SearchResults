@@ -1,0 +1,69 @@
+---- shared_ptr Matches (69 in 23 files) ----
+muduo::get_pointer in Callbacks.h (muduo\net) : inline T* get_pointer(const std::shared_ptr<T>& ptr)
+muduo::down_pointer_cast in Callbacks.h (muduo\net) : inline ::std::shared_ptr<To> down_pointer_cast(const ::std::shared_ptr<From>& f) {
+muduo::net in Callbacks.h (muduo\net) : typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
+muduo::net::Channel in Channel.h (muduo\net) :   /// Tie this channel to the owner object managed by shared_ptr,
+muduo::net::Channel in Channel.h (muduo\net) :   void tie(const std::shared_ptr<void>&);
+codec.h (examples\protobuf\codec) line 26 : typedef std::shared_ptr<google::protobuf::Message> MessagePtr;
+curl::Request in Curl.h (examples\curl) :   std::shared_ptr<muduo::net::Channel> channel_;
+curl in Curl.h (examples\curl) : typedef std::shared_ptr<Request> RequestPtr;
+dispatcher.h (examples\protobuf\codec) line 21 : typedef std::shared_ptr<google::protobuf::Message> MessagePtr;
+CallbackT in dispatcher.h (examples\protobuf\codec) :                                 const std::shared_ptr<T>& message,
+CallbackT::onMessage in dispatcher.h (examples\protobuf\codec) :     std::shared_ptr<T> concrete = muduo::down_pointer_cast<T>(message);
+ProtobufDispatcher::registerMessageCallback in dispatcher.h (examples\protobuf\codec) :     std::shared_ptr<CallbackT<T> > pd(new CallbackT<T>(callback));
+ProtobufDispatcher in dispatcher.h (examples\protobuf\codec) :   typedef std::map<const google::protobuf::Descriptor*, std::shared_ptr<Callback> > CallbackMap;
+dispatcher_lite.h (examples\protobuf\codec) line 19 : typedef std::shared_ptr<google::protobuf::Message> MessagePtr;
+EchoServer in echo.h (examples\idleconnection) :   typedef std::shared_ptr<Entry> EntryPtr;
+muduo::net::EventLoop in EventLoop.h (muduo\net) :   /// better to call through shared_ptr<EventLoop> for 100% safety.
+hiredis::Hiredis in Hiredis.h (contrib\hiredis) :   std::shared_ptr<muduo::net::Channel> channel_;
+Item.h (examples\memcached\server) line 19 : typedef std::shared_ptr<Item> ItemPtr;  // TODO: use unique_ptr
+Item.h (examples\memcached\server) line 20 : typedef std::shared_ptr<const Item> ConstItemPtr;  // TODO: use unique_ptr
+Plot in plot.h (examples\procmon) :   // pair<shared_ptr<void*>, int> toPng();
+muduo::net in ProtobufCodecLite.h (muduo\net\protobuf) : typedef std::shared_ptr<google::protobuf::Message> MessagePtr;
+muduo::net::ProtobufCodecLiteT in ProtobufCodecLite.h (muduo\net\protobuf) :   typedef std::shared_ptr<MSG> ConcreteMessagePtr;
+muduo::net in RpcChannel.h (muduo\net\protorpc) : typedef std::shared_ptr<RpcChannel> RpcChannelPtr;
+muduo::net in RpcCodec.h (muduo\net\protorpc) : typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
+muduo::net in RpcCodec.h (muduo\net\protorpc) : typedef std::shared_ptr<RpcMessage> RpcMessagePtr;
+Session.h (examples\memcached\server) line 112 : typedef std::shared_ptr<Session> SessionPtr;
+muduo::net in TcpClient.h (muduo\net) : typedef std::shared_ptr<Connector> ConnectorPtr;
+muduo::net in TcpConnection.h (muduo\net) : typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
+muduo::net::TcpServer in TcpServer.h (muduo\net) :   std::shared_ptr<EventLoopThreadPool> threadPool()
+muduo::net::TcpServer in TcpServer.h (muduo\net) :   std::shared_ptr<EventLoopThreadPool> threadPool_;
+ThriftConnection in ThriftConnection.h (contrib\thrift) :   boost::shared_ptr<TNullTransport> nullTransport_;
+ThriftConnection in ThriftConnection.h (contrib\thrift) :   boost::shared_ptr<TMemoryBuffer> inputTransport_;
+ThriftConnection in ThriftConnection.h (contrib\thrift) :   boost::shared_ptr<TMemoryBuffer> outputTransport_;
+ThriftConnection in ThriftConnection.h (contrib\thrift) :   boost::shared_ptr<TTransport> factoryInputTransport_;
+ThriftConnection in ThriftConnection.h (contrib\thrift) :   boost::shared_ptr<TTransport> factoryOutputTransport_;
+ThriftConnection in ThriftConnection.h (contrib\thrift) :   boost::shared_ptr<TProtocol> inputProtocol_;
+ThriftConnection in ThriftConnection.h (contrib\thrift) :   boost::shared_ptr<TProtocol> outputProtocol_;
+ThriftConnection in ThriftConnection.h (contrib\thrift) :   boost::shared_ptr<TProcessor> processor_;
+ThriftConnection.h (contrib\thrift) line 64 : typedef boost::shared_ptr<ThriftConnection> ThriftConnectionPtr;
+ThriftServer in ThriftServer.h (contrib\thrift) :   ThriftServer(const boost::shared_ptr<ProcessorFactory>& processorFactory,
+ThriftServer in ThriftServer.h (contrib\thrift) :   ThriftServer(const boost::shared_ptr<Processor>& processor,
+ThriftServer in ThriftServer.h (contrib\thrift) :   ThriftServer(const boost::shared_ptr<ProcessorFactory>& processorFactory,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TProtocolFactory>& protocolFactory,
+ThriftServer in ThriftServer.h (contrib\thrift) :   ThriftServer(const boost::shared_ptr<Processor>& processor,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TProtocolFactory>& protocolFactory,
+ThriftServer in ThriftServer.h (contrib\thrift) :   ThriftServer(const boost::shared_ptr<ProcessorFactory>& processorFactory,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TTransportFactory>& transportFactory,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TProtocolFactory>& protocolFactory,
+ThriftServer in ThriftServer.h (contrib\thrift) :   ThriftServer(const boost::shared_ptr<Processor>& processor,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TTransportFactory>& transportFactory,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TProtocolFactory>& protocolFactory,
+ThriftServer in ThriftServer.h (contrib\thrift) :   ThriftServer(const boost::shared_ptr<ProcessorFactory>& processorFactory,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TTransportFactory>& inputTransportFactory,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TTransportFactory>& outputTransportFactory,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TProtocolFactory>& inputProtocolFactory,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TProtocolFactory>& outputProtocolFactory,
+ThriftServer in ThriftServer.h (contrib\thrift) :   ThriftServer(const boost::shared_ptr<Processor>& processor,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TTransportFactory>& inputTransportFactory,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TTransportFactory>& outputTransportFactory,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TProtocolFactory>& inputProtocolFactory,
+ThriftServer::ThriftServer in ThriftServer.h (contrib\thrift) :                const boost::shared_ptr<TProtocolFactory>& outputProtocolFactory,
+muduo::TimeZone in TimeZone.h (muduo\base) :   std::shared_ptr<Data> data_;
+Tunnel::onHighWaterMarkWeak in tunnel.h (examples\socks4a) :     std::shared_ptr<Tunnel> tunnel = wkTunnel.lock();
+Tunnel::onWriteCompleteWeak in tunnel.h (examples\socks4a) :     std::shared_ptr<Tunnel> tunnel = wkTunnel.lock();
+tunnel.h (examples\socks4a) line 193 : typedef std::shared_ptr<Tunnel> TunnelPtr;
+muduo::WeakCallback::operator() in WeakCallback.h (muduo\base) :     std::shared_ptr<CLASS> ptr(object_.lock());
+muduo::makeWeakCallback in WeakCallback.h (muduo\base) : WeakCallback<CLASS, ARGS...> makeWeakCallback(const std::shared_ptr<CLASS>& object,
+muduo::makeWeakCallback in WeakCallback.h (muduo\base) : WeakCallback<CLASS, ARGS...> makeWeakCallback(const std::shared_ptr<CLASS>& object,

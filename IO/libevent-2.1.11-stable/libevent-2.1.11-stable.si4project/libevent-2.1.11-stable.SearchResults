@@ -1,1 +1,48 @@
----- event_msgqueue Matches (0 in 0 files) ----
+---- event_base_new Matches (47 in 25 files) ----
+main in bench_http.c (test) : 	base = event_base_new_with_config(cfg);
+main in bench_httpclient.c (test) : 	base = event_base_new();
+main in dns-example.c (sample) : 	event_base = event_base_new();
+main in event-read-fifo.c (sample) : 	base = event_base_new();
+event_init in event.c : 	struct event_base *base = event_base_new_with_config(NULL);
+event.c line 520 : event_base_new(void)
+event_base_new in event.c : 		base = event_base_new_with_config(cfg);
+event.c line 605 : event_base_new_with_config(const struct event_config *cfg)
+main in hello-world.c (sample) : 	base = event_base_new();
+main in http-connect.c (sample) : 	VERIFY(base = event_base_new());
+main in http-server.c (sample) : 	base = event_base_new_with_config(cfg);
+main in https-client.c (sample) : 	base = event_base_new();
+main in https-client.c (sample) : 		perror("event_base_new()");
+main in le-proxy.c (sample) : 	base = event_base_new();
+main in le-proxy.c (sample) : 		perror("event_base_new()");
+test_simpleclose in regress.c (test) : 	struct event_base *base = event_base_new();
+regress.c (test) line 1946 : test_event_base_new(void *ptr)
+test_event_base_new in regress.c (test) : 	base = event_base_new();
+test_loopexit_multiple in regress.c (test) : 	base = event_base_new();
+test_methods in regress.c (test) : 	base = event_base_new_with_config(cfg);
+test_base_features in regress.c (test) : 	base = event_base_new_with_config(cfg);
+test_base_features in regress.c (test) : 		base = event_base_new();
+test_base_environ in regress.c (test) : 	base = event_base_new();
+test_base_environ in regress.c (test) : 	base = event_base_new_with_config(cfg);
+test_base_environ in regress.c (test) : 	base = event_base_new_with_config(cfg);
+test_mm_functions in regress.c (test) : 	b = event_base_new_with_config(cfg);
+test_gettimeofday_cached in regress.c (test) : 	cached_time_base = base = event_base_new_with_config(cfg);
+main_testcases in regress.c (test) : 	BASIC(event_base_new, TT_FORK|TT_NEED_SOCKETPAIR),
+dns_resolve_reverse in regress_dns.c (test) : 	struct event_base *base = event_base_new();
+dns_disable_when_inactive_no_ns_test in regress_dns.c (test) : 	inactive_base = event_base_new();
+testleak_setup in regress_dns.c (test) : 	env->base = event_base_new();
+test_getaddrinfo_async_cancel_stress in regress_dns.c (test) : 	base = event_base_new();
+getaddrinfo_race_gotresolve_test in regress_dns.c (test) : 	rp.base = event_base_new();
+test_edgetriggered_mix_error in regress_et.c (test) : 	base = event_base_new();
+test_fin_free_finalize in regress_finalize.c (test) : 	base = event_base_new();
+http_cancel_test in regress_http.c (test) : 		inactive_base = event_base_new();
+http_base_test in regress_http.c (test) : 	base = event_base_new();
+basic_test_setup in regress_main.c (test) : 			base = event_base_new();
+thread_deferred_cb_skew in regress_thread.c (test) : 	base = event_base_new_with_config(cfg);
+main in signal-test.c (sample) : 	base = event_base_new();
+main in test-changelist.c (test) : 	if (!(base = event_base_new()))
+main in test-closed.c (test) : 	base = event_base_new_with_config(cfg);
+main in test-dumpevents.c (test) : 	if (!(base = event_base_new())) {
+start_loop in test-fdleak.c (test) : 	base = event_base_new();
+test_ratelimiting in test-ratelim.c (test) : 	base = event_base_new_with_config(base_cfg);
+main in time-test.c (sample) : 	base = event_base_new();
+whatsnew-2.0.txt line 173 :       base = event_base_new_with_config(config);

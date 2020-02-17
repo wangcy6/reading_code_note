@@ -1,6 +1,17 @@
----- readQueryFromClient Matches (5 in 4 files) ----
-createClient in networking.c (src) :             readQueryFromClient, c) == AE_ERR)
-networking.c (src) line 1548 : void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
-redis.h (src) line 1546 : void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask);
-replicationResurrectCachedMaster in replication.c (src) :                           readQueryFromClient, server.master)) {
-evalGenericCommand in scripting.c (src) :                           readQueryFromClient,c);
+---- migrating_slots_to Matches (16 in 2 files) ----
+clusterLoadConfig in cluster.c (src) :                     server.cluster->migrating_slots_to[slot] = cn;
+clusterDelNode in cluster.c (src) :         if (server.cluster->migrating_slots_to[j] == delnode)
+clusterDelNode in cluster.c (src) :             server.cluster->migrating_slots_to[j] = NULL;
+clusterCloseAllSlots in cluster.c (src) :     memset(server.cluster->migrating_slots_to,0,
+clusterCloseAllSlots in cluster.c (src) :         sizeof(server.cluster->migrating_slots_to));
+clusterGenNodeDescription in cluster.c (src) :             if (server.cluster->migrating_slots_to[j]) {
+clusterGenNodeDescription in cluster.c (src) :                     server.cluster->migrating_slots_to[j]->name);
+clusterCommand in cluster.c (src) :             server.cluster->migrating_slots_to[slot] = n;
+clusterCommand in cluster.c (src) :             server.cluster->migrating_slots_to[slot] = NULL;
+clusterCommand in cluster.c (src) :                 server.cluster->migrating_slots_to[slot])
+clusterCommand in cluster.c (src) :                 server.cluster->migrating_slots_to[slot] = NULL;
+getNodeByQuery in cluster.c (src) :                     server.cluster->migrating_slots_to[slot] != NULL)
+getNodeByQuery in cluster.c (src) :         return server.cluster->migrating_slots_to[slot];
+clusterState in cluster.h (src) :     // migrating_slots_to[i] = NULL 表示槽 i 未被迁移
+clusterState in cluster.h (src) :     // migrating_slots_to[i] = clusterNode_A 表示槽 i 要从本节点迁移至节点 A
+clusterState in cluster.h (src) :     clusterNode *migrating_slots_to[REDIS_CLUSTER_SLOTS];
