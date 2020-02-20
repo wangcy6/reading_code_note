@@ -1,0 +1,14 @@
+---- singleton Matches (13 in 7 files) ----
+block_service_manager.h (src\dist\replication\common) line 3 : #include <dsn/utility/singleton_store.h>
+block_service_manager.h (src\dist\replication\common) line 17 : // a singleton for rDSN service_engine to register all blocks, this should be called only once
+block_service_manager.h (src\dist\replication\common) line 18 : class block_service_registry : public utils::singleton<block_service_registry>
+builtin_counters.h (src\core\perf_counter) line 8 : class builtin_counters : public dsn::utils::singleton<builtin_counters>
+case.h (src\dist\replication\test\simple_kv) line 40 : #include <dsn/utility/singleton.h>
+case.h (src\dist\replication\test\simple_kv) line 427 : class test_case : public dsn::utils::singleton<test_case>
+checker.h (src\dist\replication\test\simple_kv) line 40 : #include <dsn/utility/singleton.h>
+checker.h (src\dist\replication\test\simple_kv) line 53 : class test_checker : public dsn::utils::singleton<test_checker>
+command_manager.h (include\dsn\tool-api) line 30 : #include <dsn/utility/singleton.h>
+command_manager.h (include\dsn\tool-api) line 36 : class command_manager : public ::dsn::utils::singleton<command_manager>
+core_main.cpp (src\core\core) line 48 : #include <dsn/utility/singleton.h>
+customizable_id.h (include\dsn\utility) line 39 : #include <dsn/utility/singleton.h>
+customizable_id.h (include\dsn\utility) line 58 : class customized_id_mgr : public dsn::utils::singleton<customized_id_mgr<T>>

@@ -41,7 +41,7 @@ public:
 
     static T &instance()
     {
-        static T _instance;
+        static T _instance; //这个是c++11的特点
         return _instance;
     }
 };

@@ -1,0 +1,7 @@
+---- Singleton Matches (6 in 3 files) ----
+pegasus_counter_reporter.h (src\reporter) line 7 : #include <dsn/utility/singleton.h>
+pegasus_counter_reporter.h (src\reporter) line 35 : class pegasus_counter_reporter : public ::dsn::utils::singleton<pegasus_counter_reporter>
+pegasus_io_service.h (src\reporter) line 11 : #include <dsn/utility/singleton.h>
+pegasus_io_service.h (src\reporter) line 19 : class pegasus_io_service : public ::dsn::utils::singleton<pegasus_io_service>
+pegasus_server_impl.cpp (src\server) line 334 :     // Block cache is a singleton on this server shared by all replicas, so we initialize
+pegasus_server_impl.cpp (src\server) line 1571 :         // Block cache is a singleton on this server shared by all replicas, its metrics update task
