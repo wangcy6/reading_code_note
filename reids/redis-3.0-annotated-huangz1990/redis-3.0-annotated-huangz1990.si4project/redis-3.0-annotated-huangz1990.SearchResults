@@ -1,17 +1,10 @@
----- migrating_slots_to Matches (16 in 2 files) ----
-clusterLoadConfig in cluster.c (src) :                     server.cluster->migrating_slots_to[slot] = cn;
-clusterDelNode in cluster.c (src) :         if (server.cluster->migrating_slots_to[j] == delnode)
-clusterDelNode in cluster.c (src) :             server.cluster->migrating_slots_to[j] = NULL;
-clusterCloseAllSlots in cluster.c (src) :     memset(server.cluster->migrating_slots_to,0,
-clusterCloseAllSlots in cluster.c (src) :         sizeof(server.cluster->migrating_slots_to));
-clusterGenNodeDescription in cluster.c (src) :             if (server.cluster->migrating_slots_to[j]) {
-clusterGenNodeDescription in cluster.c (src) :                     server.cluster->migrating_slots_to[j]->name);
-clusterCommand in cluster.c (src) :             server.cluster->migrating_slots_to[slot] = n;
-clusterCommand in cluster.c (src) :             server.cluster->migrating_slots_to[slot] = NULL;
-clusterCommand in cluster.c (src) :                 server.cluster->migrating_slots_to[slot])
-clusterCommand in cluster.c (src) :                 server.cluster->migrating_slots_to[slot] = NULL;
-getNodeByQuery in cluster.c (src) :                     server.cluster->migrating_slots_to[slot] != NULL)
-getNodeByQuery in cluster.c (src) :         return server.cluster->migrating_slots_to[slot];
-clusterState in cluster.h (src) :     // migrating_slots_to[i] = NULL 表示槽 i 未被迁移
-clusterState in cluster.h (src) :     // migrating_slots_to[i] = clusterNode_A 表示槽 i 要从本节点迁移至节点 A
-clusterState in cluster.h (src) :     clusterNode *migrating_slots_to[REDIS_CLUSTER_SLOTS];
+---- zslInsert Matches (9 in 2 files) ----
+redis.h (src) line 1728 : zskiplistNode *zslInsert(zskiplist *zsl, double score, robj *obj);
+t_zset.c (src) line 198 : zskiplistNode *zslInsert(zskiplist *zsl, double score, robj *obj) {
+zslInsert in t_zset.c (src) :      * happen since the caller of zslInsert() should test in the hash table
+zslInsert in t_zset.c (src) :      * zslInsert() 的调用者会确保同分值且同成员的元素不会出现，
+zsetConvert in t_zset.c (src) :             node = zslInsert(zs->zsl,score,ele);
+zaddGenericCommand in t_zset.c (src) :                     znode = zslInsert(zs->zsl,score,curobj);
+zaddGenericCommand in t_zset.c (src) :                 znode = zslInsert(zs->zsl,score,ele);
+zunionInterGenericCommand in t_zset.c (src) :                     znode = zslInsert(dstzset->zsl,score,tmp);
+zunionInterGenericCommand in t_zset.c (src) :                 znode = zslInsert(dstzset->zsl,score,tmp);

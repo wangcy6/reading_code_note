@@ -1315,7 +1315,7 @@ robj *rdbLoadObject(int rdbtype, rio *rdb) {
                 maxelelen = sdslen(ele->ptr);
 
             // 将元素插入到跳跃表中
-            znode = zslInsert(zs->zsl,score,ele);
+            znode = (zs->zsl,score,ele);
             // 将元素关联到字典中
             dictAdd(zs->dict,ele,&znode->score);
 

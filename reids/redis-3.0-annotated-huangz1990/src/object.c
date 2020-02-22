@@ -61,7 +61,7 @@ robj *createRawStringObject(char *ptr, size_t len) {
  * an object where the sds string is actually an unmodifiable string
  * allocated in the same chunk as the object itself. */
 // 创建一个 REDIS_ENCODING_EMBSTR 编码的字符对象
-// 这个字符串对象中的 sds 会和字符串对象的 redisObject 结构一起分配
+// 这个字符串对象中的 sds 会和字符串对象的  结构一起分配
 // 因此这个字符也是不可修改的
 robj *createEmbeddedStringObject(char *ptr, size_t len) {
     robj *o = zmalloc(sizeof(robj)+sizeof(struct sdshdr)+len+1);

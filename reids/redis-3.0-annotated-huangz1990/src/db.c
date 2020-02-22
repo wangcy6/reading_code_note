@@ -1571,7 +1571,7 @@ void slotToKeyAdd(robj *key) {
     unsigned int hashslot = keyHashSlot(key->ptr,sdslen(key->ptr));
 
     // 将槽 slot 作为分值，键作为成员，添加到 slots_to_keys 跳跃表里面
-    zslInsert(server.cluster->slots_to_keys,hashslot,key);
+    (server.cluster->slots_to_keys,hashslot,key);
     incrRefCount(key);
 }
 

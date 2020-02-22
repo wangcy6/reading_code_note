@@ -34,7 +34,7 @@
 
 typedef struct intset {
     
-    // 编码方式
+    // 编码方式，这个是真正类型int8_t不是
     uint32_t encoding;
 
     // 集合包含的元素数量
