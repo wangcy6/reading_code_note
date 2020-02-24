@@ -176,7 +176,7 @@
 #define REDIS_HASH 4
 
 /* Objects encoding. Some kind of objects like Strings and Hashes can be
- * internally represented in multiple ways. Ther 'encoding' field of the object
+ * internally represented in multiple ways. The 'encoding' field of the object
  * is set to one of this fields for this object. */
 // 对象编码
 #define REDIS_ENCODING_RAW 0     /* Raw representation */
