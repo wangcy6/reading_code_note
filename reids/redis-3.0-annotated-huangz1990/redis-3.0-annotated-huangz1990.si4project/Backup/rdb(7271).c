@@ -1079,7 +1079,7 @@ int rdbSaveBackground(char *filename) {
 
     // fork() 开始前的时间，记录 fork() 返回耗时用
     start = ustime();
-       //child 
+
     if ((childpid = fork()) == 0) {
         int retval;
 

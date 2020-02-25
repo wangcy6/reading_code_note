@@ -1,10 +1,34 @@
----- zslInsert Matches (9 in 2 files) ----
-redis.h (src) line 1728 : zskiplistNode *zslInsert(zskiplist *zsl, double score, robj *obj);
-t_zset.c (src) line 198 : zskiplistNode *zslInsert(zskiplist *zsl, double score, robj *obj) {
-zslInsert in t_zset.c (src) :      * happen since the caller of zslInsert() should test in the hash table
-zslInsert in t_zset.c (src) :      * zslInsert() 的调用者会确保同分值且同成员的元素不会出现，
-zsetConvert in t_zset.c (src) :             node = zslInsert(zs->zsl,score,ele);
-zaddGenericCommand in t_zset.c (src) :                     znode = zslInsert(zs->zsl,score,curobj);
-zaddGenericCommand in t_zset.c (src) :                 znode = zslInsert(zs->zsl,score,ele);
-zunionInterGenericCommand in t_zset.c (src) :                     znode = zslInsert(dstzset->zsl,score,tmp);
-zunionInterGenericCommand in t_zset.c (src) :                 znode = zslInsert(dstzset->zsl,score,tmp);
+---- REDIS_ENCODING_SKIPLIST Matches (33 in 8 files) ----
+rewriteSortedSetObject in aof.c (src) :     } else if (o->encoding == REDIS_ENCODING_SKIPLIST) {
+scanGenericCommand in db.c (src) :     } else if (o->type == REDIS_ZSET && o->encoding == REDIS_ENCODING_SKIPLIST) {
+computeDatasetDigest in debug.c (src) :                 } else if (o->encoding == REDIS_ENCODING_SKIPLIST) {
+redisLogObjectDebugInfo in debug.c (src) :         if (o->encoding == REDIS_ENCODING_SKIPLIST)
+createZsetObject in object.c (src) :     o->encoding = REDIS_ENCODING_SKIPLIST;
+freeZsetObject in object.c (src) :     case REDIS_ENCODING_SKIPLIST:
+strEncoding in object.c (src) :     case REDIS_ENCODING_SKIPLIST: return "skiplist";
+rdbSaveObjectType in rdb.c (src) :         else if (o->encoding == REDIS_ENCODING_SKIPLIST)
+rdbSaveObject in rdb.c (src) :         } else if (o->encoding == REDIS_ENCODING_SKIPLIST) {
+rdbLoadObject in rdb.c (src) :                     zsetConvert(o,REDIS_ENCODING_SKIPLIST);
+redis.h (src) line 189 : #define REDIS_ENCODING_SKIPLIST 7  /* Encoded as skiplist */
+sortCommand in sort.c (src) :         zsetConvert(sortval, REDIS_ENCODING_SKIPLIST);
+zsetLength in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+zsetConvert in t_zset.c (src) :         if (encoding != REDIS_ENCODING_SKIPLIST)
+zsetConvert in t_zset.c (src) :         zobj->encoding = REDIS_ENCODING_SKIPLIST;
+zsetConvert in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+zaddGenericCommand in t_zset.c (src) :                     zsetConvert(zobj,REDIS_ENCODING_SKIPLIST);
+zaddGenericCommand in t_zset.c (src) :                     zsetConvert(zobj,REDIS_ENCODING_SKIPLIST);
+zaddGenericCommand in t_zset.c (src) :         } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+zremCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+zremrangeGenericCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+zuiInitIterator in t_zset.c (src) :         } else if (op->encoding == REDIS_ENCODING_SKIPLIST) {
+zuiClearIterator in t_zset.c (src) :         } else if (op->encoding == REDIS_ENCODING_SKIPLIST) {
+zuiLength in t_zset.c (src) :         } else if (op->encoding == REDIS_ENCODING_SKIPLIST) {
+zuiNext in t_zset.c (src) :         } else if (op->encoding == REDIS_ENCODING_SKIPLIST) {
+zuiFind in t_zset.c (src) :         } else if (op->encoding == REDIS_ENCODING_SKIPLIST) {
+zrangeGenericCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+genericZrangebyscoreCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+zcountCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+zlexcountCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+genericZrangebylexCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+zscoreCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+zrankGenericCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
