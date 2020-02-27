@@ -1803,7 +1803,7 @@ eoferr: /* unexpected end of file is handled here with a fatal exit */
 
 /* A background saving child (BGSAVE) terminated its work. Handle this. 
  *
- * 处理 BGSAVE 完成时发送的信号
+ * 处理 BGSAVE 完成时发送的请求
  */
 void backgroundSaveDoneHandler(int exitcode, int bysignal) {
 

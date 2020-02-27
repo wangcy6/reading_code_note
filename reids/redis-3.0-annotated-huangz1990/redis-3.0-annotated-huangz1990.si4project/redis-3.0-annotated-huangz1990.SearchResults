@@ -1,34 +1,5 @@
----- REDIS_ENCODING_SKIPLIST Matches (33 in 8 files) ----
-rewriteSortedSetObject in aof.c (src) :     } else if (o->encoding == REDIS_ENCODING_SKIPLIST) {
-scanGenericCommand in db.c (src) :     } else if (o->type == REDIS_ZSET && o->encoding == REDIS_ENCODING_SKIPLIST) {
-computeDatasetDigest in debug.c (src) :                 } else if (o->encoding == REDIS_ENCODING_SKIPLIST) {
-redisLogObjectDebugInfo in debug.c (src) :         if (o->encoding == REDIS_ENCODING_SKIPLIST)
-createZsetObject in object.c (src) :     o->encoding = REDIS_ENCODING_SKIPLIST;
-freeZsetObject in object.c (src) :     case REDIS_ENCODING_SKIPLIST:
-strEncoding in object.c (src) :     case REDIS_ENCODING_SKIPLIST: return "skiplist";
-rdbSaveObjectType in rdb.c (src) :         else if (o->encoding == REDIS_ENCODING_SKIPLIST)
-rdbSaveObject in rdb.c (src) :         } else if (o->encoding == REDIS_ENCODING_SKIPLIST) {
-rdbLoadObject in rdb.c (src) :                     zsetConvert(o,REDIS_ENCODING_SKIPLIST);
-redis.h (src) line 189 : #define REDIS_ENCODING_SKIPLIST 7  /* Encoded as skiplist */
-sortCommand in sort.c (src) :         zsetConvert(sortval, REDIS_ENCODING_SKIPLIST);
-zsetLength in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
-zsetConvert in t_zset.c (src) :         if (encoding != REDIS_ENCODING_SKIPLIST)
-zsetConvert in t_zset.c (src) :         zobj->encoding = REDIS_ENCODING_SKIPLIST;
-zsetConvert in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
-zaddGenericCommand in t_zset.c (src) :                     zsetConvert(zobj,REDIS_ENCODING_SKIPLIST);
-zaddGenericCommand in t_zset.c (src) :                     zsetConvert(zobj,REDIS_ENCODING_SKIPLIST);
-zaddGenericCommand in t_zset.c (src) :         } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
-zremCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
-zremrangeGenericCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
-zuiInitIterator in t_zset.c (src) :         } else if (op->encoding == REDIS_ENCODING_SKIPLIST) {
-zuiClearIterator in t_zset.c (src) :         } else if (op->encoding == REDIS_ENCODING_SKIPLIST) {
-zuiLength in t_zset.c (src) :         } else if (op->encoding == REDIS_ENCODING_SKIPLIST) {
-zuiNext in t_zset.c (src) :         } else if (op->encoding == REDIS_ENCODING_SKIPLIST) {
-zuiFind in t_zset.c (src) :         } else if (op->encoding == REDIS_ENCODING_SKIPLIST) {
-zrangeGenericCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
-genericZrangebyscoreCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
-zcountCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
-zlexcountCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
-genericZrangebylexCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
-zscoreCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
-zrankGenericCommand in t_zset.c (src) :     } else if (zobj->encoding == REDIS_ENCODING_SKIPLIST) {
+---- "PSYNC" Matches (4 in 3 files) ----
+cliSendCommand in redis-cli.c (src) :         !strcasecmp(command,"psync")) config.slave_mode = 1;
+redisCommandTable in redis.c (src) :     {"psync",syncCommand,3,"ars",0,NULL,0,0,0,0,0},
+syncCommand in replication.c (src) :     if (!strcasecmp(c->argv[0]->ptr,"psync")) {
+slaveTryPartialResynchronization in replication.c (src) :     reply = sendSynchronousCommand(fd,"PSYNC",psync_runid,psync_offset,NULL);

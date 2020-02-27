@@ -204,6 +204,7 @@ ssize_t aofRewriteBufferWrite(int fd) {
                 if (nwritten == 0) errno = EIO;
                 return -1;
             }
+			//https://stackoverflow.com/questions/53837322/is-it-is-possible-to-force-tcp-socket-to-send-0-bytes-in-case-of-packet-losses
 
             // 积累写入字节
             count += nwritten;
@@ -1564,8 +1565,8 @@ int rewriteAppendOnlyFileBackground(void) {
         server.aof_rewrite_time_start = time(NULL);
         server.aof_child_pid = childpid;
 
-        // 关闭字典自动 rehash
-        updateDictResizePolicy();
+        // 关闭字典自动 rehash 
+        updateDictResizePolicy(); //redis 100ms定时任务 扩展暂停，因为copy数据不会发生变动。
 
         /* We set appendseldb to -1 in order to force the next call to the
          * feedAppendOnlyFile() to issue a SELECT command, so the differences
@@ -1577,7 +1578,7 @@ int rewriteAppendOnlyFileBackground(void) {
          * 从而确保之后新添加的命令会设置到正确的数据库中
          */
         server.aof_selected_db = -1;
-        replicationScriptCacheFlush();
+        replicationScriptCacheFlush(); 
         return REDIS_OK;
     }
     return REDIS_OK; /* unreached */

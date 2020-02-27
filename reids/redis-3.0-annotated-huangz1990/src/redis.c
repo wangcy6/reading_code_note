@@ -1425,7 +1425,8 @@ int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData) {
     // 并且有一个 BGREWRITEAOF 在等待，那么执行 BGREWRITEAOF
     if (server.rdb_child_pid == -1 && server.aof_child_pid == -1 &&
         server.aof_rewrite_scheduled)
-    {
+    {     // 通一个命令被调用
+         // RDB >AOF 同时发送：
         rewriteAppendOnlyFileBackground();
     }
 
