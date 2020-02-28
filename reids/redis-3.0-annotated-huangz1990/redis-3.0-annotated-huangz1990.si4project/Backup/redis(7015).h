@@ -410,7 +410,7 @@ typedef struct redisObject {
     unsigned lru:REDIS_LRU_BITS; /* lru time (relative to server.lruclock) */
 
     // 引用计数
-    int refcount; //small pointer
+    int refcount;
 
     // 指向实际值的指针
     void *ptr;
@@ -677,7 +677,7 @@ typedef struct redisClient {
     /* Response buffer */
     // 回复偏移量
     int bufpos;
-    // 回复缓冲区 16k
+    // 回复缓冲区
     char buf[REDIS_REPLY_CHUNK_BYTES];
 
 } redisClient;
@@ -759,11 +759,12 @@ typedef struct zskiplist {
 typedef struct zset {
 
     // 字典，键为成员，值为分值
-    // 按成员取分值操作
+    // 用于支持 O(1) 复杂度的按成员取分值操作
     dict *dict;
 
     // 跳跃表，按分值排序成员
- 
+    // 用于支持平均复杂度为 O(log N) 的按分值定位成员操作
+    // 以及范围操作
     zskiplist *zsl;
 
 } zset;
@@ -1147,7 +1148,7 @@ struct redisServer {
     // backlog 的当前索引
     long long repl_backlog_idx;     /* Backlog circular buffer current offset */
     // backlog 中可以被还原的第一个字节的偏移量
-    long long  replication buffer;     /* Replication offset of first byte in the
+    long long repl_backlog_off;     /* Replication offset of first byte in the
                                        backlog buffer. */
     // backlog 的过期时间
     time_t repl_backlog_time_limit; /* Time without slaves after the backlog

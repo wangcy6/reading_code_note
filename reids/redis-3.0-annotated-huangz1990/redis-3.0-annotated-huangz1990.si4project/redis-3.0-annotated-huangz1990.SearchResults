@@ -1,5 +1,1 @@
----- "PSYNC" Matches (4 in 3 files) ----
-cliSendCommand in redis-cli.c (src) :         !strcasecmp(command,"psync")) config.slave_mode = 1;
-redisCommandTable in redis.c (src) :     {"psync",syncCommand,3,"ars",0,NULL,0,0,0,0,0},
-syncCommand in replication.c (src) :     if (!strcasecmp(c->argv[0]->ptr,"psync")) {
-slaveTryPartialResynchronization in replication.c (src) :     reply = sendSynchronousCommand(fd,"PSYNC",psync_runid,psync_offset,NULL);
+---- unknown-replica-port Matches (0 in 0 files) ----

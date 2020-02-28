@@ -205,7 +205,7 @@ ssize_t aofRewriteBufferWrite(int fd) {
                 return -1;
             }
 			//https://stackoverflow.com/questions/53837322/is-it-is-possible-to-force-tcp-socket-to-send-0-bytes-in-case-of-packet-losses
-            //#define AOF_RW_BUF_BLOCK_SIZE (1024*1024*10)    /* 10 MB per block */
+
             // 积累写入字节
             count += nwritten;
         }
@@ -1116,7 +1116,7 @@ int rewriteSetObject(rio *r, robj *key, robj *o) {
     if (o->encoding == REDIS_ENCODING_INTSET) {
         int ii = 0;
         int64_t llval;
-            // 遍历数组
+
         while(intsetGet(o->ptr,ii++,&llval)) {
             if (count == 0) {
                 int cmd_items = (items > REDIS_AOF_REWRITE_ITEMS_PER_CMD) ?

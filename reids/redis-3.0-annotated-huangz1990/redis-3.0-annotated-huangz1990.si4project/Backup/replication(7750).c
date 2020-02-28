@@ -627,7 +627,7 @@ void syncCommand(redisClient *c) {
             addReplyError(c,"Unable to perform background save");
             return;
         }
-        // 设置状态 表述 已经开始复制了。
+        // 设置状态
         c->replstate = REDIS_REPL_WAIT_BGSAVE_END;
         /* Flush the script cache for the new slave. */
         // 因为新 slave 进入，刷新复制脚本缓存
@@ -769,7 +769,7 @@ void sendBulkToSlave(aeEventLoop *el, int fd, void *privdata, int mask) {
             (buflen == 0) ? "premature EOF" : strerror(errno));
         freeClient(slave);
         return;
-    } //16k output buffer
+    }
     // 写入数据到 slave
     if ((nwritten = write(fd,buf,buflen)) == -1) {
         if (errno != EAGAIN) {
@@ -830,7 +830,7 @@ void updateSlavesWaitingBgsave(int bgsaveerr) {
     listRewind(server.slaves,&li);
     while((ln = listNext(&li))) {
         redisClient *slave = ln->value;
-        //We need to produce a new RDB file
+
         if (slave->replstate == REDIS_REPL_WAIT_BGSAVE_START) {
             // 之前的 RDB 文件不能被 slave 使用，
             // 开始新的 BGSAVE
@@ -862,7 +862,6 @@ void updateSlavesWaitingBgsave(int bgsaveerr) {
             slave->repldboff = 0;
             slave->repldbsize = buf.st_size;
             // 更新状态
-            //Sending RDB file to slave.
             slave->replstate = REDIS_REPL_SEND_BULK;
 
             slave->replpreamble = sdscatprintf(sdsempty(),"$%lld\r\n",
