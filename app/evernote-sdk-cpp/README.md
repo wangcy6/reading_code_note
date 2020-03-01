@@ -103,3 +103,12 @@ http://www.gnu.org/software/automake/manual/automake.html#Hello-World
 
 
 
+##
+https://github.com/roop/NotekeeperOpen/blob/master/src/cloud/evernote/evernotesync/evernoteaccess.cpp
+https://dev.twsiyuan.com/2017/06/evernote-sdk-for-golang.html
+https://dev.yinxiang.com/doc/articles/core_concepts.php
+https://dev.yinxiang.com/doc/start/python.php
+https://www.jianshu.com/p/bda26798f3b3
+
+https://dev.yinxiang.com/doc/start/python.php
+https://github.com/evernote/evernote-sdk-python3
