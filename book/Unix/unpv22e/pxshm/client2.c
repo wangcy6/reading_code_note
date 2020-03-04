@@ -1,7 +1,6 @@
 #include	"cliserv2.h"
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int		fd, i, nloop, nusec;
 	pid_t	pid;
@@ -14,7 +13,7 @@ main(int argc, char **argv)
 	nloop = atoi(argv[2]);
 	nusec = atoi(argv[3]);
 
-		/* 4open and map shared memory that server must create */
+	/* 4open and map shared memory that server must create */
 	fd = Shm_open(Px_ipc_name(argv[1]), O_RDWR, FILE_MODE);
 	ptr = Mmap(NULL, sizeof(struct shmstruct), PROT_READ | PROT_WRITE,
 			   MAP_SHARED, fd, 0);

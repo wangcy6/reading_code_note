@@ -1,0 +1,105 @@
+---- FILE_MODE Matches (104 in 80 files) ----
+main in bw_door.c (bench) : 	Close(Open(argv[1], O_CREAT | O_EXCL | O_RDWR, FILE_MODE));
+main in bw_pxmsg.c (bench) : 	mq = Mq_open(Px_ipc_name(NAME), O_RDWR | O_CREAT, FILE_MODE, &attr);
+main in client1.c (pxshm) : 	fd = Shm_open(Px_ipc_name(argv[1]), O_RDWR, FILE_MODE);
+main in client2.c (pxshm) : 	fd = Shm_open(Px_ipc_name(argv[1]), O_RDWR, FILE_MODE);
+produce in deadlock.c (pxsem) : 							FILE_MODE, 1);
+produce in deadlock.c (pxsem) : 							 FILE_MODE, NBUFF);
+produce in deadlock.c (pxsem) : 							  FILE_MODE, 0);
+main in incr1.c (shm) : 	mutex = Sem_open(Px_ipc_name(SEM_NAME), O_CREAT | O_EXCL, FILE_MODE, 1);
+main in incr2.c (shm) : 	fd = Open(argv[1], O_RDWR | O_CREAT, FILE_MODE);
+main in incr2.c (shm) : 	mutex = Sem_open(Px_ipc_name(SEM_NAME), O_CREAT | O_EXCL, FILE_MODE, 1);
+main in incr2private.c (shm) : 	fd = Open(argv[1], O_RDWR | O_CREAT, FILE_MODE);
+main in incr2private.c (shm) : 	mutex = Sem_open(Px_ipc_name(SEM_NAME), O_CREAT | O_EXCL, FILE_MODE, 1);
+main in incr3.c (shm) : 	fd = Open(argv[1], O_RDWR | O_CREAT, FILE_MODE);
+main in incr_dev_zero.c (shm) : 	mutex = Sem_open(Px_ipc_name(SEM_NAME), O_CREAT | O_EXCL, FILE_MODE, 1);
+main in incr_fcntl1.c (bench) : 	shared.fd = Open(pathname, O_RDWR | O_CREAT | O_TRUNC, FILE_MODE);
+main in incr_fcntl5.c (bench) : 	shared->fd = Open(pathname, O_RDWR | O_CREAT | O_TRUNC, FILE_MODE);
+main in incr_map_anon.c (shm) : 	mutex = Sem_open(Px_ipc_name(SEM_NAME), O_CREAT | O_EXCL, FILE_MODE, 1);
+main in incr_pxsem2.c (bench) : 	shared.mutex = Sem_open(Px_ipc_name(NAME), O_CREAT | O_EXCL, FILE_MODE, 0);
+main in incr_pxsem6.c (bench) : 	shared->mutex = Sem_open(Px_ipc_name(NAME), O_CREAT | O_EXCL, FILE_MODE, 0);
+main in incr_pxsem7.c (bench) : 	mutex = Sem_open(Px_ipc_name(NAME), O_CREAT | O_EXCL, FILE_MODE, 0);
+main in incr_pxsem8.c (bench) : 	pmutex = Sem_open(Px_ipc_name(NAME), O_CREAT | O_EXCL, FILE_MODE, 0);
+main in lat_door.c (bench) : 	Close(Open(argv[1], O_CREAT | O_EXCL | O_RDWR, FILE_MODE));
+main in lat_pxmsg.c (bench) : 	mq1 = Mq_open(Px_ipc_name(NAME1), O_RDWR | O_CREAT, FILE_MODE, &attr);
+main in lat_pxmsg.c (bench) : 	mq2 = Mq_open(Px_ipc_name(NAME2), O_RDWR | O_CREAT, FILE_MODE, &attr);
+my_lock in locklink.c (lock) : 	Close(Open(ptr, O_CREAT | O_RDWR | O_TRUNC, FILE_MODE));
+my_lock in lockmain.c (lock) : 	fd = Open(SEQFILE, O_RDWR, FILE_MODE);
+my_lock in lockmainubuf.c (lock) : 	fd = Open(SEQFILE, O_RDWR | O_CREAT, FILE_MODE);
+my_lock in lockopen.c (lock) : 	while ( (tempfd = open(LOCKFILE, O_RDWR|O_CREAT|O_EXCL, FILE_MODE)) < 0) {
+my_lock in lockpxsem.c (lock) : 		locksem = Sem_open(Px_ipc_name(LOCK_PATH), O_CREAT, FILE_MODE, 1);
+my_lock in loopmain.c (lock) : 	fd = Open(SEQFILE, O_RDWR, FILE_MODE);
+my_lock in loopmainnonb.c (lock) : 	fd = Open(SEQFILE, O_RDWR | O_NONBLOCK, FILE_MODE);
+main in mainclient.c (fifocliserv) : 	if ((mkfifo(fifoname, FILE_MODE) < 0) && (errno != EEXIST))
+client in mainfifo.c (pipe) : 	if ((mkfifo(FIFO1, FILE_MODE) < 0) && (errno != EEXIST))
+client in mainfifo.c (pipe) : 	if ((mkfifo(FIFO2, FILE_MODE) < 0) && (errno != EEXIST)) {
+client in mainfifo.c (pipemesg) : 	if ((mkfifo(FIFO1, FILE_MODE) < 0) && (errno != EEXIST))
+client in mainfifo.c (pipemesg) : 	if ((mkfifo(FIFO2, FILE_MODE) < 0) && (errno != EEXIST)) {
+main in mainserver.c (fifocliserv) : 	if ((mkfifo(SERV_FIFO, FILE_MODE) < 0) && (errno != EEXIST))
+main in mqcreate.c (my_pxmsg_mmap) : 	mqd = Mymq_open(argv[optind], flags, FILE_MODE,
+main in mqcreate.c (pxmsg) : 	mqd = Mq_open(argv[optind], flags, FILE_MODE,
+main in mqcreate1.c (pxmsg) : 	mqd = Mq_open(argv[optind], flags, FILE_MODE, NULL);
+main in onedaemon.c (lock) : 	pidfd = Open(PATH_PIDFILE, O_RDWR | O_CREAT, FILE_MODE);
+produce in prodcons1.c (my_pxsem_fifo) : 							FILE_MODE, 1);
+produce in prodcons1.c (my_pxsem_fifo) : 							 FILE_MODE, NBUFF);
+produce in prodcons1.c (my_pxsem_fifo) : 							  FILE_MODE, 0);
+produce in prodcons1.c (my_pxsem_mmap) : 							FILE_MODE, 1);
+produce in prodcons1.c (my_pxsem_mmap) : 							 FILE_MODE, NBUFF);
+produce in prodcons1.c (my_pxsem_mmap) : 							  FILE_MODE, 0);
+produce in prodcons1.c (my_pxsem_svsem) : 							FILE_MODE, 1);
+produce in prodcons1.c (my_pxsem_svsem) : 							 FILE_MODE, NBUFF);
+produce in prodcons1.c (my_pxsem_svsem) : 							  FILE_MODE, 0);
+produce in prodcons1.c (pxsem) : 							FILE_MODE, 1);
+produce in prodcons1.c (pxsem) : 							 FILE_MODE, NBUFF);
+produce in prodcons1.c (pxsem) : 							  FILE_MODE, 0);
+main in semcreate.c (pxsem) : 	sem = Sem_open(argv[optind], flags, FILE_MODE, value);
+main in server1.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in server1.c (pxshm) : 	fd = Shm_open(Px_ipc_name(argv[1]), O_RDWR | O_CREAT | O_EXCL, FILE_MODE);
+main in server1.c (pxshm) : 	mutex = Sem_open(Px_ipc_name(argv[2]), O_CREAT | O_EXCL, FILE_MODE, 1);
+main in server2.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in server2.c (pxshm) : 	fd = Shm_open(Px_ipc_name(argv[1]), O_RDWR | O_CREAT | O_EXCL, FILE_MODE);
+main in server3.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in server4.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in server5.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in server6.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in server7.c (doors) : 	Close(Open(PATH_SQUARE_DOOR, O_CREAT | O_RDWR, FILE_MODE));
+main in server7.c (doors) : 	Close(Open(PATH_SQRT_DOOR, O_CREAT | O_RDWR, FILE_MODE));
+main in server8.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in server9.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in serverfd1.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in serverintr1.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in serverintr2.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in serverintr3.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in serverintr4.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in serverunref1.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in serverunref2.c (doors) : 	Close(Open(argv[1], O_CREAT | O_RDWR, FILE_MODE));
+main in server_main.c (pipe) : 	if ((mkfifo(FIFO1, FILE_MODE) < 0) && (errno != EEXIST))
+main in server_main.c (pipe) : 	if ((mkfifo(FIFO2, FILE_MODE) < 0) && (errno != EEXIST)) {
+main in shmcreate.c (pxshm) : 	fd = Shm_open(argv[optind], flags, FILE_MODE);
+main in shmread.c (pxshm) : 	fd = Shm_open(argv[1], O_RDONLY, FILE_MODE);
+main in shmwrite.c (pxshm) : 	fd = Shm_open(argv[1], O_RDWR, FILE_MODE);
+main in test1.c (lock) : 	fd = Open("test1.data", O_RDWR | O_CREAT, (mode_t) FILE_MODE);
+main in test1.c (my_pxmsg_mmap) : 	mqd = Mq_open(argv[1], O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
+main in test1.c (my_pxmsg_mmap) : 	mqd = mq_open(argv[1], O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
+main in test1.c (my_pxmsg_mmap) : 	mqd = Mq_open(argv[1], O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+main in test1.c (pipe) : 	Mkfifo(argv[1], FILE_MODE);
+main in test1.c (pxmsg) : 	mqd = Mq_open(argv[optind], flags, FILE_MODE,
+main in test1.c (pxshm) : 				  FILE_MODE);
+main in test1.c (shm) : 	fd = Open(argv[1], O_RDWR | O_CREAT | O_TRUNC, FILE_MODE);
+main in test2.c (lock) : 	fd = Open("test1.data", O_RDWR | O_CREAT, FILE_MODE);
+main in test2.c (pxshm) : 	fd = Shm_open(Px_ipc_name(FILE), O_RDWR | O_CREAT | O_TRUNC, FILE_MODE);
+main in test2.c (shm) : 	fd = Open(FILE, O_RDWR | O_CREAT | O_TRUNC, FILE_MODE);
+main in test3.c (lock) : 	fd = Open("test1.data", O_RDWR | O_CREAT, FILE_MODE);
+main in test3.c (pxshm) : 	fd1 = Shm_open(Px_ipc_name(argv[1]), O_RDWR | O_CREAT | O_EXCL, FILE_MODE);
+main in test3.c (shm) : 	fd = Open(argv[1], O_RDWR | O_CREAT | O_EXCL, FILE_MODE);
+main in test4.c (lock) : 	fd = Open("test1.data", O_RDWR | O_CREAT, FILE_MODE);
+main in testeintr.c (my_pxsem_fifo) : 					  FILE_MODE, 0);
+main in testeintr.c (pxsem) : 					FILE_MODE, 0);
+main in testmq.c (my_pxmsg_mmap) : 	mqd = Mymq_open(argv[1], O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
+main in testmq.c (my_pxmsg_mmap) : 	mqd = mymq_open(argv[1], O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
+main in testmq.c (my_pxmsg_mmap) : 	mqd = Mymq_open(argv[1], O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+doit in testsem.c (my_pxsem_mmap) : 		sem[i] = Mysem_open(Px_ipc_name(name), O_CREAT, FILE_MODE, initval);
+main in tserver1.c (doors) : 	Close(Open(argv[1], O_CREAT | O_EXCL | O_RDWR, FILE_MODE));
+unpipc.h (bench) line 146 : #define	FILE_MODE	(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+unpipc.h (bench) line 148 : /* $$.ix [FILE_MODE]~constant,~definition~of$$ */
+unpipc.h (bench) line 149 : #define	DIR_MODE	(FILE_MODE | S_IXUSR | S_IXGRP | S_IXOTH)

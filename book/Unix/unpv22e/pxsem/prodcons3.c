@@ -15,8 +15,7 @@ struct {	/* data shared by producers and consumer */
 
 void	*produce(void *), *consume(void *);
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int		i, count[MAXNTHREADS];
 	pthread_t	tid_produce[MAXNTHREADS], tid_consume;
@@ -26,17 +25,20 @@ main(int argc, char **argv)
 	nitems = atoi(argv[1]);
 	nproducers = min(atoi(argv[2]), MAXNTHREADS);
 
-		/* 4initialize three semaphores */
+	/* 4initialize three semaphores */
 	Sem_init(&shared.mutex, 0, 1);
 	Sem_init(&shared.nempty, 0, NBUFF);
 	Sem_init(&shared.nstored, 0, 0);
 
 		/* 4create all producers and one consumer */
 	Set_concurrency(nproducers + 1);
+    //多写入
 	for (i = 0; i < nproducers; i++) {
 		count[i] = 0;
 		Pthread_create(&tid_produce[i], NULL, produce, &count[i]);
 	}
+
+	//单读取
 	Pthread_create(&tid_consume, NULL, consume, NULL);
 
 		/* 4wait for all producers and the consumer */
@@ -54,8 +56,7 @@ main(int argc, char **argv)
 /* end main */
 
 /* include produce */
-void *
-produce(void *arg)
+void * produce(void *arg)
 {
 	for ( ; ; ) {
 		Sem_wait(&shared.nempty);	/* wait for at least 1 empty slot */

@@ -2,8 +2,7 @@
 
 #define	SEM_NAME	"mysem"
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int		fd, i, nloop, zero = 0;
 	int		*ptr;
@@ -13,13 +12,13 @@ main(int argc, char **argv)
 		err_quit("usage: incr2 <pathname> <#loops>");
 	nloop = atoi(argv[2]);
 
-		/* 4open file, initialize to 0, map into memory */
+	/* 4open file, initialize to 0, map into memory */
 	fd = Open(argv[1], O_RDWR | O_CREAT, FILE_MODE);
 	Write(fd, &zero, sizeof(int));
 	ptr = Mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	Close(fd);
 
-		/* 4create, initialize, and unlink semaphore */
+	/* 4create, initialize, and unlink semaphore */
 	mutex = Sem_open(Px_ipc_name(SEM_NAME), O_CREAT | O_EXCL, FILE_MODE, 1);
 	Sem_unlink(Px_ipc_name(SEM_NAME));
 

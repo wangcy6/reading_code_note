@@ -31,7 +31,7 @@ main(int argc, char **argv)
 	nproducers = min(atoi(argv[2]), MAXNTHREADS);
 	nconsumers = min(atoi(argv[3]), MAXNTHREADS);
 
-		/* 4initialize three semaphores */
+	/* 4initialize three semaphores */
 	Sem_init(&shared.mutex, 0, 1);
 	Sem_init(&shared.nempty, 0, NBUFF);
 	Sem_init(&shared.nstored, 0, 0);

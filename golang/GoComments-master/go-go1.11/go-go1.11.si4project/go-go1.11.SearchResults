@@ -1,0 +1,5 @@
+----  atomic.AddInt32(&rw.readerCount Matches (4 in 1 files) ----
+rwmutex.go (src\sync) line 49 : 	if atomic.AddInt32(&rw.readerCount, 1) < 0 { //读者数量简单+1，如果readerCount为负值，说明有协程持有了写锁，需要等待协程解除写锁后释放信号量解锁
+rwmutex.go (src\sync) line 69 : 	if r := atomic.AddInt32(&rw.readerCount, -1); r < 0 { //每个读者解锁时，首先将readerCount -1，如果readerCount为负值，说明有协程在等待写锁
+rwmutex.go (src\sync) line 97 : 	r := atomic.AddInt32(&rw.readerCount, -rwmutexMaxReaders) + rwmutexMaxReaders //使用原子操作减去rwmutexMaxReaders将readerCount置为负值,目的是阻止读锁。再加上rwmutexMaxReaders又可以获取原来的读者数。非常精妙
+rwmutex.go (src\sync) line 123 : 	r := atomic.AddInt32(&rw.readerCount, rwmutexMaxReaders) //因为持有写锁期间,读者数量有可能增加,此处将读者数量加上rwmutexMaxReaders,将读者数量转为正值。
