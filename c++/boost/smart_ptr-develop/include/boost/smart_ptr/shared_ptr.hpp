@@ -338,7 +338,10 @@ struct sp_internal_constructor_tag
 //  is destroyed or reset.
 //
 
-template<class T> class shared_ptr
+template<class T> 
+
+
+class shared_ptr
 {
 private:
 

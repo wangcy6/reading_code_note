@@ -1,0 +1,336 @@
+---- shared_ptr Matches (335 in 71 files) ----
+caffe::AdaDeltaSolver::AdaDeltaPreSolve in adadelta_solver.cpp (caffe-master\src\caffe\solvers) :                 shared_ptr<Blob<Dtype> >(new Blob<Dtype>(shape)));
+caffe::AdamSolver::AdamPreSolve in adam_solver.cpp (caffe-master\src\caffe\solvers) :             shared_ptr<Blob<Dtype> >(new Blob<Dtype>(shape)));
+caffe::BaseConvolutionLayer::LayerSetUp in base_conv_layer.cpp (caffe-master\src\caffe\layers) :     shared_ptr<Filler<Dtype> > weight_filler(GetFiller<Dtype>(
+caffe::BaseConvolutionLayer::LayerSetUp in base_conv_layer.cpp (caffe-master\src\caffe\layers) :       shared_ptr<Filler<Dtype> > bias_filler(GetFiller<Dtype>(
+caffe::BaseDataLayer in base_data_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<DataTransformer<Dtype> > data_transformer_;
+caffe::BasePrefetchingDataLayer in base_data_layer.hpp (caffe-master\include\caffe\layers) :   vector<shared_ptr<Batch<Dtype> > > prefetch_;
+caffe::BiasLayer::LayerSetUp in bias_layer.cpp (caffe-master\src\caffe\layers) :     shared_ptr<Filler<Dtype> > filler(GetFiller<Dtype>(param.filler()));
+caffe::Blob in blob.hpp (caffe-master\include\caffe) :   inline const shared_ptr<SyncedMemory>& data() const {
+caffe::Blob in blob.hpp (caffe-master\include\caffe) :   inline const shared_ptr<SyncedMemory>& diff() const {
+caffe::Blob in blob.hpp (caffe-master\include\caffe) :    * @brief Set the data_ shared_ptr to point to the SyncedMemory holding the
+caffe::Blob in blob.hpp (caffe-master\include\caffe) :    * shared_ptr calls its destructor when reset with the "=" operator.
+caffe::Blob in blob.hpp (caffe-master\include\caffe) :    * @brief Set the diff_ shared_ptr to point to the SyncedMemory holding the
+caffe::Blob in blob.hpp (caffe-master\include\caffe) :    * shared_ptr calls its destructor when reset with the "=" operator.
+caffe::Blob in blob.hpp (caffe-master\include\caffe) :   shared_ptr<SyncedMemory> data_;
+caffe::Blob in blob.hpp (caffe-master\include\caffe) :   shared_ptr<SyncedMemory> diff_;
+caffe::Blob in blob.hpp (caffe-master\include\caffe) :   shared_ptr<SyncedMemory> shape_data_;
+caffe::BlockingQueue in blocking_queue.hpp (caffe-master\include\caffe\util) :   shared_ptr<sync> sync_;
+_caffe.cpp (caffe-master\python\caffe) line 30 : #define BP_REGISTER_SHARED_PTR_TO_PYTHON(PTR) do { \
+BP_REGISTER_SHARED_PTR_TO_PYTHON in _caffe.cpp (caffe-master\python\caffe) :     boost::python::type_id<shared_ptr<PTR > >(); \
+BP_REGISTER_SHARED_PTR_TO_PYTHON in _caffe.cpp (caffe-master\python\caffe) :     bp::register_ptr_to_python<shared_ptr<PTR > >(); \
+BP_REGISTER_SHARED_PTR_TO_PYTHON in _caffe.cpp (caffe-master\python\caffe) :     bp::register_ptr_to_python<shared_ptr<PTR > >(); \
+caffe in _caffe.cpp (caffe-master\python\caffe) : shared_ptr<Net<Dtype> > Net_Init(string network_file, int phase,
+caffe::Net_Init in _caffe.cpp (caffe-master\python\caffe) :   shared_ptr<Net<Dtype> > net(new Net<Dtype>(network_file,
+caffe in _caffe.cpp (caffe-master\python\caffe) : shared_ptr<Net<Dtype> > Net_Init_Load(
+caffe::Net_Init_Load in _caffe.cpp (caffe-master\python\caffe) :   shared_ptr<Net<Dtype> > net(new Net<Dtype>(param_file,
+caffe::Net_SetInputArrays in _caffe.cpp (caffe-master\python\caffe) :   shared_ptr<MemoryDataLayer<Dtype> > md_layer =
+caffe::NdarrayCallPolicies::postcall in _caffe.cpp (caffe-master\python\caffe) :     shared_ptr<Blob<Dtype> > blob =
+caffe::NdarrayCallPolicies::postcall in _caffe.cpp (caffe-master\python\caffe) :       bp::extract<shared_ptr<Blob<Dtype> > >(pyblob);
+caffe::BlobVec_add_blob in _caffe.cpp (caffe-master\python\caffe) :   typedef vector<shared_ptr<Blob<Dtype> > > BlobVec;
+caffe::BlobVec_add_blob in _caffe.cpp (caffe-master\python\caffe) :   self->push_back(shared_ptr<Blob<Dtype> >(new Blob<Dtype>(shape)));
+caffe::NCCL in _caffe.cpp (caffe-master\python\caffe) :   NCCL(shared_ptr<Solver<Dtype> > solver, const string& uid) {}
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   bp::class_<Net<Dtype>, shared_ptr<Net<Dtype> >, boost::noncopyable >("Net",
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   BP_REGISTER_SHARED_PTR_TO_PYTHON(Net<Dtype>);
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   bp::class_<Blob<Dtype>, shared_ptr<Blob<Dtype> >, boost::noncopyable>(
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   BP_REGISTER_SHARED_PTR_TO_PYTHON(Blob<Dtype>);
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   bp::class_<Layer<Dtype>, shared_ptr<PythonLayer<Dtype> >,
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   BP_REGISTER_SHARED_PTR_TO_PYTHON(Layer<Dtype>);
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   bp::class_<Solver<Dtype>, shared_ptr<Solver<Dtype> >, boost::noncopyable>(
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   BP_REGISTER_SHARED_PTR_TO_PYTHON(Solver<Dtype>);
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :     shared_ptr<SGDSolver<Dtype> >, boost::noncopyable>(
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :     shared_ptr<NesterovSolver<Dtype> >, boost::noncopyable>(
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :     shared_ptr<AdaGradSolver<Dtype> >, boost::noncopyable>(
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :     shared_ptr<RMSPropSolver<Dtype> >, boost::noncopyable>(
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :     shared_ptr<AdaDeltaSolver<Dtype> >, boost::noncopyable>(
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :     shared_ptr<AdamSolver<Dtype> >, boost::noncopyable>(
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   bp::class_<vector<shared_ptr<Blob<Dtype> > > >("BlobVec")
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :     .def(bp::vector_indexing_suite<vector<shared_ptr<Blob<Dtype> > >, true>())
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   bp::class_<vector<shared_ptr<Layer<Dtype> > > >("LayerVec")
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :     .def(bp::vector_indexing_suite<vector<shared_ptr<Layer<Dtype> > >, true>());
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   bp::class_<vector<shared_ptr<Net<Dtype> > > >("NetVec")
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :     .def(bp::vector_indexing_suite<vector<shared_ptr<Net<Dtype> > >, true>());
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   bp::class_<NCCL<Dtype>, shared_ptr<NCCL<Dtype> >,
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :                         bp::init<shared_ptr<Solver<Dtype> >, const string&>())
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   BP_REGISTER_SHARED_PTR_TO_PYTHON(NCCL<Dtype>);
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   bp::class_<Timer, shared_ptr<Timer>, boost::noncopyable>(
+caffe::BOOST_PYTHON_MODULE in _caffe.cpp (caffe-master\python\caffe) :   BP_REGISTER_SHARED_PTR_TO_PYTHON(Timer);
+caffe.cpp (caffe-master\tools) line 23 : using caffe::shared_ptr;
+train in caffe.cpp (caffe-master\tools) :   shared_ptr<caffe::Solver<float> >
+time in caffe.cpp (caffe-master\tools) :   const vector<shared_ptr<Layer<float> > >& layers = caffe_net.layers();
+caffe_.cpp (caffe-master\matlab\+caffe\private) line 45 : static vector<shared_ptr<Solver<float> > > solvers_;
+caffe_.cpp (caffe-master\matlab\+caffe\private) line 46 : static vector<shared_ptr<Net<float> > > nets_;
+caffe_.cpp (caffe-master\matlab\+caffe\private) line 172 : // Convert a vector of shared_ptr in C++ to handle struct vector
+ptr_vec_to_handle_vec in caffe_.cpp (caffe-master\matlab\+caffe\private) : static mxArray* ptr_vec_to_handle_vec(const vector<shared_ptr<T> >& ptr_vec) {
+get_solver in caffe_.cpp (caffe-master\matlab\+caffe\private) :   shared_ptr<Solver<float> > solver(
+delete_solver in caffe_.cpp (caffe-master\matlab\+caffe\private) :       [solver] (const shared_ptr< Solver<float> > &solverPtr) {
+get_net in caffe_.cpp (caffe-master\matlab\+caffe\private) :   shared_ptr<Net<float> > net(new caffe::Net<float>(model_file, phase));
+delete_net in caffe_.cpp (caffe-master\matlab\+caffe\private) :       [net] (const shared_ptr< Net<float> > &netPtr) {
+Classifier in classification.cpp (caffe-master\examples\cpp_classification) :   shared_ptr<Net<float> > net_;
+caffe::Caffe::RNG::Generator in common.cpp (caffe-master\src\caffe) :   shared_ptr<caffe::rng_t> rng_;
+caffe::Caffe::RNG::Generator in common.cpp (caffe-master\src\caffe) :   shared_ptr<caffe::rng_t> rng_;
+common.hpp (caffe-master\include\caffe) line 4 : #include <boost/shared_ptr.hpp>
+caffe in common.hpp (caffe-master\include\caffe) : // We will use the boost shared_ptr instead of the new C++11 one mainly
+caffe in common.hpp (caffe-master\include\caffe) : using boost::shared_ptr;
+caffe::Caffe::RNG in common.hpp (caffe-master\include\caffe) :     shared_ptr<Generator> generator_;
+caffe::Caffe in common.hpp (caffe-master\include\caffe) :   shared_ptr<RNG> random_generator_;
+caffe::DataLayer in data_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<db::DB> db_;
+caffe::DataLayer in data_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<db::Cursor> cursor_;
+caffe::DataTransformer in data_transformer.hpp (caffe-master\include\caffe) :   shared_ptr<Caffe::RNG> rng_;
+caffe::DummyDataLayer in dummy_data_layer.hpp (caffe-master\include\caffe\layers) :   vector<shared_ptr<Filler<Dtype> > > fillers_;
+caffe::EmbedLayer::LayerSetUp in embed_layer.cpp (caffe-master\src\caffe\layers) :     shared_ptr<Filler<Dtype> > weight_filler(GetFiller<Dtype>(
+caffe::EmbedLayer::LayerSetUp in embed_layer.cpp (caffe-master\src\caffe\layers) :       shared_ptr<Filler<Dtype> > bias_filler(GetFiller<Dtype>(
+feature_extraction_pipeline in extract_features.cpp (caffe-master\tools) :   boost::shared_ptr<Net<Dtype> > feature_extraction_net(
+feature_extraction_pipeline in extract_features.cpp (caffe-master\tools) :   std::vector<boost::shared_ptr<db::DB> > feature_dbs;
+feature_extraction_pipeline in extract_features.cpp (caffe-master\tools) :   std::vector<boost::shared_ptr<db::Transaction> > txns;
+feature_extraction_pipeline in extract_features.cpp (caffe-master\tools) :     boost::shared_ptr<db::DB> db(db::GetDB(db_type));
+feature_extraction_pipeline in extract_features.cpp (caffe-master\tools) :     boost::shared_ptr<db::Transaction> txn(db->NewTransaction());
+feature_extraction_pipeline in extract_features.cpp (caffe-master\tools) :       const boost::shared_ptr<Blob<Dtype> > feature_blob =
+caffe::GaussianFiller in filler.hpp (caffe-master\include\caffe) :   shared_ptr<SyncedMemory> rand_vec_;
+caffe::HDF5DataLayer::LoadHDF5FileData in hdf5_data_layer.cpp (caffe-master\src\caffe\layers) :     hdf_blobs_[i] = shared_ptr<Blob<Dtype> >(new Blob<Dtype>());
+caffe::HDF5DataLayer in hdf5_data_layer.hpp (caffe-master\include\caffe\layers) :   std::vector<shared_ptr<Blob<Dtype> > > hdf_blobs_;
+caffe::ImageDataLayer in image_data_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<Caffe::RNG> prefetch_rng_;
+caffe::InfogainLossLayer in infogain_loss_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<Layer<Dtype> > softmax_layer_;
+caffe::InnerProductLayer::LayerSetUp in inner_product_layer.cpp (caffe-master\src\caffe\layers) :     shared_ptr<Filler<Dtype> > weight_filler(GetFiller<Dtype>(
+caffe::InnerProductLayer::LayerSetUp in inner_product_layer.cpp (caffe-master\src\caffe\layers) :       shared_ptr<Filler<Dtype> > bias_filler(GetFiller<Dtype>(
+caffe::InternalThread in internal_thread.hpp (caffe-master\include\caffe) :   shared_ptr<boost::thread> thread_;
+caffe::Layer in layer.hpp (caffe-master\include\caffe) :   vector<shared_ptr<Blob<Dtype> > >& blobs() {
+caffe::Layer in layer.hpp (caffe-master\include\caffe) :   vector<shared_ptr<Blob<Dtype> > > blobs_;
+caffe::GetConvolutionLayer in layer_factory.cpp (caffe-master\src\caffe) : shared_ptr<Layer<Dtype> > GetConvolutionLayer(
+caffe::GetConvolutionLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new ConvolutionLayer<Dtype>(param));
+caffe::GetConvolutionLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new CuDNNConvolutionLayer<Dtype>(param));
+caffe::GetDeconvolutionLayer in layer_factory.cpp (caffe-master\src\caffe) : shared_ptr<Layer<Dtype> > GetDeconvolutionLayer(const LayerParameter& param) {
+caffe::GetDeconvolutionLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new DeconvolutionLayer<Dtype>(param));
+caffe::GetDeconvolutionLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new CuDNNDeconvolutionLayer<Dtype>(param));
+caffe::GetPoolingLayer in layer_factory.cpp (caffe-master\src\caffe) : shared_ptr<Layer<Dtype> > GetPoolingLayer(const LayerParameter& param) {
+caffe::GetPoolingLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new PoolingLayer<Dtype>(param));
+caffe::GetPoolingLayer in layer_factory.cpp (caffe-master\src\caffe) :       return shared_ptr<Layer<Dtype> >(new PoolingLayer<Dtype>(param));
+caffe::GetPoolingLayer in layer_factory.cpp (caffe-master\src\caffe) :         return shared_ptr<Layer<Dtype> >(new PoolingLayer<Dtype>(param));
+caffe::GetPoolingLayer in layer_factory.cpp (caffe-master\src\caffe) :         return shared_ptr<Layer<Dtype> >(new CuDNNPoolingLayer<Dtype>(param));
+caffe::GetLRNLayer in layer_factory.cpp (caffe-master\src\caffe) : shared_ptr<Layer<Dtype> > GetLRNLayer(const LayerParameter& param) {
+caffe::GetLRNLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new LRNLayer<Dtype>(param));
+caffe::GetLRNLayer in layer_factory.cpp (caffe-master\src\caffe) :       return shared_ptr<Layer<Dtype> >(new CuDNNLCNLayer<Dtype>(param));
+caffe::GetLRNLayer in layer_factory.cpp (caffe-master\src\caffe) :         return shared_ptr<Layer<Dtype> >(new LRNLayer<Dtype>(param));
+caffe::GetLRNLayer in layer_factory.cpp (caffe-master\src\caffe) :         return shared_ptr<Layer<Dtype> >(new CuDNNLRNLayer<Dtype>(param));
+caffe::GetReLULayer in layer_factory.cpp (caffe-master\src\caffe) : shared_ptr<Layer<Dtype> > GetReLULayer(const LayerParameter& param) {
+caffe::GetReLULayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new ReLULayer<Dtype>(param));
+caffe::GetReLULayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new CuDNNReLULayer<Dtype>(param));
+caffe::GetSigmoidLayer in layer_factory.cpp (caffe-master\src\caffe) : shared_ptr<Layer<Dtype> > GetSigmoidLayer(const LayerParameter& param) {
+caffe::GetSigmoidLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new SigmoidLayer<Dtype>(param));
+caffe::GetSigmoidLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new CuDNNSigmoidLayer<Dtype>(param));
+caffe::GetSoftmaxLayer in layer_factory.cpp (caffe-master\src\caffe) : shared_ptr<Layer<Dtype> > GetSoftmaxLayer(const LayerParameter& param) {
+caffe::GetSoftmaxLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new SoftmaxLayer<Dtype>(param));
+caffe::GetSoftmaxLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new CuDNNSoftmaxLayer<Dtype>(param));
+caffe::GetTanHLayer in layer_factory.cpp (caffe-master\src\caffe) : shared_ptr<Layer<Dtype> > GetTanHLayer(const LayerParameter& param) {
+caffe::GetTanHLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new TanHLayer<Dtype>(param));
+caffe::GetTanHLayer in layer_factory.cpp (caffe-master\src\caffe) :     return shared_ptr<Layer<Dtype> >(new CuDNNTanHLayer<Dtype>(param));
+caffe::GetPythonLayer in layer_factory.cpp (caffe-master\src\caffe) : shared_ptr<Layer<Dtype> > GetPythonLayer(const LayerParameter& param) {
+caffe::GetPythonLayer in layer_factory.cpp (caffe-master\src\caffe) :     return bp::extract<shared_ptr<PythonLayer<Dtype> > >(layer)();
+caffe::LayerRegistry in layer_factory.hpp (caffe-master\include\caffe) :   typedef shared_ptr<Layer<Dtype> > (*Creator)(const LayerParameter&);
+caffe::LayerRegistry in layer_factory.hpp (caffe-master\include\caffe) :   static shared_ptr<Layer<Dtype> > CreateLayer(const LayerParameter& param) {
+caffe::LayerRegisterer::LayerRegisterer in layer_factory.hpp (caffe-master\include\caffe) :                   shared_ptr<Layer<Dtype> > (*creator)(const LayerParameter&)) {
+REGISTER_LAYER_CLASS in layer_factory.hpp (caffe-master\include\caffe) :   shared_ptr<Layer<Dtype> > Creator_##type##Layer(const LayerParameter& param) \
+REGISTER_LAYER_CLASS in layer_factory.hpp (caffe-master\include\caffe) :     return shared_ptr<Layer<Dtype> >(new type##Layer<Dtype>(param));           \
+caffe::LRNLayer in lrn_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<SplitLayer<Dtype> > split_layer_;
+caffe::LRNLayer in lrn_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<PowerLayer<Dtype> > square_layer_;
+caffe::LRNLayer in lrn_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<PoolingLayer<Dtype> > pool_layer_;
+caffe::LRNLayer in lrn_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<PowerLayer<Dtype> > power_layer_;
+caffe::LRNLayer in lrn_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<EltwiseLayer<Dtype> > product_layer_;
+caffe::Net::AppendTop in net.cpp (caffe-master\src\caffe) :   shared_ptr<LayerParameter> layer_param(
+caffe::Net::AppendTop in net.cpp (caffe-master\src\caffe) :     shared_ptr<Blob<Dtype> > blob_pointer(new Blob<Dtype>());
+caffe::Net::ShareTrainedLayersWith in net.cpp (caffe-master\src\caffe) :     vector<shared_ptr<Blob<Dtype> > >& target_blobs =
+caffe::Net::CopyTrainedLayersFrom in net.cpp (caffe-master\src\caffe) :     vector<shared_ptr<Blob<Dtype> > >& target_blobs =
+caffe::Net::CopyTrainedLayersFromHDF5 in net.cpp (caffe-master\src\caffe) :     vector<shared_ptr<Blob<Dtype> > >& target_blobs =
+caffe::Net::blob_by_name in net.cpp (caffe-master\src\caffe) : const shared_ptr<Blob<Dtype> > Net<Dtype>::blob_by_name(
+caffe::Net::blob_by_name in net.cpp (caffe-master\src\caffe) :   shared_ptr<Blob<Dtype> > blob_ptr;
+caffe::Net::layer_by_name in net.cpp (caffe-master\src\caffe) : const shared_ptr<Layer<Dtype> > Net<Dtype>::layer_by_name(
+caffe::Net::layer_by_name in net.cpp (caffe-master\src\caffe) :   shared_ptr<Layer<Dtype> > layer_ptr;
+caffe::Net in net.hpp (caffe-master\include\caffe) :   inline const vector<shared_ptr<Blob<Dtype> > >& blobs() const {
+caffe::Net in net.hpp (caffe-master\include\caffe) :   inline const vector<shared_ptr<Layer<Dtype> > >& layers() const {
+caffe::Net in net.hpp (caffe-master\include\caffe) :   inline const vector<shared_ptr<Blob<Dtype> > >& params() const {
+caffe::Net in net.hpp (caffe-master\include\caffe) :   const shared_ptr<Blob<Dtype> > blob_by_name(const string& blob_name) const;
+caffe::Net in net.hpp (caffe-master\include\caffe) :   const shared_ptr<Layer<Dtype> > layer_by_name(const string& layer_name) const;
+caffe::Net in net.hpp (caffe-master\include\caffe) :   vector<shared_ptr<Layer<Dtype> > > layers_;
+caffe::Net in net.hpp (caffe-master\include\caffe) :   vector<shared_ptr<Blob<Dtype> > > blobs_;
+caffe::Net in net.hpp (caffe-master\include\caffe) :   vector<shared_ptr<Blob<Dtype> > > params_;
+caffe::Params::Params in parallel.cpp (caffe-master\src\caffe) : Params<Dtype>::Params(shared_ptr<Solver<Dtype> > root_solver)
+caffe::GPUParams::GPUParams in parallel.cpp (caffe-master\src\caffe) : GPUParams<Dtype>::GPUParams(shared_ptr<Solver<Dtype> > root_solver, int device)
+caffe::NCCL::NCCL in parallel.cpp (caffe-master\src\caffe) : NCCL<Dtype>::NCCL(shared_ptr<Solver<Dtype> > solver)
+caffe::NCCL::NCCL in parallel.cpp (caffe-master\src\caffe) : NCCL<Dtype>::NCCL(shared_ptr<Solver<Dtype> > solver, const string& uid)
+caffe::NCCL::run in parallel.cpp (caffe-master\src\caffe) :   vector<shared_ptr<Blob<Dtype> > >& blobs =
+caffe::Worker in parallel.cpp (caffe-master\src\caffe) :   explicit Worker(shared_ptr<Solver<Dtype> > rank0, int device,
+caffe::Worker::InternalThreadEntry in parallel.cpp (caffe-master\src\caffe) :     shared_ptr<Solver<Dtype> > s(SolverRegistry<Dtype>::CreateSolver(param));
+caffe::Worker in parallel.cpp (caffe-master\src\caffe) :   shared_ptr<Solver<Dtype> > rank0_;
+caffe::NCCL::Run in parallel.cpp (caffe-master\src\caffe) :   vector<shared_ptr<Worker<Dtype> > > workers(gpus.size());
+caffe::Params in parallel.hpp (caffe-master\include\caffe) :   explicit Params(shared_ptr<Solver<Dtype> > root_solver);
+caffe::GPUParams in parallel.hpp (caffe-master\include\caffe) :   GPUParams(shared_ptr<Solver<Dtype> > root_solver, int device);
+caffe::NCCL in parallel.hpp (caffe-master\include\caffe) :   explicit NCCL(shared_ptr<Solver<Dtype> > solver);
+caffe::NCCL in parallel.hpp (caffe-master\include\caffe) :   NCCL(shared_ptr<Solver<Dtype> > solver, const string& uid);
+caffe::NCCL in parallel.hpp (caffe-master\include\caffe) :   shared_ptr<Solver<Dtype> > solver_;
+caffe::PReLULayer::LayerSetUp in prelu_layer.cpp (caffe-master\src\caffe\layers) :     shared_ptr<Filler<Dtype> > filler;
+caffe::RecurrentLayer in recurrent_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<Net<Dtype> > unrolled_net_;
+caffe::ScaleLayer::LayerSetUp in scale_layer.cpp (caffe-master\src\caffe\layers) :     shared_ptr<Filler<Dtype> > filler(GetFiller<Dtype>(filler_param));
+caffe::ScaleLayer in scale_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<Layer<Dtype> > bias_layer_;
+caffe::SGDSolver::PreSolve in sgd_solver.cpp (caffe-master\src\caffe\solvers) :     history_.push_back(shared_ptr<Blob<Dtype> >(new Blob<Dtype>(shape)));
+caffe::SGDSolver::PreSolve in sgd_solver.cpp (caffe-master\src\caffe\solvers) :     update_.push_back(shared_ptr<Blob<Dtype> >(new Blob<Dtype>(shape)));
+caffe::SGDSolver::PreSolve in sgd_solver.cpp (caffe-master\src\caffe\solvers) :     temp_.push_back(shared_ptr<Blob<Dtype> >(new Blob<Dtype>(shape)));
+caffe::SGDSolver in sgd_solvers.hpp (caffe-master\include\caffe) :   const vector<shared_ptr<Blob<Dtype> > >& history() { return history_; }
+caffe::SGDSolver in sgd_solvers.hpp (caffe-master\include\caffe) :   vector<shared_ptr<Blob<Dtype> > > history_, update_, temp_;
+caffe::SigmoidCrossEntropyLossLayer in sigmoid_cross_entropy_loss_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<SigmoidLayer<Dtype> > sigmoid_layer_;
+caffe::SigmoidCrossEntropyLossLayer in sigmoid_cross_entropy_loss_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<Blob<Dtype> > sigmoid_output_;
+caffe::SoftmaxWithLossLayer in softmax_loss_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<Layer<Dtype> > softmax_layer_;
+caffe::LoadNetWeights in solver.cpp (caffe-master\src\caffe) : void LoadNetWeights(shared_ptr<Net<Dtype> > net,
+caffe::Solver::Test in solver.cpp (caffe-master\src\caffe) :   const shared_ptr<Net<Dtype> >& test_net = test_nets_[test_net_id];
+caffe::Solver in solver.hpp (caffe-master\include\caffe) :   inline shared_ptr<Net<Dtype> > net() { return net_; }
+caffe::Solver in solver.hpp (caffe-master\include\caffe) :   inline const vector<shared_ptr<Net<Dtype> > >& test_nets() {
+caffe::Solver in solver.hpp (caffe-master\include\caffe) :   shared_ptr<Net<Dtype> > net_;
+caffe::Solver in solver.hpp (caffe-master\include\caffe) :   vector<shared_ptr<Net<Dtype> > > test_nets_;
+caffe::SPPLayer::LayerSetUp in spp_layer.cpp (caffe-master\src\caffe\layers) :     pooling_layers_.push_back(shared_ptr<PoolingLayer<Dtype> > (
+caffe::SPPLayer::LayerSetUp in spp_layer.cpp (caffe-master\src\caffe\layers) :     pooling_layers_.push_back(shared_ptr<PoolingLayer<Dtype> > (
+caffe::SPPLayer in spp_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<SplitLayer<Dtype> > split_layer_;
+caffe::SPPLayer in spp_layer.hpp (caffe-master\include\caffe\layers) :   vector<shared_ptr<PoolingLayer<Dtype> > > pooling_layers_;
+caffe::SPPLayer in spp_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<ConcatLayer<Dtype> > concat_layer_;
+caffe::SwishLayer in swish_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<SigmoidLayer<Dtype> > sigmoid_layer_;
+caffe::SwishLayer in swish_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<Blob<Dtype> > sigmoid_input_;
+caffe::SwishLayer in swish_layer.hpp (caffe-master\include\caffe\layers) :   shared_ptr<Blob<Dtype> > sigmoid_output_;
+caffe::AccuracyLayerTest::FillBottoms in test_accuracy_layer.cpp (caffe-master\src\caffe\test) :     shared_ptr<Caffe::RNG> rng(new Caffe::RNG(prefetch_rng_seed));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_bias_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<BiasLayer<Dtype> > layer(new BiasLayer<Dtype>(layer_param));
+caffe::ConcatLayerTest::SetUp in test_concat_layer.cpp (caffe-master\src\caffe\test) :     shared_ptr<ConstantFiller<Dtype> > filler;
+caffe::caffe_conv in test_convolution_layer.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<Dtype> > >& weights,
+caffe in test_convolution_layer.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<float> > >& weights,
+caffe in test_convolution_layer.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<double> > >& weights,
+caffe::ConvolutionLayerTest in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<Dtype> > ref_blob_top_;
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<GaussianFiller<Dtype> > filler;
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<Dtype> > blob_sep(new Blob<Dtype>());
+caffe::CuDNNConvolutionLayerTest in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<Dtype> > ref_blob_top_;
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<TypeParam> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<TypeParam> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<TypeParam> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<GaussianFiller<TypeParam> > filler;
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<TypeParam> > layer(
+caffe::TYPED_TEST in test_convolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<TypeParam> > blob_sep(new Blob<TypeParam>());
+caffe::DataLayerTest in test_data_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<string> filename_;
+caffe::TYPED_TEST in test_deconvolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_deconvolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_deconvolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_deconvolution_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_eltwise_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<EltwiseLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_eltwise_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<EltwiseLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_eltwise_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<EltwiseLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_eltwise_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<EltwiseLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_eltwise_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<EltwiseLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_embed_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<EmbedLayer<Dtype> > layer(new EmbedLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_embed_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<EmbedLayer<Dtype> > layer(new EmbedLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_embed_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<EmbedLayer<Dtype> > layer(new EmbedLayer<Dtype>(layer_param));
+caffe::ConstantFillerTest in test_filler.cpp (caffe-master\src\caffe\test) :   shared_ptr<ConstantFiller<Dtype> > filler_;
+caffe::UniformFillerTest in test_filler.cpp (caffe-master\src\caffe\test) :   shared_ptr<UniformFiller<Dtype> > filler_;
+caffe::PositiveUnitballFillerTest in test_filler.cpp (caffe-master\src\caffe\test) :   shared_ptr<PositiveUnitballFiller<Dtype> > filler_;
+caffe::GaussianFillerTest in test_filler.cpp (caffe-master\src\caffe\test) :   shared_ptr<GaussianFiller<Dtype> > filler_;
+caffe::XavierFillerTest in test_filler.cpp (caffe-master\src\caffe\test) :   shared_ptr<XavierFiller<Dtype> > filler_;
+caffe::MSRAFillerTest in test_filler.cpp (caffe-master\src\caffe\test) :   shared_ptr<MSRAFiller<Dtype> > filler_;
+caffe::BilinearFillerTest in test_filler.cpp (caffe-master\src\caffe\test) :   shared_ptr<BilinearFiller<Dtype> > filler_;
+caffe::GradientBasedSolverTest in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :   shared_ptr<SGDSolver<Dtype> > solver_;
+caffe::GradientBasedSolverTest in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :   shared_ptr<NCCL<Dtype> > nccl_;
+caffe::GradientBasedSolverTest::ComputeLeastSquaresUpdate in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :       vector<shared_ptr<Blob<Dtype> > >* updated_params) {
+caffe::GradientBasedSolverTest::ComputeLeastSquaresUpdate in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<Dtype> > >& param_blobs =
+caffe::GradientBasedSolverTest::ComputeLeastSquaresUpdate in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :       const vector<shared_ptr<Blob<Dtype> > >& history = solver_->history();
+caffe::GradientBasedSolverTest::CheckLeastSquaresUpdate in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :       const vector<shared_ptr<Blob<Dtype> > >& updated_params) {
+caffe::GradientBasedSolverTest::CheckLeastSquaresUpdate in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<Dtype> > >& param_blobs =
+caffe::GradientBasedSolverTest::CheckLeastSquaresUpdate in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :       const vector<shared_ptr<Blob<Dtype> > >& history = solver_->history();
+caffe::GradientBasedSolverTest::CheckAccumulation in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<Dtype> > >& param_blobs =
+caffe::GradientBasedSolverTest::CheckAccumulation in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :     vector<shared_ptr<Blob<Dtype> > > noaccum_params(param_blobs.size());
+caffe::GradientBasedSolverTest::CheckAccumulation in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<Dtype> > >& accum_params =
+caffe::GradientBasedSolverTest::TestLeastSquaresUpdate in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :       vector<shared_ptr<Blob<Dtype> > > updated_params;
+caffe::GradientBasedSolverTest::TestSnapshot in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :     vector<shared_ptr<Blob<Dtype> > > param_copies;
+caffe::GradientBasedSolverTest::TestSnapshot in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :     vector<shared_ptr<Blob<Dtype> > > history_copies;
+caffe::GradientBasedSolverTest::TestSnapshot in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<Dtype> > >& orig_history = solver_->history();
+caffe::GradientBasedSolverTest::TestSnapshot in test_gradient_based_solver.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<Dtype> > >& history = solver_->history();
+caffe::GradientChecker::CheckGradientSingle in test_gradient_check_util.hpp (caffe-master\include\caffe\test) :   vector<shared_ptr<Blob<Dtype> > >
+caffe::GradientChecker::CheckGradientNet in test_gradient_check_util.hpp (caffe-master\include\caffe\test) :   const vector<shared_ptr<Layer<Dtype> > >& layers = net.layers();
+caffe::TYPED_TEST in test_inner_product_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<InnerProductLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_inner_product_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<InnerProductLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_inner_product_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<InnerProductLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_inner_product_layer.cpp (caffe-master\src\caffe\test) :     shared_ptr<InnerProductLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_inner_product_layer.cpp (caffe-master\src\caffe\test) :     shared_ptr<InnerProductLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_inner_product_layer.cpp (caffe-master\src\caffe\test) :     shared_ptr<InnerProductLayer<Dtype> > ip_t(
+caffe::TYPED_TEST in test_inner_product_layer.cpp (caffe-master\src\caffe\test) :     shared_ptr<InnerProductLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_inner_product_layer.cpp (caffe-master\src\caffe\test) :     shared_ptr<InnerProductLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_inner_product_layer.cpp (caffe-master\src\caffe\test) :     shared_ptr<InnerProductLayer<Dtype> > ip_t(
+caffe::TYPED_TEST in test_layer_factory.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer;
+caffe::TYPED_TEST in test_lstm_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<LSTMLayer<Dtype> > layer(new LSTMLayer<Dtype>(this->layer_param_));
+caffe::TYPED_TEST in test_memory_data_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Layer<Dtype> > layer(
+caffe::TYPED_TEST in test_memory_data_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<MemoryDataLayer<Dtype> > layer(
+caffe::NetTest::CopyNetBlobs in test_net.cpp (caffe-master\src\caffe\test) :       vector<shared_ptr<Blob<Dtype> > >* blobs_copy) {
+caffe::NetTest::CopyNetBlobs in test_net.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<Dtype> > >& net_blobs = net_->blobs();
+caffe::NetTest::CopyNetParams in test_net.cpp (caffe-master\src\caffe\test) :       vector<shared_ptr<Blob<Dtype> > >* params_copy) {
+caffe::NetTest::CopyNetParams in test_net.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<Dtype> > >& net_params = net_->params();
+caffe::NetTest in test_net.cpp (caffe-master\src\caffe\test) :   shared_ptr<Net<Dtype> > net_;
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   vector<shared_ptr<Blob<Dtype> > > blob_grads;
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   vector<shared_ptr<Blob<Dtype> > > param_grads;
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<Dtype> > >& weighted_blobs =
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :     const vector<shared_ptr<Blob<Dtype> > >& weighted_params =
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :     const shared_ptr<Blob<Dtype> >& weighted_blob =
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   vector<shared_ptr<Blob<Dtype> > > blob_grads;
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   vector<shared_ptr<Blob<Dtype> > > param_grads;
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   vector<shared_ptr<Blob<Dtype> > > blob_grads_loss_2;
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   vector<shared_ptr<Blob<Dtype> > > param_grads_loss_2;
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   const vector<shared_ptr<Blob<Dtype> > >& blob_grads_loss_3 =
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   const vector<shared_ptr<Blob<Dtype> > >& blob_grads_midnet_loss_3 =
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   const vector<shared_ptr<Blob<Dtype> > >& params = this->net_->params();
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   const vector<shared_ptr<Blob<Dtype> > >& params2 = this->net_->params();
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   const vector<shared_ptr<Blob<Dtype> > >& params3 = this->net_->params();
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   const vector<shared_ptr<Blob<Dtype> > >& params4 = this->net_->params();
+caffe::TYPED_TEST in test_net.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<Dtype> > input_blob = this->net_->blob_by_name("data");
+caffe::TYPED_TEST in test_neuron_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<Dtype> > blob_bottom_2(new Blob<Dtype>());
+caffe::TYPED_TEST in test_neuron_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<Dtype> > blob_top_2(new Blob<Dtype>());
+caffe::TYPED_TEST in test_neuron_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<Dtype> > tmp_blob(new Blob<Dtype>());
+caffe::TYPED_TEST in test_neuron_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<Dtype> > blob_bottom_2(new Blob<Dtype>());
+caffe::TYPED_TEST in test_neuron_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<Dtype> > blob_middle_2(new Blob<Dtype>());
+caffe::TYPED_TEST in test_neuron_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<Dtype> > blob_top_2(new Blob<Dtype>());
+caffe::TYPED_TEST in test_neuron_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<Blob<Dtype> > tmp_blob(new Blob<Dtype>());
+caffe::RandomNumberGeneratorTest in test_random_number_generator.cpp (caffe-master\src\caffe\test) :   shared_ptr<SyncedMemory> data_;
+caffe::RandomNumberGeneratorTest in test_random_number_generator.cpp (caffe-master\src\caffe\test) :   shared_ptr<SyncedMemory> data_2_;
+caffe::RandomNumberGeneratorTest in test_random_number_generator.cpp (caffe-master\src\caffe\test) :   shared_ptr<SyncedMemory> int_data_;
+caffe::RandomNumberGeneratorTest in test_random_number_generator.cpp (caffe-master\src\caffe\test) :   shared_ptr<SyncedMemory> int_data_2_;
+caffe::ReductionLayerTest::TestForward in test_reduction_layer.cpp (caffe-master\src\caffe\test) :     shared_ptr<ReductionLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_reduction_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ReductionLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_reduction_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ReductionLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_reduction_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ReductionLayer<Dtype> > layer(
+caffe::TYPED_TEST in test_rnn_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<RNNLayer<Dtype> > layer(new RNNLayer<Dtype>(this->layer_param_));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::TYPED_TEST in test_scale_layer.cpp (caffe-master\src\caffe\test) :   shared_ptr<ScaleLayer<Dtype> > layer(new ScaleLayer<Dtype>(layer_param));
+caffe::SolverTest in test_solver.cpp (caffe-master\src\caffe\test) :   shared_ptr<Solver<Dtype> > solver_;
+test_solver_factory.cpp (caffe-master\src\caffe\test) line 40 :   shared_ptr<Solver<Dtype> > solver;
+test_upgrade_proto.cpp (caffe-master\src\caffe\test) line 2896 :   shared_ptr<Layer<float> > layer;
+window_data_layer.hpp (caffe-master\include\caffe\layers) line 41 :   shared_ptr<Caffe::RNG> prefetch_rng_;
