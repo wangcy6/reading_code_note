@@ -331,8 +331,9 @@ namespace boost
         using detail::basic_condition_variable::do_wait_until;
         using detail::basic_condition_variable::notify_one;
         using detail::basic_condition_variable::notify_all;
+		wait
 
-        void wait(unique_lock<mutex>& m)
+        void (unique_lock<mutex>& m)
         {
             do_wait_until(m, detail::internal_platform_timepoint::getMax());
         }

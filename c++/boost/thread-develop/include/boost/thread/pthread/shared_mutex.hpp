@@ -73,17 +73,17 @@ namespace boost
             {
                 BOOST_ASSERT(  ! upgrade );
             }
-
+            // 没有其读锁，和写锁请求
             bool can_lock () const
             {
                 return ! (shared_count || exclusive);
             }
-
+            //独占了
             void lock ()
             {
                 exclusive = true;
             }
-
+            //释放了
             void unlock ()
             {
                 exclusive = false;
@@ -133,19 +133,19 @@ namespace boost
             }
 
         //private:
-            unsigned shared_count;
-            bool exclusive;
+            unsigned shared_count; //读线程 不是持有锁资源，而是持有的int 数量，出现很多
+            bool exclusive; //写线程 ，不是持有锁资源，而是占用标记，被标记代表占用锁了
             bool upgrade;
-            bool exclusive_waiting_blocked;
+            bool exclusive_waiting_blocked; //写线程 ，不是持有锁资源，而是占用标记，被标记代表占用锁了
         };
 
 
 
         state_data state;
         boost::mutex state_change;
-        boost::condition_variable shared_cond;
-        boost::condition_variable exclusive_cond;
-        boost::condition_variable upgrade_cond;
+        boost::condition_variable shared_cond; //read 
+        boost::condition_variable exclusive_cond; //write
+        boost::condition_variable upgrade_cond; //???
 
         void release_waiters()
         {
@@ -164,25 +164,31 @@ namespace boost
         ~shared_mutex()
         {
         }
-
+        //阻塞读锁
         void lock_shared()
         {
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
             boost::this_thread::disable_interruption do_not_disturb;
 #endif
             boost::unique_lock<boost::mutex> lk(state_change);
-            shared_cond.wait(lk, boost::bind(&state_data::can_lock_shared, boost::ref(state)));
-            state.lock_shared();
-        }
 
+			//循环判断 can_lock_shared 是否可以加锁成功
+			shared_cond.wait(lk, boost::bind(&state_data::can_lock_shared, boost::ref(state)));
+
+            //+1
+			state.lock_shared();
+        }
+        //非阻塞读锁
         bool try_lock_shared()
-        {
+        {   //互斥加锁
             boost::unique_lock<boost::mutex> lk(state_change);
 
+			//如果有写锁 或者等待写锁 离开返回失败
             if(!state.can_lock_shared())
             {
                 return false;
             }
+			//读锁不是占用互斥所，而是修改公共变量引用计数+1
             state.lock_shared();
             return true;
         }
@@ -237,12 +243,16 @@ namespace boost
           state.lock_shared();
           return true;
         }
-#endif
+#endif     //共享解锁
         void unlock_shared()
-        {
+        {      
+        
             boost::unique_lock<boost::mutex> lk(state_change);
+			
             state.assert_lock_shared();
-            state.unlock_shared();
+                        //-1 操作
+			state.unlock_shared();
+			// 条件满足，通知等待条件变量可用。
             if (state.no_shared())
             {
                 if (state.upgrade)
@@ -262,16 +272,22 @@ namespace boost
                 release_waiters();
             }
         }
-
+        //Exclusive locking
         void lock()
         {
-#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
-            boost::this_thread::disable_interruption do_not_disturb;
-#endif
+           //上来就加锁，获取锁成功，可以修改状态
             boost::unique_lock<boost::mutex> lk(state_change);
+
+			//等待加锁
             state.exclusive_waiting_blocked=true;
-            exclusive_cond.wait(lk, boost::bind(&state_data::can_lock, boost::ref(state)));
-            state.exclusive=true;
+
+			// 不是read全部释放后（count =0） 才加锁
+			//抢到锁，等待 can_lock(), 
+			//最后一个读者 回通知 exclusive_cond
+			exclusive_cond.wait(lk, boost::bind(&state_data::can_lock, boost::ref(state)));
+
+			//加锁成功，无read
+			state.exclusive=true;
         }
 
 #if defined BOOST_THREAD_USES_DATETIME
@@ -349,11 +365,13 @@ namespace boost
         void unlock()
         {
             boost::unique_lock<boost::mutex> lk(state_change);
-            state.assert_locked();
+
+			state.assert_locked();
             state.exclusive=false;
             state.exclusive_waiting_blocked=false;
             state.assert_free();
-            release_waiters();
+
+			release_waiters();
         }
 
         void lock_upgrade()

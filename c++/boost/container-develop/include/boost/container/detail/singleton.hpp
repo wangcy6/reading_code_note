@@ -86,7 +86,7 @@ struct singleton_default
     };
     static object_creator create_object;
 
-    singleton_default();
+    singleton_default(); //构造函数私有
 
   public:
     typedef T object_type;
@@ -109,8 +109,7 @@ struct singleton_default
     }
 };
 template <typename T>
-typename singleton_default<T>::object_creator
-singleton_default<T>::create_object;
+typename singleton_default<T>::object_creator singleton_default<T>::create_object;
 
 } // namespace dtl
 } // namespace container
