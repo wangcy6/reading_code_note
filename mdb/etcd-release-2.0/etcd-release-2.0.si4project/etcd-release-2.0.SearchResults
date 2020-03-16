@@ -1,0 +1,10 @@
+---- for( Matches (9 in 3 files) ----
+flag.go (Godeps\_workspace\src\github.com\codegangsta\cli) line 71 : 	return withEnvHint(f.EnvVar, fmt.Sprintf("%s%s %v\t`%v` %s", prefixFor(f.Name), f.Name, f.Value, "-"+f.Name+" option -"+f.Name+" option", f.Usage))
+flag.go (Godeps\_workspace\src\github.com\codegangsta\cli) line 115 : 	pref := prefixFor(firstName)
+flag.go (Godeps\_workspace\src\github.com\codegangsta\cli) line 169 : 	pref := prefixFor(firstName)
+flag.go (Godeps\_workspace\src\github.com\codegangsta\cli) line 382 : func prefixFor(name string) (prefix string) {
+flag.go (Godeps\_workspace\src\github.com\codegangsta\cli) line 396 : 		prefixed += prefixFor(name) + name
+reverse.go (proxy) line 81 : 	maybeSetForwardedFor(proxyreq)
+reverse.go (proxy) line 168 : func maybeSetForwardedFor(req *http.Request) {
+reverse_test.go (proxy) line 132 : func TestMaybeSetForwardedFor(t *testing.T) {
+reverse_test.go (proxy) line 163 : 		maybeSetForwardedFor(req)

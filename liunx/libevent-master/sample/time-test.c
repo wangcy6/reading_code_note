@@ -39,8 +39,7 @@ struct timeval lasttime;
 
 int event_is_persistent;
 
-static void
-timeout_cb(evutil_socket_t fd, short event, void *arg)
+static void timeout_cb(evutil_socket_t fd, short event, void *arg)
 {
 	struct timeval newtime, difference;
 	struct event *timeout = arg;
@@ -63,22 +62,13 @@ timeout_cb(evutil_socket_t fd, short event, void *arg)
 	}
 }
 
-int
-main(int argc, char **argv)
+int  main(int argc, char **argv)
 {
 	struct event timeout;
 	struct timeval tv;
 	struct event_base *base;
 	int flags;
 
-#ifdef _WIN32
-	WORD wVersionRequested;
-	WSADATA wsaData;
-
-	wVersionRequested = MAKEWORD(2, 2);
-
-	(void)WSAStartup(wVersionRequested, &wsaData);
-#endif
 
 	if (argc == 2 && !strcmp(argv[1], "-p")) {
 		event_is_persistent = 1;

@@ -1118,7 +1118,6 @@ item *do_item_touch(const char *key, size_t nkey, uint32_t exptime,
 }
 
 /*** LRU MAINTENANCE THREAD ***/
-
 /* Returns number of items remove, expired, or evicted.
  * Callable from worker threads or the LRU maintainer thread */
 // 从LRU 链表尾部开始搜索item

@@ -37,7 +37,7 @@ __STL_BEGIN_NAMESPACE
 #endif
 
 // Heap-manipulation functions: push_heap, pop_heap, make_heap, sort_heap.
-// push_heap 做 shift up 操作，调整满足 max-heap 特性
+// push_heap 做 shift up 操作，调整满足  max-heap 特性
 template <class _RandomAccessIterator, class _Distance, class _Tp>
 void 
 __push_heap(_RandomAccessIterator __first,
@@ -219,8 +219,7 @@ pop_heap(_RandomAccessIterator __first,
 
 // [first, last) 调整为 heap
 template <class _RandomAccessIterator, class _Tp, class _Distance>
-void 
-__make_heap(_RandomAccessIterator __first,
+void __make_heap(_RandomAccessIterator __first,
             _RandomAccessIterator __last, _Tp*, _Distance*)
 {
   if (__last - __first < 2) return; // 如果长度为 0 或 1，不排列

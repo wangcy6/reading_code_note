@@ -1,5 +1,14 @@
+<<<<<<< HEAD
 ---- EWOULDBLOCK Matches (4 in 2 files) ----
 clusterLockConfig in cluster.c (src) :         if (errno == EWOULDBLOCK) {
 clusterAcceptHandler in cluster.c (src) :             if (errno != EWOULDBLOCK)
 acceptTcpHandler in networking.c (src) :             if (errno != EWOULDBLOCK)
 acceptUnixHandler in networking.c (src) :             if (errno != EWOULDBLOCK)
+=======
+---- readQueryFromClient Matches (5 in 4 files) ----
+createClient in networking.c (src) :             readQueryFromClient, c) == AE_ERR)
+networking.c (src) line 1548 : void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
+redis.h (src) line 1546 : void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask);
+replicationResurrectCachedMaster in replication.c (src) :                           readQueryFromClient, server.master)) {
+evalGenericCommand in scripting.c (src) :                           readQueryFromClient,c);
+>>>>>>> baf2f8d72314750bb858fe66bb941550e2ca11b9

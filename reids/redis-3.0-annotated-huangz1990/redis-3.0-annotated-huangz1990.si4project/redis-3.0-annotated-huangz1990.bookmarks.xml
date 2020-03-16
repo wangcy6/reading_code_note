@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SourceInsightBookmarks
+<<<<<<< HEAD
 	AppVer="4.00.0106"
+=======
+	AppVer="4.00.0084"
+>>>>>>> baf2f8d72314750bb858fe66bb941550e2ca11b9
 	AppVerMinReader="4.00.0009"
 	>
 	<Bookmarks/>

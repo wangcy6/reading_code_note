@@ -410,8 +410,7 @@ static void event_debug_assert_socket_nonblocking_(evutil_socket_t fd) { (void)f
  * clock_gettime or gettimeofday as appropriate to find out the right time.
  * Return 0 on success, -1 on failure.
  */
-static int
-gettime(struct event_base *base, struct timeval *tp)
+static int gettime(struct event_base *base, struct timeval *tp)
 {
 	EVENT_BASE_ASSERT_LOCKED(base);
 
@@ -435,8 +434,7 @@ gettime(struct event_base *base, struct timeval *tp)
 	return 0;
 }
 
-int
-event_base_gettimeofday_cached(struct event_base *base, struct timeval *tv)
+int event_base_gettimeofday_cached(struct event_base *base, struct timeval *tv)
 {
 	int r;
 	if (!base) {
@@ -457,15 +455,13 @@ event_base_gettimeofday_cached(struct event_base *base, struct timeval *tv)
 }
 
 /** Make 'base' have no current cached time. */
-static inline void
-clear_time_cache(struct event_base *base)
+static inline void clear_time_cache(struct event_base *base)
 {
 	base->tv_cache.tv_sec = 0;
 }
 
 /** Replace the cached time in 'base' with the current time. */
-static inline void
-update_time_cache(struct event_base *base)
+static inline void update_time_cache(struct event_base *base)
 {
 	base->tv_cache.tv_sec = 0;
 	if (!(base->flags & EVENT_BASE_FLAG_NO_CACHE_TIME))
@@ -517,8 +513,7 @@ event_init(void)
 	return (base);
 }
 
-struct event_base *
-event_base_new(void)
+struct event_base * event_base_new(void)
 {
 	struct event_base *base = NULL;
 	struct event_config *cfg = event_config_new();

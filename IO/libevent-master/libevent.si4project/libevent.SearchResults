@@ -1,0 +1,5 @@
+---- EVTHREAD_READ Matches (4 in 1 files) ----
+debug_lock_lock in evthread.c : 		EVUTIL_ASSERT(mode & (EVTHREAD_READ|EVTHREAD_WRITE));
+debug_lock_lock in evthread.c : 		EVUTIL_ASSERT((mode & (EVTHREAD_READ|EVTHREAD_WRITE)) == 0);
+evthread_debug_lock_mark_unlocked in evthread.c : 		EVUTIL_ASSERT(mode & (EVTHREAD_READ|EVTHREAD_WRITE));
+evthread_debug_lock_mark_unlocked in evthread.c : 		EVUTIL_ASSERT((mode & (EVTHREAD_READ|EVTHREAD_WRITE)) == 0);
