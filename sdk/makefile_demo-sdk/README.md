@@ -36,7 +36,11 @@
 
 8) 运行automake -a命令
 
+- automake会根据configure.in中的宏把Makefile.am转换成Makefile.in文件
+
 9) 运行./confiugre脚本
+
+执行.／configure命令，最终的Makefile文件产生。
 
 
 
