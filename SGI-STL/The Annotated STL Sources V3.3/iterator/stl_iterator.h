@@ -76,7 +76,7 @@ iterator_category(const back_insert_iterator<_Container>&)
 {
   return output_iterator_tag();
 }
-
+//http://ibillxia.github.io/blog/2014/11/23/insight-into-stl-7-adaptor/
 #endif /* __STL_CLASS_PARTIAL_SPECIALIZATION */
 /**
 back_insert_iterator是一个类（废话）

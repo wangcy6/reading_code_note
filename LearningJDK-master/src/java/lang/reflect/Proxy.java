@@ -1,0 +1,1398 @@
+/*
+ * Copyright (c) 1999, 2017, Oracle and/or its affiliates. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
+ */
+
+package java.lang.reflect;
+
+import java.io.Serializable;
+import java.lang.module.ModuleDescriptor;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import jdk.internal.loader.AbstractClassLoaderValue;
+import jdk.internal.loader.BootLoader;
+import jdk.internal.loader.ClassLoaderValue;
+import jdk.internal.misc.Unsafe;
+import jdk.internal.misc.VM;
+import jdk.internal.module.Modules;
+import jdk.internal.reflect.CallerSensitive;
+import jdk.internal.reflect.Reflection;
+import sun.reflect.misc.ReflectUtil;
+import sun.security.action.GetPropertyAction;
+import sun.security.util.SecurityConstants;
+
+import static java.lang.module.ModuleDescriptor.Modifier.SYNTHETIC;
+
+/**
+ * {@code Proxy} provides static methods for creating objects that act like instances
+ * of interfaces but allow for customized method invocation.
+ * To create a proxy instance for some interface {@code Foo}:
+ * <pre>{@code
+ *     InvocationHandler handler = new MyInvocationHandler(...);
+ *     Foo f = (Foo) Proxy.newProxyInstance(Foo.class.getClassLoader(),
+ *                                          new Class<?>[] { Foo.class },
+ *                                          handler);
+ * }</pre>
+ *
+ * <p>
+ * A <em>proxy class</em> is a class created at runtime that implements a specified
+ * list of interfaces, known as <em>proxy interfaces</em>. A <em>proxy instance</em>
+ * is an instance of a proxy class.
+ *
+ * Each proxy instance has an associated <i>invocation handler</i>
+ * object, which implements the interface {@link InvocationHandler}.
+ * A method invocation on a proxy instance through one of its proxy
+ * interfaces will be dispatched to the {@link InvocationHandler#invoke
+ * invoke} method of the instance's invocation handler, passing the proxy
+ * instance, a {@code java.lang.reflect.Method} object identifying
+ * the method that was invoked, and an array of type {@code Object}
+ * containing the arguments.  The invocation handler processes the
+ * encoded method invocation as appropriate and the result that it
+ * returns will be returned as the result of the method invocation on
+ * the proxy instance.
+ *
+ * <p>A proxy class has the following properties:
+ *
+ * <ul>
+ * <li>The unqualified name of a proxy class is unspecified.  The space
+ * of class names that begin with the string {@code "$Proxy"}
+ * should be, however, reserved for proxy classes.
+ *
+ * <li>The package and module in which a proxy class is defined is specified
+ * <a href="#membership">below</a>.
+ *
+ * <li>A proxy class is <em>final and non-abstract</em>.
+ *
+ * <li>A proxy class extends {@code java.lang.reflect.Proxy}.
+ *
+ * <li>A proxy class implements exactly the interfaces specified at its
+ * creation, in the same order. Invoking {@link Class#getInterfaces() getInterfaces}
+ * on its {@code Class} object will return an array containing the same
+ * list of interfaces (in the order specified at its creation), invoking
+ * {@link Class#getMethods getMethods} on its {@code Class} object will return
+ * an array of {@code Method} objects that include all of the
+ * methods in those interfaces, and invoking {@code getMethod} will
+ * find methods in the proxy interfaces as would be expected.
+ *
+ * <li>The {@link java.security.ProtectionDomain} of a proxy class
+ * is the same as that of system classes loaded by the bootstrap class
+ * loader, such as {@code java.lang.Object}, because the code for a
+ * proxy class is generated by trusted system code.  This protection
+ * domain will typically be granted {@code java.security.AllPermission}.
+ *
+ * <li>The {@link Proxy#isProxyClass Proxy.isProxyClass} method can be used
+ * to determine if a given class is a proxy class.
+ * </ul>
+ *
+ * <p>A proxy instance has the following properties:
+ *
+ * <ul>
+ * <li>Given a proxy instance {@code proxy} and one of the
+ * interfaces, {@code Foo}, implemented by its proxy class, the
+ * following expression will return true:
+ * <pre>
+ *     {@code proxy instanceof Foo}
+ * </pre>
+ * and the following cast operation will succeed (rather than throwing
+ * a {@code ClassCastException}):
+ * <pre>
+ *     {@code (Foo) proxy}
+ * </pre>
+ *
+ * <li>Each proxy instance has an associated invocation handler, the one
+ * that was passed to its constructor.  The static
+ * {@link Proxy#getInvocationHandler Proxy.getInvocationHandler} method
+ * will return the invocation handler associated with the proxy instance
+ * passed as its argument.
+ *
+ * <li>An interface method invocation on a proxy instance will be
+ * encoded and dispatched to the invocation handler's {@link
+ * InvocationHandler#invoke invoke} method as described in the
+ * documentation for that method.
+ *
+ * <li>An invocation of the {@code hashCode},
+ * {@code equals}, or {@code toString} methods declared in
+ * {@code java.lang.Object} on a proxy instance will be encoded and
+ * dispatched to the invocation handler's {@code invoke} method in
+ * the same manner as interface method invocations are encoded and
+ * dispatched, as described above.  The declaring class of the
+ * {@code Method} object passed to {@code invoke} will be
+ * {@code java.lang.Object}.  Other public methods of a proxy
+ * instance inherited from {@code java.lang.Object} are not
+ * overridden by a proxy class, so invocations of those methods behave
+ * like they do for instances of {@code java.lang.Object}.
+ * </ul>
+ *
+ * <h3><a id="membership">Package and Module Membership of Proxy Class</a></h3>
+ *
+ * The package and module to which a proxy class belongs are chosen such that
+ * the accessibility of the proxy class is in line with the accessibility of
+ * the proxy interfaces. Specifically, the package and the module membership
+ * of a proxy class defined via the
+ * {@link Proxy#getProxyClass(ClassLoader, Class[])} or
+ * {@link Proxy#newProxyInstance(ClassLoader, Class[], InvocationHandler)}
+ * methods is specified as follows:
+ *
+ * <ol>
+ * <li>If all the proxy interfaces are in <em>exported</em> or <em>open</em>
+ * packages:
+ * <ol type="a">
+ * <li>if all the proxy interfaces are <em>public</em>, then the proxy class is
+ * <em>public</em> in a package exported by the
+ * {@linkplain ClassLoader#getUnnamedModule() unnamed module} of the specified
+ * loader. The name of the package is unspecified.</li>
+ *
+ * <li>if at least one of all the proxy interfaces is <em>non-public</em>, then
+ * the proxy class is <em>non-public</em> in the package and module of the
+ * non-public interfaces. All the non-public interfaces must be in the same
+ * package and module; otherwise, proxying them is
+ * <a href="#restrictions">not possible</a>.</li>
+ * </ol>
+ * </li>
+ * <li>If at least one proxy interface is in a package that is
+ * <em>non-exported</em> and <em>non-open</em>:
+ * <ol type="a">
+ * <li>if all the proxy interfaces are <em>public</em>, then the proxy class is
+ * <em>public</em> in a <em>non-exported</em>, <em>non-open</em> package of
+ * <a href="#dynamicmodule"><em>dynamic module</em>.</a>
+ * The names of the package and the module are unspecified.</li>
+ *
+ * <li>if at least one of all the proxy interfaces is <em>non-public</em>, then
+ * the proxy class is <em>non-public</em> in the package and module of the
+ * non-public interfaces. All the non-public interfaces must be in the same
+ * package and module; otherwise, proxying them is
+ * <a href="#restrictions">not possible</a>.</li>
+ * </ol>
+ * </li>
+ * </ol>
+ *
+ * <p>
+ * Note that if proxy interfaces with a mix of accessibilities -- for example,
+ * an exported public interface and a non-exported non-public interface -- are
+ * proxied by the same instance, then the proxy class's accessibility is
+ * governed by the least accessible proxy interface.
+ * <p>
+ * Note that it is possible for arbitrary code to obtain access to a proxy class
+ * in an open package with {@link AccessibleObject#setAccessible setAccessible},
+ * whereas a proxy class in a non-open package is never accessible to
+ * code outside the module of the proxy class.
+ *
+ * <p>
+ * Throughout this specification, a "non-exported package" refers to a package
+ * that is not exported to all modules, and a "non-open package" refers to
+ * a package that is not open to all modules.  Specifically, these terms refer to
+ * a package that either is not exported/open by its containing module or is
+ * exported/open in a qualified fashion by its containing module.
+ *
+ * <h3><a id="dynamicmodule">Dynamic Modules</a></h3>
+ * <p>
+ * A dynamic module is a named module generated at runtime. A proxy class
+ * defined in a dynamic module is encapsulated and not accessible to any module.
+ * Calling {@link Constructor#newInstance(Object...)} on a proxy class in
+ * a dynamic module will throw {@code IllegalAccessException};
+ * {@code Proxy.newProxyInstance} method should be used instead.
+ *
+ * <p>
+ * A dynamic module can read the modules of all of the superinterfaces of a proxy
+ * class and the modules of the types referenced by all public method signatures
+ * of a proxy class.  If a superinterface or a referenced type, say {@code T},
+ * is in a non-exported package, the {@linkplain Module module} of {@code T} is
+ * updated to export the package of {@code T} to the dynamic module.
+ *
+ * <h3>Methods Duplicated in Multiple Proxy Interfaces</h3>
+ *
+ * <p>When two or more proxy interfaces contain a method with
+ * the same name and parameter signature, the order of the proxy class's
+ * interfaces becomes significant.  When such a <i>duplicate method</i>
+ * is invoked on a proxy instance, the {@code Method} object passed
+ * to the invocation handler will not necessarily be the one whose
+ * declaring class is assignable from the reference type of the interface
+ * that the proxy's method was invoked through.  This limitation exists
+ * because the corresponding method implementation in the generated proxy
+ * class cannot determine which interface it was invoked through.
+ * Therefore, when a duplicate method is invoked on a proxy instance,
+ * the {@code Method} object for the method in the foremost interface
+ * that contains the method (either directly or inherited through a
+ * superinterface) in the proxy class's list of interfaces is passed to
+ * the invocation handler's {@code invoke} method, regardless of the
+ * reference type through which the method invocation occurred.
+ *
+ * <p>If a proxy interface contains a method with the same name and
+ * parameter signature as the {@code hashCode}, {@code equals},
+ * or {@code toString} methods of {@code java.lang.Object},
+ * when such a method is invoked on a proxy instance, the
+ * {@code Method} object passed to the invocation handler will have
+ * {@code java.lang.Object} as its declaring class.  In other words,
+ * the public, non-final methods of {@code java.lang.Object}
+ * logically precede all of the proxy interfaces for the determination of
+ * which {@code Method} object to pass to the invocation handler.
+ *
+ * <p>Note also that when a duplicate method is dispatched to an
+ * invocation handler, the {@code invoke} method may only throw
+ * checked exception types that are assignable to one of the exception
+ * types in the {@code throws} clause of the method in <i>all</i> of
+ * the proxy interfaces that it can be invoked through.  If the
+ * {@code invoke} method throws a checked exception that is not
+ * assignable to any of the exception types declared by the method in one
+ * of the proxy interfaces that it can be invoked through, then an
+ * unchecked {@code UndeclaredThrowableException} will be thrown by
+ * the invocation on the proxy instance.  This restriction means that not
+ * all of the exception types returned by invoking
+ * {@code getExceptionTypes} on the {@code Method} object
+ * passed to the {@code invoke} method can necessarily be thrown
+ * successfully by the {@code invoke} method.
+ *
+ * @author Peter Jones
+ * @revised 9
+ * @spec JPMS
+ * @see InvocationHandler
+ * @since 1.3
+ */
+/*
+ * JDK默认的动态代理
+ *
+ * Proxy作为所有代理类的父类，用来生成代理对象
+ *
+ * 【示例】
+ *
+ * 假设有代理接口：
+ * package con.kang;
+ *
+ * interface Subject {
+ *     void request();  // 目标方法
+ * }
+ *
+ * 则需要构造一个被代理类：
+ * public class SubjectImpl interface Subject {
+ *     // 被代理方法
+ *     void request() {
+ *     }
+ * }
+ *
+ * 实现回调引用：
+ * public class SubjectHandler interface InvocationHandler {
+ *     private Subject target;   // 被代理对象
+ *
+ *     public SubjectHandler(Subject target) {
+ *         this.target = target;
+ *     }
+ *
+ *     // 代理回调方法
+ *     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+ *         // 代理前的操作...
+ *
+ *         method.invoke(target);
+ *
+ *         // 代理后的操作...
+ *
+ *         return null;
+ *     }
+ * }
+ *
+ * 或者，将以上两步合并（不推荐）
+ * public class SubjectImpl interface Subject, InvocationHandler {
+ *     private Subject target;   // 被代理对象
+ *
+ *     public SubjectHandler(Subject target) {
+ *         this.target = target;
+ *     }
+ *
+ *     // 被代理方法
+ *     void request() {
+ *     }
+ *
+ *     // 代理回调方法
+ *     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+ *         // 代理前的操作...
+ *
+ *         method.invoke(target);   // 间接调用被代理方法
+ *
+ *         // 代理后的操作...
+ *
+ *         return null;
+ *     }
+ * }
+ *
+ * 系统生成的代理类为（除去了无关枝节）：
+ * final class $Proxy0 extends Proxy implements Subject {
+ *     private static Method method;    // 被代理方法
+ *
+ *     static {
+ *          method = Class.forName("com.kang.Subject").getMethod("request");
+ *     }
+ *
+ *     public $Proxy0(InvocationHandler h) {
+ *         super(h);
+ *     }
+ *
+ *     // 代理方法
+ *     public final void request() {
+ *          // 通过代理回调方法，来回调被代理方法
+ *          super.h.invoke(this, method, (Object[])null);
+ *     }
+ * }
+ *
+ * 随后，可以通过Proxy.newProxyInstance(...)获取代理类对象，并调用代理方法
+ *
+ * 生成代理类时，如果开启"jdk.proxy.ProxyGenerator.saveGeneratedFiles"属性，则可以得到代理类字节码文件，参见ProxyGenerator。
+ */
+public class Proxy implements Serializable {
+    private static final long serialVersionUID = -2222568056686623797L;
+    
+    /**
+     * the invocation handler for this proxy instance.
+     *
+     * @serial
+     */
+    protected InvocationHandler h;  // 回调引用，在代理方法中通过此回调引用来间接调用被代理方法
+    
+    /** parameter types of a proxy class constructor */
+    // 代理类构造器参数(固定)
+    private static final Class<?>[] constructorParams = {InvocationHandler.class};
+    
+    /**
+     * a cache of proxy constructors with {@link Constructor#setAccessible(boolean) accessible} flag already set
+     */
+    // root-clv，此处主要用来构造sub-clv
+    private static final ClassLoaderValue<Constructor<?>> proxyCache = new ClassLoaderValue<>();
+    
+    private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
+    
+    // 代理接口都是public时，代理类需要统一使用该包名
+    private static final String PROXY_PACKAGE_PREFIX = ReflectUtil.PROXY_PACKAGE;
+    
+    
+    
+    /*▼ 构造器 ████████████████████████████████████████████████████████████████████████████████┓ */
+    
+    /**
+     * Prohibits instantiation.
+     */
+    private Proxy() {
+    }
+    
+    /**
+     * Constructs a new {@code Proxy} instance from a subclass
+     * (typically, a dynamic proxy class) with the specified value
+     * for its invocation handler.
+     *
+     * @param h the invocation handler for this proxy instance
+     *
+     * @throws NullPointerException if the given invocation handler, {@code h},
+     *                              is {@code null}.
+     */
+    // 由代理类(Proxy的子类)调用：给回调引用赋值，以便找到被代理对象
+    protected Proxy(InvocationHandler h) {
+        Objects.requireNonNull(h);
+        this.h = h;
+    }
+    
+    /*▲ 构造器 ████████████████████████████████████████████████████████████████████████████████┛ */
+    
+    
+    
+    /*▼ 工厂方法 ████████████████████████████████████████████████████████████████████████████████┓ */
+    
+    /**
+     * Returns a proxy instance for the specified interfaces
+     * that dispatches method invocations to the specified invocation
+     * handler.
+     * <p>
+     * <a id="restrictions">{@code IllegalArgumentException} will be thrown
+     * if any of the following restrictions is violated:</a>
+     * <ul>
+     * <li>All of {@code Class} objects in the given {@code interfaces} array
+     * must represent interfaces, not classes or primitive types.
+     *
+     * <li>No two elements in the {@code interfaces} array may
+     * refer to identical {@code Class} objects.
+     *
+     * <li>All of the interface types must be visible by name through the
+     * specified class loader. In other words, for class loader
+     * {@code cl} and every interface {@code i}, the following
+     * expression must be true:<p>
+     * {@code Class.forName(i.getName(), false, cl) == i}
+     *
+     * <li>All of the types referenced by all
+     * public method signatures of the specified interfaces
+     * and those inherited by their superinterfaces
+     * must be visible by name through the specified class loader.
+     *
+     * <li>All non-public interfaces must be in the same package
+     * and module, defined by the specified class loader and
+     * the module of the non-public interfaces can access all of
+     * the interface types; otherwise, it would not be possible for
+     * the proxy class to implement all of the interfaces,
+     * regardless of what package it is defined in.
+     *
+     * <li>For any set of member methods of the specified interfaces
+     * that have the same signature:
+     * <ul>
+     * <li>If the return type of any of the methods is a primitive
+     * type or void, then all of the methods must have that same
+     * return type.
+     * <li>Otherwise, one of the methods must have a return type that
+     * is assignable to all of the return types of the rest of the
+     * methods.
+     * </ul>
+     *
+     * <li>The resulting proxy class must not exceed any limits imposed
+     * on classes by the virtual machine.  For example, the VM may limit
+     * the number of interfaces that a class may implement to 65535; in
+     * that case, the size of the {@code interfaces} array must not
+     * exceed 65535.
+     * </ul>
+     *
+     * <p>Note that the order of the specified proxy interfaces is
+     * significant: two requests for a proxy class with the same combination
+     * of interfaces but in a different order will result in two distinct
+     * proxy classes.
+     *
+     * @param loader     the class loader to define the proxy class
+     * @param interfaces the list of interfaces for the proxy class
+     *                   to implement
+     * @param h          the invocation handler to dispatch method invocations to
+     *
+     * @return a proxy instance with the specified invocation handler of a
+     * proxy class that is defined by the specified class loader
+     * and that implements the specified interfaces
+     *
+     * @throws IllegalArgumentException if any of the <a href="#restrictions">
+     *                                  restrictions</a> on the parameters are violated
+     * @throws SecurityException        if a security manager, <em>s</em>, is present
+     *                                  and any of the following conditions is met:
+     *                                  <ul>
+     *                                  <li> the given {@code loader} is {@code null} and
+     *                                  the caller's class loader is not {@code null} and the
+     *                                  invocation of {@link SecurityManager#checkPermission
+     *                                  s.checkPermission} with
+     *                                  {@code RuntimePermission("getClassLoader")} permission
+     *                                  denies access;</li>
+     *                                  <li> for each proxy interface, {@code intf},
+     *                                  the caller's class loader is not the same as or an
+     *                                  ancestor of the class loader for {@code intf} and
+     *                                  invocation of {@link SecurityManager#checkPackageAccess
+     *                                  s.checkPackageAccess()} denies access to {@code intf};</li>
+     *                                  <li> any of the given proxy interfaces is non-public and the
+     *                                  caller class is not in the same {@linkplain Package runtime package}
+     *                                  as the non-public interface and the invocation of
+     *                                  {@link SecurityManager#checkPermission s.checkPermission} with
+     *                                  {@code ReflectPermission("newProxyInPackage.{package name}")}
+     *                                  permission denies access.</li>
+     *                                  </ul>
+     * @throws NullPointerException     if the {@code interfaces} array
+     *                                  argument or any of its elements are {@code null}, or
+     *                                  if the invocation handler, {@code h}, is
+     *                                  {@code null}
+     * @revised 9
+     * @spec JPMS
+     * @see <a href="#membership">Package and Module Membership of Proxy Class</a>
+     */
+    /*
+     * 工厂方法：生成动态代理对象
+     *
+     * loader    ：用于加载代理对象的类加载器，一般与被代理对象的类加载器一致
+     * interfaces：代理接口
+     * h         ：回调引用，可以在回调引用的内部持有被代理对象的引用，或者，回调引用本身也是被代理对象
+     */
+    @CallerSensitive
+    public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler h) {
+        Objects.requireNonNull(h);
+    
+        // 如果存在安全管理器，返回newProxyInstance()方法的调用者所处的类
+        final Class<?> caller = System.getSecurityManager() == null ? null : Reflection.getCallerClass();
+    
+        /* Look up or generate the designated proxy class and its constructor. */
+        // 获取代理类的专用构造器：该构造器的形参必须为InvocationHandler类型
+        Constructor<?> cons = getProxyConstructor(caller, loader, interfaces);
+    
+        // 生成动态代理对象并返回
+        return newProxyInstance(caller, cons, h);
+    }
+    
+    /*▲ 工厂方法 ████████████████████████████████████████████████████████████████████████████████┛ */
+    
+    
+    /**
+     * Returns the invocation handler for the specified proxy instance.
+     *
+     * @param proxy the proxy instance to return the invocation handler for
+     *
+     * @return the invocation handler for the proxy instance
+     *
+     * @throws IllegalArgumentException if the argument is not a
+     *                                  proxy instance
+     * @throws SecurityException        if a security manager, <em>s</em>, is present
+     *                                  and the caller's class loader is not the same as or an
+     *                                  ancestor of the class loader for the invocation handler
+     *                                  and invocation of {@link SecurityManager#checkPackageAccess
+     *                                  s.checkPackageAccess()} denies access to the invocation
+     *                                  handler's class.
+     */
+    // 返回代理类内部的回调处理器
+    @CallerSensitive
+    public static InvocationHandler getInvocationHandler(Object proxy) throws IllegalArgumentException {
+        /* Verify that the object is actually a proxy instance */
+        // 如果proxy不是代理类，抛异常
+        if(!isProxyClass(proxy.getClass())) {
+            throw new IllegalArgumentException("not a proxy instance");
+        }
+        
+        final InvocationHandler ih = ((Proxy) proxy).h;
+        
+        // 如果不存在安全管理器，直接返回
+        if(System.getSecurityManager() == null) {
+            return ih;
+        }
+        
+        // 获取getInvocationHandler()的调用者所在的类
+        Class<?> caller = Reflection.getCallerClass();
+        
+        // 获取代理类
+        Class<?> ihClass = ih.getClass();
+        
+        // 判断在caller访问ihClass时，是否需要检查包访问权限
+        if(ReflectUtil.needsPackageAccessCheck(caller.getClassLoader(), ihClass.getClassLoader())) {
+            // 检查当前线程对ihClass所在的包的访问权限
+            ReflectUtil.checkPackageAccess(ihClass);
+        }
+        
+        return ih;
+    }
+    
+    /**
+     * Returns true if the given class is a proxy class.
+     *
+     * @param cl the class to test
+     *
+     * @return {@code true} if the class is a proxy class and
+     * {@code false} otherwise
+     *
+     * @throws NullPointerException if {@code cl} is {@code null}
+     * @implNote The reliability of this method is important for the ability
+     * to use it to make security decisions, so its implementation should
+     * not just test if the class in question extends {@code Proxy}.
+     * @revised 9
+     * @spec JPMS
+     */
+    // 判断proxyClass是否为代理类
+    public static boolean isProxyClass(Class<?> proxyClass) {
+        return Proxy.class.isAssignableFrom(proxyClass) // 要求proxyClass是Proxy类型
+            && ProxyBuilder.isProxyClass(proxyClass);   // 要求proxyClass位于相应类加载器的代理类缓存中
+    }
+    
+    /**
+     * Returns the {@code java.lang.Class} object for a proxy class
+     * given a class loader and an array of interfaces.  The proxy class
+     * will be defined by the specified class loader and will implement
+     * all of the supplied interfaces.  If any of the given interfaces
+     * is non-public, the proxy class will be non-public. If a proxy class
+     * for the same permutation of interfaces has already been defined by the
+     * class loader, then the existing proxy class will be returned; otherwise,
+     * a proxy class for those interfaces will be generated dynamically
+     * and defined by the class loader.
+     *
+     * @param loader     the class loader to define the proxy class
+     * @param interfaces the list of interfaces for the proxy class
+     *                   to implement
+     *
+     * @return a proxy class that is defined in the specified class loader
+     * and that implements the specified interfaces
+     *
+     * @throws IllegalArgumentException if any of the <a href="#restrictions">
+     *                                  restrictions</a> on the parameters are violated
+     * @throws SecurityException        if a security manager, <em>s</em>, is present
+     *                                  and any of the following conditions is met:
+     *                                  <ul>
+     *                                  <li> the given {@code loader} is {@code null} and
+     *                                  the caller's class loader is not {@code null} and the
+     *                                  invocation of {@link SecurityManager#checkPermission
+     *                                  s.checkPermission} with
+     *                                  {@code RuntimePermission("getClassLoader")} permission
+     *                                  denies access.</li>
+     *                                  <li> for each proxy interface, {@code intf},
+     *                                  the caller's class loader is not the same as or an
+     *                                  ancestor of the class loader for {@code intf} and
+     *                                  invocation of {@link SecurityManager#checkPackageAccess
+     *                                  s.checkPackageAccess()} denies access to {@code intf}.</li>
+     *                                  </ul>
+     * @throws NullPointerException     if the {@code interfaces} array
+     *                                  argument or any of its elements are {@code null}
+     * @revised 9
+     * @spec JPMS
+     * @see <a href="#membership">Package and Module Membership of Proxy Class</a>
+     * @deprecated Proxy classes generated in a named module are encapsulated
+     * and not accessible to code outside its module.
+     * {@link Constructor#newInstance(Object...) Constructor.newInstance}
+     * will throw {@code IllegalAccessException} when it is called on
+     * an inaccessible proxy class.
+     * Use {@link #newProxyInstance(ClassLoader, Class[], InvocationHandler)}
+     * to create a proxy instance instead.
+     */
+    // 返回代理类的类对象；该方法已过时，需要使用支持模块语义的ProxyBuilder#defineProxyClass()
+    @Deprecated
+    @CallerSensitive
+    public static Class<?> getProxyClass(ClassLoader loader, Class<?>... interfaces) throws IllegalArgumentException {
+        Class<?> caller = System.getSecurityManager() == null ? null : Reflection.getCallerClass();
+    
+        // 返回代理类的专用构造器：该构造器的形参必须为InvocationHandler类型
+        Constructor<?> constructor = getProxyConstructor(caller, loader, interfaces);
+    
+        return constructor.getDeclaringClass();   // 返回构造器所在的类
+    }
+    
+    
+    /**
+     * Returns the {@code Constructor} object of a proxy class that takes a
+     * single argument of type {@link InvocationHandler}, given a class loader
+     * and an array of interfaces. The returned constructor will have the
+     * {@link Constructor#setAccessible(boolean) accessible} flag already set.
+     *
+     * @param caller     passed from a public-facing @CallerSensitive method if
+     *                   SecurityManager is set or {@code null} if there's no
+     *                   SecurityManager
+     * @param loader     the class loader to define the proxy class
+     * @param interfaces the list of interfaces for the proxy class
+     *                   to implement
+     *
+     * @return a Constructor of the proxy class taking single
+     * {@code InvocationHandler} parameter
+     */
+    // 返回代理类的专用构造器：该构造器的形参必须为InvocationHandler类型
+    private static Constructor<?> getProxyConstructor(Class<?> caller, ClassLoader loader, Class<?>... interfaces) {
+        // 如果只有一个被代理接口
+        if(interfaces.length == 1) {
+            Class<?> intf = interfaces[0];
+            
+            if(caller != null) {
+                // 检查caller对代理接口interfaces的访问权限，以及loader为null时检查getClassLoader权限
+                checkProxyAccess(caller, loader, intf);
+            }
+            
+            // 构造一个包含代理接口的sub-clv
+            AbstractClassLoaderValue<ClassLoaderValue<Constructor<?>>, Constructor<?>>.Sub<? extends Class<?>> subCLV = proxyCache.sub(intf);
+            
+            // 返回subCLV在loader中的类加载器局部缓存中映射的代理类构造器，如果不存在，则计算出新的代理类构造器并缓存起来
+            return subCLV.computeIfAbsent(loader, (cl, clv) -> new ProxyBuilder(cl, clv.key()).build());
+            
+            // 如果存在多个被代理接口
+        } else {
+            // interfaces cloned
+            final Class<?>[] intfsArray = interfaces.clone();
+            
+            if(caller != null) {
+                // 检查caller对代理接口interfaces的访问权限，以及loader为null时检查getClassLoader权限
+                checkProxyAccess(caller, loader, intfsArray);
+            }
+            
+            final List<Class<?>> intfs = Arrays.asList(intfsArray);
+            
+            // 构造一个包含代理接口的sub-clv
+            AbstractClassLoaderValue<ClassLoaderValue<Constructor<?>>, Constructor<?>>.Sub<List<Class<?>>> subCLV = proxyCache.sub(intfs);
+            
+            // 返回subCLV在loader中的类加载器局部缓存中映射的代理类构造器，如果不存在，则计算出新的代理类构造器并缓存起来
+            return subCLV.computeIfAbsent(loader, (cl, clv) -> new ProxyBuilder(cl, clv.key()).build());
+        }
+    }
+    
+    // 生成动态代理对象。如果没有SecurityManager，caller为null
+    private static Object newProxyInstance(Class<?> caller, Constructor<?> cons, InvocationHandler h) {
+        /*
+         * Invoke its constructor with the designated invocation handler.
+         */
+        try {
+            if(caller != null) {
+                // 判断代理对象所在的类是否可以访问代理类（如果不能访问则无法调用构造器）
+                checkNewProxyPermission(caller, cons.getDeclaringClass());
+            }
+            
+            return cons.newInstance(h);
+        } catch(IllegalAccessException | InstantiationException e) {
+            throw new InternalError(e.toString(), e);
+        } catch(InvocationTargetException e) {
+            Throwable t = e.getCause();
+            if(t instanceof RuntimeException) {
+                throw (RuntimeException) t;
+            } else {
+                throw new InternalError(t.toString(), t);
+            }
+        }
+    }
+    
+    /**
+     * Returns the class loader for the given module.
+     */
+    // 返回加载指定模块的类加载器
+    private static ClassLoader getLoader(Module module) {
+        PrivilegedAction<ClassLoader> pa = () -> module.getClassLoader();
+        return AccessController.doPrivileged(pa);
+    }
+    
+    /**
+     * Check permissions required to create a Proxy class.
+     *
+     * To define a proxy class, it performs the access checks as in
+     * Class.forName (VM will invoke ClassLoader.checkPackageAccess):
+     * 1. "getClassLoader" permission check if loader == null
+     * 2. checkPackageAccess on the interfaces it implements
+     *
+     * To get a constructor and new instance of a proxy class, it performs
+     * the package access check on the interfaces it implements
+     * as in Class.getConstructor.
+     *
+     * If an interface is non-public, the proxy class must be defined by
+     * the defining loader of the interface.  If the caller's class loader
+     * is not the same as the defining loader of the interface, the VM
+     * will throw IllegalAccessError when the generated proxy class is
+     * being defined.
+     */
+    // 检查caller对代理接口interfaces的访问权限，以及loader为null时检查getClassLoader权限
+    private static void checkProxyAccess(Class<?> caller, ClassLoader loader, Class<?>... interfaces) {
+        SecurityManager sm = System.getSecurityManager();
+        if(sm == null) {
+            return;
+        }
+    
+        ClassLoader ccl = caller.getClassLoader();
+    
+        if(loader == null && ccl != null) {
+            sm.checkPermission(SecurityConstants.GET_CLASSLOADER_PERMISSION);
+        }
+    
+        // 检查ccl（加载的类）对代理接口interfaces的访问权限
+        ReflectUtil.checkProxyPackageAccess(ccl, interfaces);
+    }
+    
+    // 判断caller是否可以访问proxyClass
+    private static void checkNewProxyPermission(Class<?> caller, Class<?> proxyClass) {
+        SecurityManager sm = System.getSecurityManager();
+        if(sm == null) {
+            return;
+        }
+        
+        // 判断proxyClass是否为实现了非public代理接口的代理类
+        if(ReflectUtil.isNonPublicProxyClass(proxyClass)) {
+            ClassLoader ccl = caller.getClassLoader();
+            ClassLoader pcl = proxyClass.getClassLoader();
+            
+            // do permission check if the caller is in a different runtime package of the proxy class
+            String callerPkg = caller.getPackageName();
+            String pkg = proxyClass.getPackageName();
+            
+            if(ccl != pcl || !pkg.equals(callerPkg)) {
+                sm.checkPermission(new ReflectPermission("newProxyInPackage." + pkg));
+            }
+        }
+    }
+    
+    
+    /**
+     * Builder for a proxy class.
+     *
+     * If the module is not specified in this ProxyBuilder constructor,
+     * it will map from the given loader and interfaces to the module
+     * in which the proxy class will be defined.
+     */
+    // 代理类构建器
+    private static final class ProxyBuilder {
+        private static final String DEBUG = GetPropertyAction.privilegedGetProperty("jdk.proxy.debug", "");
+        
+        private static final Unsafe UNSAFE = Unsafe.getUnsafe();
+        
+        private static final AtomicInteger counter = new AtomicInteger();   // 动态代理所在模块/包的名称编号
+        
+        /* next number to use for generation of unique proxy class names */
+        private static final AtomicLong nextUniqueNumber = new AtomicLong();    // 代理类名称编号
+        
+        // prefix for all proxy class names
+        private static final String proxyClassNamePrefix = "$Proxy";    // 动态代理类名称前缀
+        
+        private final List<Class<?>> interfaces;    // 代理接口
+        
+        private final Module module;    // 动态代理类所在模块
+        
+        /*
+         * 动态代理模块CLV，由所有代理类构建器对象共享
+         *
+         * 该CLV映射了一个动态代理模块，这个映射存储在加载该动态代理模块的类加载器的类加载器局部缓存中
+         */
+        private static final ClassLoaderValue<Module> dynProxyModulesCLV = new ClassLoaderValue<>();
+        
+        /*
+         * 代理类CLV的root-clv，由所有代理类构建器对象共享
+         *
+         * 可以借此root-clv创建一系列子级sub-clv，这些sub-clv内部存储了可由对应类加载器加载的代理类，
+         * 而对于sub-clv作为类加载器局部缓存的key这个功能来说，sub-clv只是简单地映射了一个Boolean.TRUE值。
+         */
+        private static final ClassLoaderValue<Boolean> reverseProxyCacheCLV = new ClassLoaderValue<>(); // a reverse cache of defined proxy classes
+        
+        ProxyBuilder(ClassLoader loader, Class<?> intf) {
+            this(loader, Collections.singletonList(intf));
+        }
+        
+        ProxyBuilder(ClassLoader loader, List<Class<?>> interfaces) {
+            // 确保模块化系统已经初始化完成
+            if(!VM.isModuleSystemInited()) {
+                throw new InternalError("Proxy is not supported until module system is fully initialized");
+            }
+            
+            // 代理接口数量不能超过65535
+            if(interfaces.size()>65535) {
+                throw new IllegalArgumentException("interface limit exceeded: " + interfaces.size());
+            }
+            
+            // 获取所有代理接口中所有非静态目标方法需要用到类型
+            Set<Class<?>> refTypes = referencedTypes(loader, interfaces);
+            
+            /* IAE if violates any restrictions specified in newProxyInstance */
+            // 确保类加载器loader可以完成对代理类的加载
+            validateProxyInterfaces(loader, interfaces, refTypes);
+            
+            // 代理接口
+            this.interfaces = interfaces;
+            
+            // (构造并)返回动态代理类所在模块
+            this.module = mapToModule(loader, interfaces, refTypes);
+            
+            assert getLoader(module) == loader;
+        }
+        
+        /**
+         * Generate a proxy class and return its proxy Constructor with
+         * accessible flag already set. If the target module does not have access
+         * to any interface types, IllegalAccessError will be thrown by the VM
+         * at defineClass time.
+         *
+         * Must call the checkProxyAccess method to perform permission checks
+         * before calling this.
+         */
+        // 返回代理类的专用构造器：该构造器的形参必须为InvocationHandler类型
+        Constructor<?> build() {
+            // 生成代理类的类对象；module是代理类所在模块，interfaces是代理接口
+            Class<?> proxyClass = defineProxyClass(module, interfaces);
+            
+            final Constructor<?> cons;
+            try {
+                // 获取代理类的构造器，该方法的形参必须为InvocationHandler类型
+                cons = proxyClass.getConstructor(constructorParams);
+            } catch(NoSuchMethodException e) {
+                throw new InternalError(e.toString(), e);
+            }
+            
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                public Void run() {
+                    // 设置可访问性
+                    cons.setAccessible(true);
+                    return null;
+                }
+            });
+    
+            return cons;
+        }
+        
+        // 生成代理类的类对象；module是代理类所在模块，interfaces是代理接口
+        private static Class<?> defineProxyClass(Module module, List<Class<?>> interfaces) {
+            
+            // 代理类所在的包
+            String proxyPkg = null;     // package to define proxy class in
+            
+            // 代理类访问接口
+            int accessFlags = Modifier.PUBLIC | Modifier.FINAL;
+            
+            /*
+             * Record the package of a non-public proxy interface so that the
+             * proxy class will be defined in the same package.  Verify that
+             * all non-public proxy interfaces are in the same package.
+             */
+            // 遍历代理接口，如果存在非public接口，需要对proxyPkg和accessFlags做出修正
+            for(Class<?> intf : interfaces) {
+                // 获取代理接口修饰符
+                int flags = intf.getModifiers();
+                
+                // 如果存在非public代理接口
+                if(!Modifier.isPublic(flags)) {
+                    // 代理类仅需要添加final修饰符
+                    accessFlags = Modifier.FINAL;  // non-public, final
+    
+                    // 代理接口所在的包
+                    String pkg = intf.getPackageName();
+    
+                    // 如果当前代理接口是非public的，则代理类所在的包应当与代理接口所在的包一致
+                    if(proxyPkg == null) {
+                        proxyPkg = pkg;
+                    } else if(!pkg.equals(proxyPkg)) {
+                        throw new IllegalArgumentException("non-public interfaces from different packages");
+                    }
+                }
+            }
+            
+            // proxyPkg为null意味着代理接口都是是public的，此时使用统一的包名："com.sun.proxy"
+            if(proxyPkg == null) {
+                // all proxy interfaces are public
+                proxyPkg = module.isNamed() ? PROXY_PACKAGE_PREFIX + "." + module.getName() // 如果代理类所在模块是命名模块，使用形如com.sun.proxy.jdk.proxy1这样的包名
+                    : PROXY_PACKAGE_PREFIX; // 如果代理类所在模块是非命名模块，直接使用"com.sun.proxy"做包名
+            } else if(proxyPkg.isEmpty() && module.isNamed()) {
+                throw new IllegalArgumentException("Unnamed package cannot be added to " + module);
+            }
+            
+            // 如果代理类所在模块是命名模块
+            if(module.isNamed()) {
+                // 需要确保代理类所在的包在该命名模块下辖的包中
+                if(!module.getDescriptor().packages().contains(proxyPkg)) {
+                    throw new InternalError(proxyPkg + " not exist in " + module.getName());
+                }
+            }
+            
+            /*
+             * Choose a name for the proxy class to generate.
+             */
+            // 代理类的类名
+            long num = nextUniqueNumber.getAndIncrement();
+            String proxyName = proxyPkg.isEmpty() ? proxyClassNamePrefix + num    // 形如"$Proxy0"
+                : proxyPkg + "." + proxyClassNamePrefix + num;
+            
+            // 获取加载指定模块的类加载器
+            ClassLoader loader = getLoader(module);
+            trace(proxyName, module, loader, interfaces);
+            
+            /* Generate the specified proxy class. */
+            // 动态生成代理类的字节码流
+            byte[] proxyClassFile = ProxyGenerator.generateProxyClass(proxyName, interfaces.toArray(EMPTY_CLASS_ARRAY), accessFlags);
+            
+            try {
+                // 生成代理类的类对象
+                Class<?> proxyClass = UNSAFE.defineClass(proxyName, proxyClassFile, 0, proxyClassFile.length, loader, null);
+                
+                // 构造一个包含指定代理类的类对象的sub-clv
+                AbstractClassLoaderValue<ClassLoaderValue<Boolean>, Boolean>.Sub<? extends Class<?>> subCLV = reverseProxyCacheCLV.sub(proxyClass);
+                
+                // 向loader的类加载器局部缓存中存入一个subCLV对象到Boolean.TRUE的映射，并返回旧(目标)值，不允许覆盖
+                subCLV.putIfAbsent(loader, Boolean.TRUE);
+                
+                // 返回生成的代理类对象
+                return proxyClass;
+            } catch(ClassFormatError e) {
+                /*
+                 * A ClassFormatError here means that (barring bugs in the proxy class generation code) there was some other invalid aspect of the arguments
+                 * supplied to the proxy class creation (such as virtual machine limitations exceeded).
+                 */
+                throw new IllegalArgumentException(e.toString());
+            }
+        }
+        
+        /**
+         * Test if given class is a class defined by {@link #defineProxyClass(Module, List)}
+         */
+        // 判断指定的类是否位于相应类加载器的代理类缓存中
+        static boolean isProxyClass(Class<?> proxyClass) {
+            // 获取加载该代理类的类加载器
+            ClassLoader loader = proxyClass.getClassLoader();
+            
+            // 构造一个包含指定代理类的类对象的sub-clv
+            AbstractClassLoaderValue<ClassLoaderValue<Boolean>, Boolean>.Sub<? extends Class<?>> sub = reverseProxyCacheCLV.sub(proxyClass);
+            
+            // 从loader的类加载器局部缓存中提取当前对象映射的值
+            Boolean value = sub.get(loader);
+            
+            // 判断该映射是否存在
+            return Objects.equals(value, Boolean.TRUE);
+        }
+        
+        /**
+         * Validate the given proxy interfaces and the given referenced types
+         * are visible to the defining loader.
+         *
+         * @throws IllegalArgumentException if it violates the restrictions
+         *                                  specified in {@link Proxy#newProxyInstance}
+         */
+        // 确保类加载器loader可以完成对代理类的加载
+        private static void validateProxyInterfaces(ClassLoader loader, List<Class<?>> interfaces, Set<Class<?>> refTypes) {
+            Map<Class<?>, Boolean> interfaceSet = new IdentityHashMap<>(interfaces.size());
+            
+            // 遍历所有代理接口
+            for(Class<?> intf : interfaces) {
+                /*
+                 * Verify that the class loader resolves the name of this interface to the same Class object.
+                 */
+                // 确保类加载器loader可以加载到代理接口intf
+                ensureVisible(loader, intf);
+                
+                /*
+                 * Verify that the Class object actually represents an interface.
+                 */
+                // 确保代理接口为接口类型
+                if(!intf.isInterface()) {
+                    throw new IllegalArgumentException(intf.getName() + " is not an interface");
+                }
+                
+                /*
+                 * Verify that this interface is not a duplicate.
+                 */
+                // 确保列出的代理接口不重复
+                if(interfaceSet.put(intf, Boolean.TRUE) != null) {
+                    throw new IllegalArgumentException("repeated interface: " + intf.getName());
+                }
+            }
+    
+            // 遍历所有将来用到的类型
+            for(Class<?> type : refTypes) {
+                // 确保类加载器loader可以加载到所有将来用到的类型
+                ensureVisible(loader, type);
+            }
+        }
+        
+        /*
+         * Returns all types referenced by all public non-static method signatures of the proxy interfaces
+         */
+        // 返回所有代理接口中所有非静态目标方法需要用到类型，包括方法的返回值类型、形参类型以及异常类型（排除原始类型）
+        private static Set<Class<?>> referencedTypes(ClassLoader loader, List<Class<?>> interfaces) {
+            HashSet<Class<?>> types = new HashSet<>();
+    
+            // 遍历代理接口
+            for(Class<?> intf : interfaces) {
+                // 遍历代理接口中的所有目标方法(包括其父接口中的非静态方法)
+                for(Method method : intf.getMethods()) {
+                    // 排除静态方法
+                    if(Modifier.isStatic(method.getModifiers())) {
+                        continue;
+                    }
+            
+                    // 向types中存入目标方法的返回值类型
+                    addElementType(types, method.getReturnType());
+            
+                    // 向types中存入目标方法的形参类型
+                    addElementTypes(types, method.getSharedParameterTypes());
+            
+                    // 向types中存入目标方法抛出的异常类型
+                    addElementTypes(types, method.getSharedExceptionTypes());
+                }
+            }
+    
+            return types;
+        }
+        
+        // 将非原始类型的类对象存入Set
+        private static void addElementType(HashSet<Class<?>> types, Class<?> cls) {
+            // 获取类对象的类型(对于数组类，获取其最外层的组件类型)
+            var type = getElementType(cls);
+    
+            // 排除原始类型
+            if(!type.isPrimitive()) {
+                types.add(type);
+            }
+        }
+        
+        // 将非原始类型的类对象批量存入Set
+        private static void addElementTypes(HashSet<Class<?>> types, Class<?>... classes) {
+            // 遍历可变参数列表内所有类对象
+            for(var cls : classes) {
+                // 将非原始类型的类对象存入Set
+                addElementType(types, cls);
+            }
+        }
+        
+        // 获取类对象的类型，对于数组类型，返回其最外层的类型，如对于int[][]返回int
+        private static Class<?> getElementType(Class<?> type) {
+            Class<?> e = type;
+    
+            while(e.isArray()) {
+                // 获取数组的组件类型
+                e = e.getComponentType();
+            }
+    
+            return e;
+        }
+        
+        /**
+         * Returns the module that the generated proxy class belongs to.
+         *
+         * If all proxy interfaces are public and in exported packages,
+         * then the proxy class is in unnamed module.
+         *
+         * If any of proxy interface is package-private, then the proxy class
+         * is in the same module of the package-private interface.
+         *
+         * If all proxy interfaces are public and at least one in a non-exported
+         * package, then the proxy class is in a dynamic module in a
+         * non-exported package.  Reads edge and qualified exports are added
+         * for dynamic module to access.
+         */
+        /*
+         * (构造并)返回动态代理类所在模块
+         *
+         * loader    : 加载动态代理模块的类加载器
+         * interfaces: 代理接口
+         * refTypes  : 代理类的方法中涉及到的接口/类
+         */
+        private static Module mapToModule(ClassLoader loader, List<Class<?>> interfaces, Set<Class<?>> refTypes) {
+            // 记录没有被完全导出(exports)的public代理接口到其所在模块的映射
+            Map<Class<?>, Module> modulePrivateTypes = new HashMap<>();
+    
+            // 记录非public代理接口到其所在模块的映射
+            Map<Class<?>, Module> packagePrivateTypes = new HashMap<>();
+    
+            // 遍历代理接口
+            for(Class<?> intf : interfaces) {
+                // 获取该接口所在的模块
+                Module module = intf.getModule();
+        
+                // 处理public代理接口
+                if(Modifier.isPublic(intf.getModifiers())) {
+                    // 代理接口所在的包
+                    String pn = intf.getPackageName();
+            
+                    // 如果模块module没有将pn包导出(exports)给了所有模块(即该public代理接口没有被完全导出)
+                    if(!module.isExported(pn)) {
+                        modulePrivateTypes.put(intf, module);
+                    }
+            
+                    // 处理非public代理接口
+                } else {
+                    packagePrivateTypes.put(intf, module);
+                }
+            }
+    
+            /*
+             * all proxy interfaces are public and exported, the proxy class is in unnamed module.
+             * Such proxy class is accessible to any unnamed module and named module that can read unnamed module
+             */
+            // 如果代理接口被完全导出，则可将代理类生成到未命名模块，此处返回loader定义的未命名模块
+            if(packagePrivateTypes.isEmpty() && modulePrivateTypes.isEmpty()) {
+                return loader != null ? loader.getUnnamedModule() : BootLoader.getUnnamedModule();
+            }
+    
+            // 如果存在非public代理接口
+            if(packagePrivateTypes.size()>0) {
+                /*
+                 * all package-private types must be in the same runtime package
+                 * i.e. same package name and same module (named or unnamed)
+                 *
+                 * Configuration will fail if M1 and in M2 defined by the same loader
+                 * and both have the same package p (so no need to check class loader)
+                 */
+                // 确保非public代理接口来自相同模块的相同包下，否则无法确定代理类该生成到哪里
+                if(packagePrivateTypes.size()>1) {
+                    if(packagePrivateTypes.keySet().stream().map(Class::getPackageName).distinct().count()>1    // more than one package
+                        || packagePrivateTypes.values().stream().distinct().count()>1) {    // or more than one module
+                        throw new IllegalArgumentException("non-public interfaces from different packages");
+                    }
+                }
+        
+                /* all package-private types are in the same module (named or unnamed) */
+                // 非public代理接口所在的模块
+                Module target = null;
+        
+                // 遍历非public代理接口所在的模块(至此，只应该有一个模块)
+                for(Module module : packagePrivateTypes.values()) {
+                    // 确保这些模块的类加载器就是给定的类加载器
+                    if(getLoader(module) != loader) {
+                        // the specified loader is not the same class loader of the non-public interface
+                        throw new IllegalArgumentException("non-public interface is not defined by the given loader");
+                    }
+            
+                    target = module;
+                }
+        
+                /* validate if the target module can access all other interfaces */
+                // 遍历代理接口
+                for(Class<?> intf : interfaces) {
+                    // 获取代理接口所在模块
+                    Module module = intf.getModule();
+            
+                    // 如果遇到非public代理接口，直接略过，因为上面已经判断过了
+                    if(module == target) {
+                        continue;
+                    }
+            
+                    // 代理接口所在包
+                    String pn = intf.getPackageName();
+            
+                    // 遇到public接口
+                    if(target.canRead(module) // 确保public代理接口所在模块依赖(requires)非public代理接口所在模块，因为将来会把代理类放在非public代理接口所在模块下
+                        && module.isExported(pn, target)) { // 确保public接口所在模块将pn包导出(exports)给了非public代理接口所在模块，不然将来位于非public接口中的代理类无法访问public代理接口
+                        continue;
+                    }
+            
+                    throw new IllegalArgumentException(target + " can't access " + intf.getName());
+                }
+        
+                /* return the module of the package-private interface */
+                // 使用非public接口所在模块作为代理类的存放模块
+                return target;
+            }
+    
+            /* 至此，说明所有代理接口都是public的 */
+    
+            /*
+             * All proxy interfaces are public and at least one in a non-exported package.
+             * So maps to a dynamic proxy module and add reads edge and qualified exports, if necessary
+             */
+            // 如果代理接口都是public的，则它们可能位于各个不同的模块，此时需要动态构造一个命名模块，以存放将来生成的代理类
+            Module target = getDynamicModule(loader);
+    
+            /* set up proxy class access to proxy interfaces and types referenced in the method signature */
+            // 代理类中用到的所有接口/类
+            Set<Class<?>> types = new HashSet<>(interfaces);
+            types.addAll(refTypes);
+    
+            // 确保动态代理类所在模块target可以访问到代理类中出现的所有接口/类
+            for(Class<?> c : types) {
+                ensureAccess(target, c);
+            }
+    
+            // 返回动态代理所在的模块
+            return target;
+        }
+        
+        /*
+         * Ensure the given module can access the given class.
+         */
+        // 确保模块target可以访问到目标类c所在模块
+        private static void ensureAccess(Module target, Class<?> c) {
+    
+            // 获取c所在的模块
+            Module module = c.getModule();
+    
+            /* add read edge and qualified export for the target module to access */
+            // 确保模块target依赖(requires)模块module
+            if(!target.canRead(module)) {
+                Modules.addReads(target, module);
+            }
+    
+            // 获取c所在的包
+            String pn = c.getPackageName();
+    
+            // 确保模块module将pn包导出(exports)给了模块target
+            if(!module.isExported(pn, target)) {
+                Modules.addExports(module, pn, target);
+            }
+        }
+        
+        /*
+         * Ensure the given class is visible to the class loader.
+         */
+        // 确保类加载器cl可以加载到目标类/接口target
+        private static void ensureVisible(ClassLoader cl, Class<?> target) {
+            Class<?> type = null;
+            
+            try {
+                // 尝试用指定的类加载器来加载目标类/接口
+                type = Class.forName(target.getName(), false, cl);
+            } catch(ClassNotFoundException e) {
+            }
+            
+            if(type != target) {
+                throw new IllegalArgumentException(target.getName() + " referenced from a method is not visible from class loader");
+            }
+        }
+        
+        /**
+         * Define a dynamic module for the generated proxy classes in a non-exported package named com.sun.proxy.$MODULE.
+         *
+         * Each class loader will have one dynamic module.
+         */
+        // 动态构造一个命名模块，以存放将来生成的代理类
+        private static Module getDynamicModule(ClassLoader loader) {
+            // 返回dynProxyModulesCLV在loader中的类加载器局部缓存中映射的动态代理模块，如果不存在，则计算出新的动态代理模块并缓存起来
+            return dynProxyModulesCLV.computeIfAbsent(loader, (cl, clv) -> {
+                // create a dynamic module and setup module access
+                String mn = "jdk.proxy" + counter.incrementAndGet();    // 动态代理所在模块，如"jdk.proxy1"
+                String pn = PROXY_PACKAGE_PREFIX + "." + mn;            // 动态代理所在包，如com.sun.proxy.jdk.proxy1
+        
+                // 构造模块描述符
+                ModuleDescriptor descriptor = ModuleDescriptor.newModule(mn, Set.of(SYNTHETIC)).packages(Set.of(pn)).build();
+        
+                // 构造一个命名模块，会通知虚拟机
+                Module module = Modules.defineModule(cl, descriptor, null);
+        
+                // 使代理类所在模块依赖(requires)Proxy类所在模块，因为将来生成的代理类会继承Proxy类
+                Modules.addReads(module, Proxy.class.getModule());
+        
+                /* java.base to create proxy instance */
+                // 将代理类所在模块的pn包导出(exports)给"java.base"模块
+                Modules.addExports(module, pn, Object.class.getModule());
+        
+                // 返回动态创建的命名模块
+                return module;
+            });
+        }
+        
+        
+        // 判断指定的类是否为public，且该类所在的包被完全导出(exports)
+        private static boolean isExportedType(Class<?> c) {
+            String pn = c.getPackageName();
+            return Modifier.isPublic(c.getModifiers()) && c.getModule().isExported(pn);
+        }
+        
+        // 判断给定的类是否为非public
+        private static boolean isPackagePrivateType(Class<?> c) {
+            return !Modifier.isPublic(c.getModifiers());
+        }
+        
+        static void trace(String cn, Module module, ClassLoader loader, List<Class<?>> interfaces) {
+            if(isDebug()) {
+                System.err.format("PROXY: %s/%s defined by %s%n", module.getName(), cn, loader);
+            }
+            
+            if(isDebug("debug")) {
+                interfaces.forEach(c -> System.out.println(toDetails(c)));
+            }
+        }
+        
+        private static String toDetails(Class<?> c) {
+            String access = "unknown";
+    
+            if(isExportedType(c)) {
+                access = "exported";
+            } else if(isPackagePrivateType(c)) {
+                access = "package-private";
+            } else {
+                access = "module-private";
+            }
+    
+            ClassLoader ld = c.getClassLoader();
+    
+            return String.format("   %s/%s %s loader %s", c.getModule().getName(), c.getName(), access, ld);
+        }
+        
+        private static boolean isDebug() {
+            return !DEBUG.isEmpty();
+        }
+        
+        private static boolean isDebug(String flag) {
+            return DEBUG.equals(flag);
+        }
+    }
+    
+}

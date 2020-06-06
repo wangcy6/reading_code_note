@@ -181,9 +181,13 @@ class Buffer : public muduo::copyable
   }
 
  private:
+<<<<<<< HEAD
   std::vector<char> buffer_;
   size_t readerIndex_;
   size_t writerIndex_;
+=======
+readQueryFromClient 
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 };
 
 }

@@ -128,7 +128,7 @@ int st_usleep(st_utime_t usecs)
   } else
     me->state = _ST_ST_SUSPENDED;
 
-  _ST_SWITCH_CONTEXT(me);
+  _ST_SWITCH_CONTEXT(me); //切换其他线程
 
   if (me->flags & _ST_FL_INTERRUPT) {
     me->flags &= ~_ST_FL_INTERRUPT;
@@ -325,7 +325,7 @@ int st_mutex_lock(_st_mutex_t *lock)
   return 0;
 }
 
-
+// 用户线程从xx锁等待队列 移动可被调度可运行队列
 int st_mutex_unlock(_st_mutex_t *lock)
 {
   _st_thread_t *thread;

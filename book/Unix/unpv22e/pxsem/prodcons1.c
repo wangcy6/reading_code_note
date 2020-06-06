@@ -49,8 +49,12 @@ main(int argc, char **argv)
 /* end main */
 
 /* include prodcons */
+<<<<<<< HEAD
 void *
 produce(void *arg)
+=======
+void * produce(void *arg)
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 {
 	int		i;
 

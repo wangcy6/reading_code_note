@@ -1,15 +1,30 @@
+<<<<<<< HEAD
 authtoken: 4Q8WccagVYdR3VkJM7tEZ_225WSACJ1Rqydj3Ci19cA
 #region: us
 #console_ui: true
+=======
+authtoken: 2KycTkE9WkuMMKLbi9bpk_7M4ZYSDoEweRr5wuLUbsE
+#region: us
+console_ui: true
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 #http_proxy: false
 #inspect_db_size: 50000000
 log_level: info
 log_format: json
+<<<<<<< HEAD
 #log: /var/log/ngrok.log
 log: stdout
+=======
+log: /root/local/ngrok.log
+#log: stdout
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 #metadata: '{"serial": "00012xa-33rUtz9", "comment": "For customer alan@example.com"}'
 #root_cas: trusted
 #socks5_proxy: "socks5://localhost:9150"
 #update: false
 #update_channel: stable
+<<<<<<< HEAD
 web_addr: 65.49.221.20:4040
+=======
+web_addr:4040
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8

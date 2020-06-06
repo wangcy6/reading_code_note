@@ -1,0 +1,22 @@
+---- Observable Matches (21 in 20 files) ----
+AARCH64Frame.{block}.{anon_class_73} in AARCH64Frame.java (src\sun\jvm\hotspot\runtime\aarch64) :         public void update(Observable o, Object data) {
+AARCH64JavaCallWrapper.java (src\sun\jvm\hotspot\runtime\aarch64) line 38 :         public void update(Observable o, Object data) {
+AdapterBlob.java (src\sun\jvm\hotspot\code) line 35 :         public void update(Observable o, Object data) {
+AdaptiveFreeList.java (src\sun\jvm\hotspot\gc\cms) line 29 : import java.util.Observable;
+AdaptiveFreeList.java (src\sun\jvm\hotspot\gc\cms) line 42 :       public void update(Observable o, Object data) {
+AFLBinaryTreeDictionary.java (src\sun\jvm\hotspot\memory) line 36 :          public void update(Observable o, Object data) {
+AMD64JavaCallWrapper.java (src\sun\jvm\hotspot\runtime\amd64) line 37 :         public void update(Observable o, Object data) {
+Arguments.java (src\sun\jvm\hotspot\runtime) line 38 :             public void update(Observable o, Object data) {
+Array.java (src\sun\jvm\hotspot\oops) line 38 :         public void update(Observable o, Object data) {
+ArrayKlass.java (src\sun\jvm\hotspot\oops) line 40 :         public void update(Observable o, Object data) {
+BasicHashtable.java (src\sun\jvm\hotspot\utilities) line 37 :         public void update(Observable o, Object data) {
+BasicHashtableEntry.java (src\sun\jvm\hotspot\utilities) line 37 :         public void update(Observable o, Object data) {
+BasicLock.java (src\sun\jvm\hotspot\runtime) line 36 :         public void update(Observable o, Object data) {
+BasicObjectLock.java (src\sun\jvm\hotspot\runtime) line 35 :         public void update(Observable o, Object data) {
+Block.java (src\sun\jvm\hotspot\opto) line 37 :         public void update(Observable o, Object data) {
+Block_Array.java (src\sun\jvm\hotspot\opto) line 36 :         public void update(Observable o, Object data) {
+Block_List.java (src\sun\jvm\hotspot\opto) line 36 :         public void update(Observable o, Object data) {
+BreakpointInfo.java (src\sun\jvm\hotspot\oops) line 42 :         public void update(Observable o, Object data) {
+BsdAMD64JavaThreadPDAccess.java (src\sun\jvm\hotspot\runtime\bsd_amd64) line 53 :         public void update(Observable o, Object data) {
+BsdX86JavaThreadPDAccess.java (src\sun\jvm\hotspot\runtime\bsd_x86) line 49 :         public void update(Observable o, Object data) {
+BufferBlob.java (src\sun\jvm\hotspot\code) line 35 :         public void update(Observable o, Object data) {

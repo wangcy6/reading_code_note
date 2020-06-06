@@ -97,6 +97,7 @@ fi
 #if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 #    . /etc/bash_completion
 #fi
+<<<<<<< HEAD
 
 
 ##############
@@ -111,11 +112,14 @@ export PATH=/opt/scala/sbt/:$M2_HOME/bin:/home/gadmin/ob_rel/redis:$PATH
 export PATH=$PATH:/usr/local/bin
 export PATH=$PATH:/usr/local/mongodb/bin
 
+=======
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 #根目录
 export GOROOT=/root/local/go
 #bin目录
 export GOBIN=$GOROOT/bin
 #工作目录
+<<<<<<< HEAD
 export GOPATH=/root/wangchuanyi/gocode
 export PATH=$PATH:$GOPATH:$GOBIN:/home/gadmin/wangchuanyi/go-ethereum-master/build/bin
 
@@ -129,3 +133,12 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu/:/usr/lib:/roo
 export PATH=/usr/bin:/usr/sbin/:$PATH
 alias cman='man -M /usr/share/man/zh_CN' 
 alias cdcode="cd /root/code/TryEverything"
+=======
+export GOPATH=/root/code;
+export PATH=$PATH:$GOPATH:$GOBIN
+export PATH=/usr/bin:/usr/sbin/:$PATH
+#alisa
+alias c="source ~/.bashrc"
+alias cman='man -M /usr/share/man/zh_CN' 
+alias cdcode="cd /root/code/src/gitee.com/wang_cyi/TryEverything"
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8

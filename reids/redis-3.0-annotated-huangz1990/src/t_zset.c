@@ -180,8 +180,8 @@ void zslFree(zskiplist *zsl) {
  */
 int zslRandomLevel(void) {
     int level = 1;
-
-    while ((random()&0xFFFF) < (ZSKIPLIST_P * 0xFFFF))
+    //4 294 967 295
+    while ((random()&0xFFFF) < (ZSKIPLIST_P * 0xFFFF)) //zslRandomLevel
         level += 1;
 
     return (level<ZSKIPLIST_MAXLEVEL) ? level : ZSKIPLIST_MAXLEVEL;

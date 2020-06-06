@@ -5,7 +5,12 @@ struct shared {
   int	count;		/* and the counter */
 } shared;
 
+<<<<<<< HEAD
 int main(int argc, char **argv)
+=======
+int
+main(int argc, char **argv)
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 {
 	int		fd, i, nloop;
 	struct shared 	*ptr;

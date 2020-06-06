@@ -3,6 +3,11 @@
 #include	<stdarg.h>		/* ANSI C header file */
 #include	<syslog.h>		/* for syslog() */
 
+<<<<<<< HEAD
+=======
+int		daemon_proc;		/* set nonzero by daemon_init() */
+
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 static void	err_doit(int, int, const char *, va_list);
 
 /* Nonfatal error related to a system call.

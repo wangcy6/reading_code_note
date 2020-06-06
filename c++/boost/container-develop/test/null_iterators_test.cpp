@@ -24,7 +24,10 @@
 #include <boost/core/lightweight_test.hpp>
 #include <boost/static_assert.hpp>
 #include <cstring>
+<<<<<<< HEAD
 #include <iterator>
+=======
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 #include <new>
 
 using namespace boost::container;
@@ -57,6 +60,7 @@ BOOST_INTRUSIVE_INSTANTIATE_DEFAULT_TYPE_TMPLT(const_reverse_iterator)
 
 }}}   //namespace boost::container::test {
 
+<<<<<<< HEAD
 template<class RandomAccessIterator>
 void check_plus_zero_impl(RandomAccessIterator it)
 {
@@ -91,6 +95,8 @@ void check_plus_zero()
   check_plus_zero<Container>(tag);
 }
 
+=======
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 template<class Container>
 void check_null_iterators()
 {
@@ -112,6 +118,7 @@ void check_null_iterators()
 int main()
 {
    check_null_iterators< vector<int> >();
+<<<<<<< HEAD
    check_plus_zero< vector<int> >();
    check_null_iterators< deque<int> >();
    check_plus_zero< deque<int> >();
@@ -141,6 +148,22 @@ int main()
    check_plus_zero< flat_map<int, int> >();
    check_null_iterators< flat_multimap<int, int> >();
    check_plus_zero< flat_multimap<int, int> >();
+=======
+   check_null_iterators< deque<int> >();
+   check_null_iterators< stable_vector<int> >();
+   check_null_iterators< static_vector<int, 1> >();
+   check_null_iterators< string >();
+   check_null_iterators< list<int> >();
+   check_null_iterators< slist<int> >();
+   check_null_iterators< map<int, int> >();
+   check_null_iterators< multimap<int, int> >();
+   check_null_iterators< set<int> >();
+   check_null_iterators< multiset<int> >();
+   check_null_iterators< flat_set<int> >();
+   check_null_iterators< flat_multiset<int> >();
+   check_null_iterators< flat_map<int, int> >();
+   check_null_iterators< flat_multimap<int, int> >();
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 
    return boost::report_errors();
 }

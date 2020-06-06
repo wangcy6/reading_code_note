@@ -1680,7 +1680,7 @@ int clusterProcessPacket(clusterLink *link) {
                 ntohl(hdr->data.publish.msg.channel_len) +
                 ntohl(hdr->data.publish.msg.message_len);
         if (totlen != explen) return 1;
-    } else if (type == CLUSTERMSG_TYPE_FAILOVER_AUTH_REQUEST ||
+    } else if (type == CLUSTERMSG_TYPE_ ||
                type == CLUSTERMSG_TYPE_FAILOVER_AUTH_ACK ||
                type == CLUSTERMSG_TYPE_MFSTART)
     {
@@ -3347,6 +3347,43 @@ master，如果没有大于(server.cluster->size / 2) + 1，等待下次投票�
  * -------------------------------------------------------------------------- */
 
 /* This is executed 10 times every second */
+/**
+ * clusterCron()总结
+仍然从serverCron进入clusterCron执行的部分。
+
+clusterCron按顺序做如下几件事情：
+http://arloor.com/posts/redis/redis-cluster/
+如果有通过CONFIG SET命令设置cluster_announce_ip，则将该IP设置到myself->ip
+遍历server.cluster->nodes中的节点
+如果节点的flag包含PFAIL，stats_pfail_nodes加一
+如果节点在HANDESHAKE状态，且握手已经超时，则使用clusterDelNode删除内存中该节点的信息
+如果自己到该节点的tcp连接为null，则创建tcp连接。
+并设置该连接的“readable”可读事件回调为clusterReadHandler。
+如果该节点flag包含CLUSTER_NODE_MEET，则发送一次MEET报文，随后消除CLUSTER_NODE_MEETflag。
+如果该节点不包含CLUSTER_NODE_MEETflag，则发送一次PING报文。
+随机挑选一个连接状态正常、不在HANDESHAKE状态、不在等待pong响应报文的节点，向其发送PING报文
+再次遍历server.cluster->nodes中的节点
+跳过自己、没有地址信息的、在HANDSHAKE状态的节点
+如果自己是从节点、目标节点为主节点且状态正常，
+则统计该节点的正常slave的数量（okslaves）
+如果okslaves为0，且承载的slots数量不为0，且包含CLUSTER_NODE_MIGRATE_TOflag，那么orphaned_masters（孤儿主节点、没有有效slave的节点）计数加一。
+检查并设置max_slaves（主节点最大slaves数量）、this_slaves（自己的主节点的slave数量）计数
+判断如果等待PONG响应过长时间，则主动断开连接，将在下一clusterCron重连——应用层心跳机制
+如果过长时间没有发送PING，则发送PING，随后continue;开始操作下一节点
+如果在等待PONG响应，则继续执行以下操作，否则continue;操作下一节点
+如果等待PONG响应的时间超过超时时间，则设置该节点CLUSTER_NODE_PFAILflag。同时设置需要更新cluster状态（update_state = 1）
+如果自己是从节点，且主节点重新上线，则调用replicationSetMaster，设置主节点的IP和PORT。——在replicationCron()中，将会主动连接该地址，进行拷贝操作。
+如果manual failover超时，则退出该次failover
+如果自己为从节点
+处理手动failover clusterHandleManualFailover()
+自动failover clusterHandleSlaveFailover()
+如果自己的主节点的从节点数量最多，同时集群中有孤儿主节点，则尝试把自己迁移为该孤儿主节点的从节点。
+如果cluster状态需要更新，则进行更新。if (update_state || server.cluster->state == CLUSTER_FAIL)…
+以上步骤，没有stepinto执行细节，是在阅读clusterCron代码和注释后总结的。
+ */
+
+//http://ningg.top/redis-lesson-10-redis-cluster/
+//https://blog.csdn.net/men_wen/article/details/73137338
 void clusterCron(void) {
     dictIterator *di;
     dictEntry *de;
@@ -3415,11 +3452,29 @@ void clusterCron(void) {
          * for which we have no address. */
         if (node->flags & (CLUSTER_NODE_MYSELF|CLUSTER_NODE_NOADDR)) continue;
 
-        if (node->flags & CLUSTER_NODE_PFAIL)
+        if (node->flags & CLUSTER_NODE_PFAIL) //PFAL意为possible failure，是尚未确认的故障状态，PAIL指这个节点失效的信息已经被大多数master确认。
             server.cluster->stats_pfail_nodes++;
         //节点handshake超时，删除节点
         /* A Node in HANDSHAKE state has a limited lifespan equal to the
          * configured node timeout. */
+        /**
+         *  NODE_TIMEOUT---PFAIL flag------FAIL flag(gossip)---- the weak agreement
+         *        Unsaved       
+                                                     +-------------------------+
++------------+          +------------+               |                         |
+|            |          |            |               |                         |
+|            |          |            |               |                         |
+|            +----------+            |               |                         |
+|            |          |            |               |                         |
+|            +----------+      Node B|               |                         |
+|      Node A|          |            |               |     Node C E  D E       |
+|            |          |            |               |                         |
+|            |          |            |               |                         |
+|            |          |            |               |                         |
+|            |          |            |               |                         |
++------------+          +------------+               |                         |
+                                                     +-------------------------+
+         */ 
         if (nodeInHandshake(node) && now - node->ctime > handshake_timeout) {
             clusterDelNode(node);
             continue;

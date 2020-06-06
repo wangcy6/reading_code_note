@@ -1,0 +1,11 @@
+{
+	    "server":"95.169.24.121",
+	        "server_port":8380,
+		    "local_address": "127.0.0.1",
+		        "local_port":1080,
+			    "password":"money",
+			        "timeout":300,
+				    "method":"aes-256-cfb",
+				        "fast_open": false
+}
+

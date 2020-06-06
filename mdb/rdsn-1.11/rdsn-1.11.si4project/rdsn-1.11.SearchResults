@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---- singleton Matches (13 in 7 files) ----
 block_service_manager.h (src\dist\replication\common) line 3 : #include <dsn/utility/singleton_store.h>
 block_service_manager.h (src\dist\replication\common) line 17 : // a singleton for rDSN service_engine to register all blocks, this should be called only once
@@ -12,3 +13,9 @@ command_manager.h (include\dsn\tool-api) line 36 : class command_manager : publi
 core_main.cpp (src\core\core) line 48 : #include <dsn/utility/singleton.h>
 customizable_id.h (include\dsn\utility) line 39 : #include <dsn/utility/singleton.h>
 customizable_id.h (include\dsn\utility) line 58 : class customized_id_mgr : public dsn::utils::singleton<customized_id_mgr<T>>
+=======
+---- signals Matches (3 in 1 files) ----
+DoxygenLayout.rDSN.xml (doc) line 45 :       <signals title=""/>
+DoxygenLayout.rDSN.xml (doc) line 163 :       <signals title=""/>
+DoxygenLayout.rDSN.xml (doc) line 181 :       <signals title=""/>
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8

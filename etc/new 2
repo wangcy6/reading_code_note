@@ -1,0 +1,7 @@
+nohup ./ngrok http 8090 -log /root/local/ngrok.log &
+
+
+./ngrokd -domain="demo.cn" -httpAddr=":80" -httpsAddr=":443" -log ./access.log
+
+
+nohup  ./ngrok http 8090 &

@@ -10,7 +10,11 @@ main(int argc, char **argv)
 	if (argc != 2)
 		err_quit("usage: server2 <name>");
 
+<<<<<<< HEAD
 	/* 4 create shm, set its size, map it, close descriptor */
+=======
+		/* 4create shm, set its size, map it, close descriptor */
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 	shm_unlink(Px_ipc_name(argv[1]));		/* OK if this fails */
 	fd = Shm_open(Px_ipc_name(argv[1]), O_RDWR | O_CREAT | O_EXCL, FILE_MODE);
 	ptr = Mmap(NULL, sizeof(struct shmstruct), PROT_READ | PROT_WRITE,
@@ -28,12 +32,21 @@ main(int argc, char **argv)
 	Sem_init(&ptr->nstored, 1, 0);
 	Sem_init(&ptr->noverflowmutex, 1, 1);
 
+<<<<<<< HEAD
 	/* 4this program is the consumer */
 	index = 0;
 	lastnoverflow = 0;
 	for ( ; ; ) {
 		Sem_wait(&ptr->nstored); //1 消费者：等待满
 		Sem_wait(&ptr->mutex); //1 互斥等待
+=======
+		/* 4this program is the consumer */
+	index = 0;
+	lastnoverflow = 0;
+	for ( ; ; ) { //消费者
+		Sem_wait(&ptr->nstored);// 0
+		Sem_wait(&ptr->mutex); //1
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 		offset = ptr->msgoff[index];
 		printf("index = %d: %s\n", index, &ptr->msgdata[offset]);
 		if (++index >= NMESG)

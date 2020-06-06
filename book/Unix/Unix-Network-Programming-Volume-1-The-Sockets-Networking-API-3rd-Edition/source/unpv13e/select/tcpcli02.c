@@ -23,3 +23,11 @@ main(int argc, char **argv)
 
 	exit(0);
 }
+<<<<<<< HEAD
+=======
+
+
+sudo tcpdump -i lo port 3490 -w dump.pcap -v
+
+tcpdump -i any  'port 3490'  -w dump.pcap -v
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8

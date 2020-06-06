@@ -18,9 +18,12 @@
 #  pragma once
 #endif
 
+<<<<<<< HEAD
 namespace boost {
 namespace container {
 
+=======
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 //Functors for member algorithm defaults
 template<class ValueType>
 struct value_less
@@ -36,7 +39,10 @@ struct value_equal
       {  return a == b;  }
 };
 
+<<<<<<< HEAD
 }  //namespace container {
 }  //namespace boost {
 
+=======
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 #endif   //BOOST_CONTAINER_DETAIL_VALUE_FUNCTORS_HPP

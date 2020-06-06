@@ -15,7 +15,12 @@ struct {	/* data shared by producers and consumer */
 
 void	*produce(void *), *consume(void *);
 
+<<<<<<< HEAD
 int main(int argc, char **argv)
+=======
+int
+main(int argc, char **argv)
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 {
 	int		i, count[MAXNTHREADS];
 	pthread_t	tid_produce[MAXNTHREADS], tid_consume;
@@ -25,20 +30,30 @@ int main(int argc, char **argv)
 	nitems = atoi(argv[1]);
 	nproducers = min(atoi(argv[2]), MAXNTHREADS);
 
+<<<<<<< HEAD
 	/* 4initialize three semaphores */
+=======
+		/* 4initialize three semaphores */
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 	Sem_init(&shared.mutex, 0, 1);
 	Sem_init(&shared.nempty, 0, NBUFF);
 	Sem_init(&shared.nstored, 0, 0);
 
 		/* 4create all producers and one consumer */
 	Set_concurrency(nproducers + 1);
+<<<<<<< HEAD
     //多写入
+=======
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 	for (i = 0; i < nproducers; i++) {
 		count[i] = 0;
 		Pthread_create(&tid_produce[i], NULL, produce, &count[i]);
 	}
+<<<<<<< HEAD
 
 	//单读取
+=======
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 	Pthread_create(&tid_consume, NULL, consume, NULL);
 
 		/* 4wait for all producers and the consumer */
@@ -56,7 +71,12 @@ int main(int argc, char **argv)
 /* end main */
 
 /* include produce */
+<<<<<<< HEAD
 void * produce(void *arg)
+=======
+void *
+produce(void *arg)
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 {
 	for ( ; ; ) {
 		Sem_wait(&shared.nempty);	/* wait for at least 1 empty slot */

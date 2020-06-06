@@ -111,17 +111,39 @@ private:
 
     sp_counted_base * pi_;
 
+<<<<<<< HEAD
+=======
+#if defined(BOOST_SP_ENABLE_DEBUG_HOOKS)
+    int id_;
+#endif
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 
     friend class weak_count;
 
 public:
 
+<<<<<<< HEAD
 
 
 
 
 
 
+=======
+    BOOST_CONSTEXPR shared_count() BOOST_SP_NOEXCEPT: pi_(0)
+#if defined(BOOST_SP_ENABLE_DEBUG_HOOKS)
+        , id_(shared_count_id)
+#endif
+    {
+    }
+
+    BOOST_CONSTEXPR explicit shared_count( sp_counted_base * pi ) BOOST_SP_NOEXCEPT: pi_( pi )
+#if defined(BOOST_SP_ENABLE_DEBUG_HOOKS)
+        , id_(shared_count_id)
+#endif
+    {
+    }
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 
     template<class Y> explicit shared_count( Y * p ): pi_( 0 )
 #if defined(BOOST_SP_ENABLE_DEBUG_HOOKS)

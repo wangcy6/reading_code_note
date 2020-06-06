@@ -5,7 +5,11 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+<<<<<<< HEAD
 //https://theboostcpplibraries.com/boost.smartpointers-shared-ownership
+=======
+
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 class Observable;
 
 class Observer : public boost::enable_shared_from_this<Observer>
@@ -91,8 +95,12 @@ int main()
     boost::shared_ptr<Foo> p(new Foo);
     p->observe(&subject);
     subject.notifyObservers();
+<<<<<<< HEAD
   } 
   //没有通知subject p已经消失
+=======
+  }
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
   subject.notifyObservers();
 }
 

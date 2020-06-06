@@ -84,10 +84,16 @@ struct singleton_default
       object_creator() { singleton_default<T>::instance(); }
       inline void do_nothing() const { }
     };
+<<<<<<< HEAD
     static object_creator create_object;//不属于哪个具体类，不在构造函数 等初始化
     
 
     singleton_default();
+=======
+    static object_creator create_object;
+
+    singleton_default(); //构造函数私有
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 
   public:
     typedef T object_type;
@@ -110,8 +116,12 @@ struct singleton_default
     }
 };
 template <typename T>
+<<<<<<< HEAD
 typename singleton_default<T>::object_creator
 singleton_default<T>::create_object;
+=======
+typename singleton_default<T>::object_creator singleton_default<T>::create_object;
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 
 } // namespace dtl
 } // namespace container

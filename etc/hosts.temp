@@ -1,0 +1,9 @@
+127.0.0.1    localhost work 
+65.49.221.20 localhost
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+#127.0.0.1 ideal-pony-2.localdomain
+
+

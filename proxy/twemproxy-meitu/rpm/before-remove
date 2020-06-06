@@ -1,4 +1,0 @@
-#!/bin/sh
-
-/sbin/service twemproxy stop >/dev/null 2>&1
-/sbin/chkconfig --del twemproxy

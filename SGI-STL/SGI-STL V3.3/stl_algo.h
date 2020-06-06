@@ -1853,21 +1853,32 @@ partial_sort_copy(_InputIter __first, _InputIter __last,
 }
 
 // nth_element() and its auxiliary functions.  
-
 template <class _RandomAccessIter, class _Tp>
+/**
+在一个无序的数组中 找到第 n 大的元素。
+本文介绍 STL 算法库中 nth_elemnt 的实现代码。 
+STL 采用的算法是： 当数组长度 <= 3时， 采用插入排序。
+当长度 > 3时， 采用快排 Partition 的思
+                                   */
 void __nth_element(_RandomAccessIter __first, _RandomAccessIter __nth,
                    _RandomAccessIter __last, _Tp*) {
+ 
   while (__last - __first > 3) {
     _RandomAccessIter __cut =
+    // 一次快速排序，__cut是第k大的元素 
       __unguarded_partition(__first, __last,
                             _Tp(__median(*__first,
                                          *(__first + (__last - __first)/2),
                                          *(__last - 1))));
     if (__cut <= __nth)
+    //    若   nth 在右半边， 则在右半边搜索；
       __first = __cut;
     else 
+    //  如果 nth 这个迭代器在左半边，则继续在左半边搜索；
       __last = __cut;
   }
+
+  //数组的长度 <= 3,时， 采用插入排序
   __insertion_sort(__first, __last);
 }
 

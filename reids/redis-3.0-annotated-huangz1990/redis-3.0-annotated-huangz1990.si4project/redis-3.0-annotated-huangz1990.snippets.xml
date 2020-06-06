@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SourceInsightCodeSnippets
+<<<<<<< HEAD
 	AppVer="4.00.0106"
+=======
+	AppVer="4.00.0086"
+>>>>>>> 4ecd10e86f9964ffc8c2e184effdde21375472a8
 	AppVerMinReader="4.00.0019"
 	>
 	<SnippetList/>

@@ -1,0 +1,52 @@
+# Copyright (c) 1993-2009 Microsoft Corp.
+#
+# This is a sample HOSTS file used by Microsoft TCP/IP for Windows.
+#
+# This file contains the mappings of IP addresses to host names. Each
+# entry should be kept on an individual line. The IP address should
+# be placed in the first column followed by the corresponding host name.
+# The IP address and the host name should be separated by at least one
+# space.
+#
+# Additionally, comments (such as these) may be inserted on individual
+# lines or following the machine name denoted by a '#' symbol.
+#
+# For example:
+#
+# 102.54.94.97 rhino.acme.com # source server
+# 38.25.63.10 x.acme.com # x client host
+
+# localhost name resolution is handled within DNS itself.
+#127.0.0.1 localhost
+# ::1 localhost
+#116.62.22.162 www.iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea.com
+
+#127.0.0.1  https://www.zhihu.com/
+#127.0.0.1   https://weibo.com
+#127.0.0.1   https://weibo.com/u/1913208034/home?wvr=5&retcode=6102&sudaref=passport.weibo.com
+#127.0.0.1   https://weibo.com/u/1913208034/home?wvr=5
+#127.0.0.1   http://news.qq.com/
+#127.0.0.1   https://www.zhihu.com
+#127.0.0.1   https://www.toutiao.com/
+#127.0.0.1   http://iask.sina.com.cn
+#10.112.179.15 bj1-10-112-179-15
+#127.0.0.1 www.xmind.net
+#127.0.0.1 https://weibo.com/wangchuanyi99/home?wvr=5
+#127.0.0.1 http://vip.iqiyi.com/firstsix-new-pc.html?fv=43eae339979f37d1c7c83ccbba9945bb
+#127.0.0.1 https://www.iqiyi.com/
+#127.0.0.1 https://v.qq.com/
+
+#127.0.0.1 https://www.youku.com/
+#127.0.0.1 https://weibo.com/wangchuanyi99/home?topnav=1&wvr=6&mod=logo
+#127.0.0.1 https://weibo.com/2803301701/GmRoHy0uf?type=comment#_rnd1529913493109
+#127.0.0.1 https://weibo.com/wangchuanyi99/home?wvr=5&topnav=1&mod=logo
+
+10.112.178.193 apprtc.io
+10.112.178.193 https://apprtc.io
+10.115.37.45 https://gomeeting-pre.gomedc.com
+10.115.37.45 gomeeting-pre.gomedc.com
+10.112.178.193 www.mywebrtc.com
+10.112.178.193 https://www.mywebrtc.com
+
+127.0.0.1  https://www.toutiao.com/
+127.0.0.1  https://v.qq.com/
